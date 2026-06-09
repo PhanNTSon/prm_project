@@ -9,11 +9,22 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  go_router: ^17.3.0
+  dio: ^5.5.0
+  flutter_secure_storage: ^10.3.1
+  shared_preferences: ^2.2.3
+  provider: ^6.1.2
+  stomp_dart_client: ^3.0.1
+  flutter_inappwebview: ^6.0.0
+  cached_network_image: ^3.3.1
+  flutter_dotenv: ^6.0.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  build_runner: ^2.4.9
+  json_serializable: ^6.8.0
 
 flutter:
   uses-material-design: true
