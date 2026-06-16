@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prm_project/core/network/auth_interceptor.dart';
 import 'package:prm_project/core/network/secure_storage_service.dart';
@@ -118,6 +119,59 @@ void main() {
       // Assert
       expect(fakeStorage.isCleared, isTrue);
       expect(handler.nextError, isNotNull);
+    });
+  });
+
+  group('SecureStorageService Tests', () {
+    const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
+    final Map<String, String> log = {};
+    late SecureStorageService service;
+
+    setUp(() {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+        if (methodCall.method == 'write') {
+          log[methodCall.arguments['key']] = methodCall.arguments['value'];
+          return null;
+        }
+        if (methodCall.method == 'read') {
+          return log[methodCall.arguments['key']];
+        }
+        if (methodCall.method == 'delete') {
+          log.remove(methodCall.arguments['key']);
+          return null;
+        }
+        return null;
+      });
+      service = SecureStorageService();
+    });
+
+    test('should save and read auth data', () async {
+      await service.saveAuthData(
+        token: 'test_token',
+        userId: '123',
+        role: 'ADMIN',
+        username: 'techlead',
+      );
+
+      expect(await service.getToken(), 'test_token');
+      expect(await service.getUserId(), '123');
+      expect(await service.getRole(), 'ADMIN');
+      expect(await service.getUsername(), 'techlead');
+    });
+
+    test('should clear auth data', () async {
+      await service.saveAuthData(
+        token: 'test_token',
+        userId: '123',
+        role: 'ADMIN',
+        username: 'techlead',
+      );
+
+      await service.clearAuthData();
+
+      expect(await service.getToken(), null);
+      expect(await service.getUserId(), null);
     });
   });
 }
