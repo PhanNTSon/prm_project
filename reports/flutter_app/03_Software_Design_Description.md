@@ -1,6 +1,6 @@
-# **III. Software Design Description** {#iii.-software-design-description}
+# **III. Software Design Description**
 
-## **1\. System Design** {#1.-system-design}
+## **1\. System Design**
 
 ### **1.1 System Architecture**
 
@@ -28,30 +28,14 @@ Kiến trúc tổng thể của hệ thống dựa trên mô hình Client-Server
 
 Dự án Flutter áp dụng kiến trúc **Feature-First (Phân tách theo tính năng)**. Phương pháp này giúp chia nhỏ dự án thành các module độc lập, cho phép các lập trình viên làm việc song song mà không bị xung đột (conflict) mã nguồn.
 
-```text
-lib/
-├── core/                       # Chứa mã nguồn dùng chung toàn hệ thống
-│   ├── network/                # Cấu hình DioClient, AuthInterceptor, SecureStorage
-│   ├── router/                 # Cấu hình GoRouter, MainShellScreen, Auth Guard
-│   ├── widgets/                # UI Component dùng chung (SteamButton, Loading,...)
-│   └── constants/              # Hằng số, Bảng màu (AppColors, ApiEndpoints)
-│
-├── features/                   # Chứa các chức năng chính của app
-│   ├── auth/                   # [Dev A] Logic và Giao diện Đăng nhập / Đăng ký
-│   ├── profile/                # [Dev A] Hồ sơ người dùng
-│   ├── storefront/             # [Dev B] Trang chủ, Tìm kiếm, Chi tiết game
-│   ├── cart/                   # [Dev C] Quản lý giỏ hàng, nạp tiền (VNPay)
-│   └── library/                # [Dev D] Thư viện game sở hữu
-│
-└── main.dart                   # Điểm khởi chạy của ứng dụng, khởi tạo Router và App
-```
+![Package Diagram](reports/package_diagram.png)
 
 Mỗi feature con (ví dụ `storefront`) sẽ tiếp tục được chia theo mô hình 3 tầng (3-Layer Architecture):
 - `data/`: Chứa các model (DTO) và repository giao tiếp với API.
 - `providers/`: Chứa logic xử lý trạng thái (State Management) cho feature đó.
 - `views/`: Chứa các màn hình (Screen) và các thành phần UI (Widget) cụ thể của feature đó.
 
-## **2\. Database Design** {#2.-database-design}
+## **2\. Database Design**
 
 *Thiết kế CSDL được giữ nguyên theo CSDL PostgreSQL hiện hành của Backend Spring Boot.*
 - **Bảng chính:** `User`, `Game`, `Transaction`, `TransactionDetail`, `Library`, `Cart`, `Review`.

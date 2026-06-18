@@ -1,8 +1,8 @@
-# **Acknowledgement** {#acknowledgement}
+# **Acknowledgement**
 
 Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu yêu cầu (RDS/SRS) của phiên bản web cũ, hiện đã được thiết kế lại để tối ưu hóa cho ứng dụng di động đa nền tảng bằng Flutter.
 
-# **Definition and Acronyms**  {#definition-and-acronyms}
+# **Definition and Acronyms**
 
 | Acronym | Definition |
 | :---: | ----- |
@@ -19,9 +19,9 @@ Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu y
 | UC | Use Case |
 | API | Application Program Interface |
 
-# **I. Project Introduction** {#i.-project-introduction}
+# **I. Project Introduction**
 
-## **1\. Overview** {#1.-overview}
+## **1\. Overview**
 
 ### **1.1 Project Information**
 - **Project Name:** Centurion Store (Flutter Mobile App)
@@ -38,17 +38,17 @@ Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu y
 | *4* | Nguyễn Văn D | Library & UI Kit Components |
 | *5* | Tech Lead | Architecture, Routing, Base Network, Testing |
 
-## **2\. Product Background** {#2.-product-background}
+## **2\. Product Background**
 
 Thị trường game kỹ thuật số đang ngày càng mở rộng, tuy nhiên người dùng di động thường gặp khó khăn khi muốn theo dõi, mua sắm và quản lý thư viện game PC/Console của họ một cách nhanh chóng. Dự án **Centurion Store Mobile App** được xây dựng nhằm cung cấp một nền tảng di động tiện lợi, cho phép người dùng (game thủ) truy cập vào cửa hàng game, nạp tiền vào ví điện tử thông qua VNPay, mua sắm trò chơi, và xem thư viện game đã sở hữu mọi lúc mọi nơi thông qua ứng dụng điện thoại.
 
-## **3\. Existing Solutions** {#3.-existing-solutions}
+## **3\. Existing Solutions**
 
 - **Steam Mobile App:** Ứng dụng chính thức của Steam cho phép mua sắm và xác thực, tuy nhiên giao diện đôi khi phức tạp và nặng nề.
 - **PlayStation App / Xbox App:** Cho phép mua sắm và quản lý thư viện game trên console.
 Centurion Store Mobile App học hỏi từ các hệ thống này bằng cách tối giản hóa trải nghiệm UI/UX thành kiến trúc 4 tab chính: Cửa hàng, Giỏ hàng, Thư viện, và Cá nhân.
 
-## **4\. Project Scope & Limitations** {#4.-project-scope-&-limitations}
+## **4\. Project Scope & Limitations**
 
 **In Scope:**
 - Ứng dụng di động (Android/iOS) được phát triển bằng Flutter.

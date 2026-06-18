@@ -17,6 +17,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib python-docx requests
+
+      - name: Fetch Mermaid Diagram Image
+        run: |
+          python scripts/fetch_mermaid.py
+
       - name: Set up Pandoc
         uses: pandoc/actions/setup@v1
         with:
@@ -36,14 +49,9 @@ jobs:
             reports/flutter_app/04_Software_Testing_Documentation.md \
             -o reports/SAP341_Project_Report_Generated.docx
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install dependencies
+      - name: Post-process document
         run: |
-          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+          python scripts/post_process_docx.py
 
       - name: Upload Report to Google Drive
         env:

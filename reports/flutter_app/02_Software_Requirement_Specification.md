@@ -1,6 +1,6 @@
-# **II. Software Requirement Specification** {#ii.-software-requirement-specification}
+# **II. Software Requirement Specification**
 
-## **1\. Functional Specifications** {#1.-functional-specifications}
+## **1\. Functional Specifications**
 
 ### **1.1 Authentication & Profile**
 
@@ -103,7 +103,7 @@
 
 ---
 
-## **2\. Non-Functional Requirements** {#2.-non-functional-requirements}
+## **2\. Non-Functional Requirements**
 
 ### **2.1 External Interfaces**
 - **User Interface (UI):** Thiết kế tối màu (Dark Mode) theo chuẩn màu của hệ thống Steam (`Color(0xFF1B2838)`). Sử dụng Material 3 Design với `BottomNavigationBar`.
@@ -114,7 +114,7 @@
 - **Usability:** Chuyển đổi giữa 4 Tab chính (Store, Cart, Library, Profile) không được gây load lại trang từ đầu (giữ nguyên State bằng `StatefulShellRoute` của GoRouter).
 - **Performance:** Hình ảnh tải về phải được cache lại bằng thư viện `cached_network_image` để giảm băng thông và tăng tốc độ hiển thị.
 
-## **3\. Requirement Appendix** {#3.-requirement-appendix}
+## **3\. Requirement Appendix**
 
 ### **3.1 Business Rules**
 - **BR1:** Người dùng không được phép thêm một game đã có trong Library vào Cart. Cần gọi API `/user/library/contain/{gameId}` để kiểm tra trước khi hiện nút "Add to Cart".
