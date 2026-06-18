@@ -8,22 +8,24 @@ from googleapiclient.http import MediaFileUpload
 def main():
     # Retrieve environment variables
     creds_raw = os.environ.get("GDRIVE_CREDENTIALS")
-    folder_id = os.environ.get("GDRIVE_FOLDER_ID")
+    file_id = os.environ.get("GDRIVE_FILE_ID")
     file_path = "reports/SAP341_Project_Report_Generated.docx"
     
     if not creds_raw:
         print("Error: GDRIVE_CREDENTIALS environment variable is not set.")
         return
 
-    # Attempt to parse credentials (handling raw JSON or base64 encoded JSON)
+    if not file_id:
+        print("Error: GDRIVE_FILE_ID environment variable is not set. Vui lòng cung cấp File ID của file docx trống trên Drive của bạn để ghi đè.")
+        return
+
+    # Attempt to parse credentials
     try:
-        # Try decoding as base64 first
         try:
             decoded = base64.b64decode(creds_raw).decode('utf-8')
             creds_data = json.loads(decoded)
             print("Successfully decoded credentials from base64.")
         except Exception:
-            # If fail, treat as raw JSON string
             creds_data = json.loads(creds_raw)
             print("Successfully parsed raw JSON credentials.")
     except Exception as e:
@@ -42,33 +44,22 @@ def main():
         print(f"Error authenticating with Google Drive API: {e}")
         return
 
-    # Define metadata for the upload
-    file_metadata = {
-        "name": "SAP341_Project_Report_Generated.docx",
-        "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    }
-    
-    if folder_id:
-        file_metadata["parents"] = [folder_id]
-        print(f"Uploading file to Google Drive folder: {folder_id}")
-    else:
-        print("GDRIVE_FOLDER_ID is not set. Uploading to service account root drive.")
+    media = MediaFileUpload(
+        file_path,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        resumable=True
+    )
 
-    # Upload file
     try:
-        media = MediaFileUpload(
-            file_path,
-            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            resumable=True
-        )
-        
-        file = drive_service.files().create(
-            body=file_metadata,
+        print(f"Updating existing file with ID: {file_id}")
+        file = drive_service.files().update(
+            fileId=file_id,
             media_body=media,
+            supportsAllDrives=True, # Dự phòng nếu file nằm trong Shared Drive
             fields="id, name, webViewLink"
         ).execute()
         
-        print(f"Upload Success!")
+        print("Update Success!")
         print(f"File Name: {file.get('name')}")
         print(f"File ID: {file.get('id')}")
         print(f"Web View Link: {file.get('webViewLink')}")
