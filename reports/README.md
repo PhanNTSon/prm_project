@@ -1,68 +1,79 @@
 # Hướng Dẫn Tự Động Hóa Báo Cáo Dự Án (Pandoc + GitHub Actions)
 
-Hệ thống này tự động dịch các file Markdown thành tài liệu Word (`.docx`) hoàn chỉnh, vẽ sơ đồ, chèn ảnh từ Google Drive và tải kết quả lên Google Drive của bạn mỗi khi có thay đổi trên nhánh `role/tech-lead`.
+Hệ thống này tự động dịch các file Markdown thành tài liệu Word (`.docx`) hoàn chỉnh, tự vẽ sơ đồ Mermaid, chèn ảnh mockup từ Google Drive và tải kết quả lên chính Google Drive của bạn mỗi khi có thay đổi trên nhánh `role/tech-lead`.
 
-## 1. Cấu Trúc Thư Mục
+---
+
+## 1. Cấu Trúc Thư Mục Báo Cáo
+
+Hệ thống quản lý báo cáo được tổ chức linh hoạt:
 
 ```text
 reports/
 ├── flutter_app/
-│   ├── 01_Introduction.md
-│   ├── srs/
-│   │   ├── srs_intro.md                 <-- Luôn ở đầu mục 02
-│   │   ├── 01_auth_profile.md           <-- File tính năng (tự do thêm)
-│   │   ├── 02_storefront.md             <-- File tính năng
-│   │   ├── ...
-│   │   ├── srs_non_functional.md        <-- Luôn ở cuối mục 02
-│   │   └── srs_appendix.md              <-- Luôn ở cuối mục 02
-│   ├── 03_Software_Design_Description.md
-│   └── 04_Software_Testing_Documentation.md
-├── diagrams.md            <-- Chứa toàn bộ code Mermaid Diagram
-└── SAP341 Project Report.docx <-- Template giao diện gốc của trường
+│   ├── 01_Introduction.md               <-- Chương I
+│   ├── srs/                             <-- Chương II (Đặc tả yêu cầu)
+│   │   ├── srs_intro.md                 <-- Phần mở đầu chương II (Cố định ở đầu)
+│   │   ├── 01_auth_profile.md           <-- Các file tính năng (Đánh số thứ tự)
+│   │   ├── 02_storefront.md
+│   │   ├── ...                          <-- Team có thể tự tạo thêm file tại đây
+│   │   ├── srs_non_functional.md        <-- Yêu cầu NFR (Cố định ở cuối)
+│   │   └── srs_appendix.md              <-- Phụ lục (Cố định ở cuối)
+│   ├── 03_Software_Design_Description.md <-- Chương III
+│   └── 04_Software_Testing_Documentation.md <-- Chương IV
+├── diagrams.md                          <-- Chứa TẤT CẢ code sơ đồ Mermaid của dự án
+└── SAP341 Project Report.docx           <-- Template giao diện gốc của trường
 ```
 
-## 2. Cách Viết Tài Liệu Tính Năng (SRS)
+> **Nguyên tắc "Lắp ghép" tự động:**
+> Bạn có thể tự do tách hoặc thêm các file tính năng trong thư mục `srs/`. Chỉ cần đặt tên file bắt đầu bằng số (ví dụ: `05_admin_panel.md`). Runner sẽ tự động quét, sắp xếp theo thứ tự và gộp tất cả chúng vào giữa phần Mở đầu (`srs_intro.md`) và Phụ lục (`srs_appendix.md`) mà không cần bạn phải chỉnh sửa cấu hình ở đâu khác!
 
-Bạn có thể tự do tách hoặc thêm các file tính năng trong thư mục `srs/`.
-**Quy tắc:** Đặt tên file bắt đầu bằng số (ví dụ: `05_admin_panel.md`). Runner sẽ tự động quét, sắp xếp theo thứ tự bảng chữ cái/số và ghép chúng vào giữa `srs_intro.md` và `srs_non_functional.md`.
+---
 
-## 3. Cách Quản Lý Ảnh Bằng Google Drive
+## 2. Quản Lý Hình Ảnh (Mockups/Assets) Bằng Google Drive
 
-Bạn không cần đẩy ảnh lên GitHub làm nặng repo. Hãy quản lý ảnh mockups trên thư mục Google Drive:
+Để tránh làm nặng repository GitHub bằng các tệp nhị phân, hãy quản lý toàn bộ ảnh trên Google Drive của nhóm.
 
-1. **Upload ảnh**: Tải ảnh lên thư mục Drive đã kết nối (ID thư mục đã được đặt trong Secret `GDRIVE_ASSETS_FOLDER_ID`).
-2. **Quy tắc đặt tên ảnh trên Drive**: Đặt tên rõ ràng, viết thường, có đuôi mở rộng. Ví dụ: `login_screen.png`, `flow_vnpay.jpg`.
-3. **Chèn vào Markdown**:
-   Để chèn ảnh từ Drive vào bài viết, hãy sử dụng placeholder sau:
+1. **Chuẩn bị Thư mục Drive**: Tạo một thư mục trên Google Drive (ví dụ: `Mockups Dự Án`), cấp quyền **Viewer** cho email Service Account.
+2. **Cấu hình Secret**: Lấy ID của thư mục đó và dán vào GitHub Secret mang tên `GDRIVE_ASSETS_FOLDER_ID`.
+3. **Quy tắc tải ảnh**: Đặt tên ảnh rõ ràng, không dấu (VD: `login_screen.png`, `flow_vnpay.jpg`) và tải lên thư mục Drive đó.
+4. **Cách chèn ảnh vào Markdown**: Tại vị trí cần chèn trong tài liệu, sử dụng cú pháp Placeholder:
    ```text
    {{IMAGE:login_screen.png}}
    ```
-   *Lưu ý: Tên file phải khớp chính xác với tên file bạn đã tải lên Drive (bao gồm cả đuôi mở rộng nếu có).*
-   Hệ thống sẽ tự động tải ảnh đó về và chèn thành thẻ `![login_screen.png](...)` vào tài liệu.
+   **Cơ chế hoạt động**: Khi chạy CI/CD, hệ thống tự động tải `login_screen.png` từ thư mục Drive về và thay thế Placeholder thành thẻ ảnh Markdown thực thụ, sau đó nhúng trực tiếp vào file Word.
 
-## 4. Cách Quản Lý Sơ Đồ Mermaid
+---
 
-Thay vì để code Mermaid rải rác, hãy khai báo tất cả tại file `reports/diagrams.md`.
+## 3. Quản Lý Sơ Đồ Hệ Thống (Mermaid Diagrams)
 
-**Quy tắc khai báo trong `diagrams.md`:**
-Mỗi sơ đồ bắt đầu bằng thẻ `## <tên_sơ_đồ>` theo sau là block code mermaid:
+Toàn bộ sơ đồ hệ thống được quản lý tập trung tại file `reports/diagrams.md`.
+
+**Cách khai báo một sơ đồ mới:**
+Mở file `diagrams.md`, khai báo tên sơ đồ bằng thẻ H2 (`##`), theo ngay sau đó là block code Mermaid:
 ```markdown
-## flow_vnpay
+## payment_flow
 ` ``mermaid
 sequenceDiagram
+    Client->>VNPay: Request payment
     ...
 ` ``
 ```
+*(Lưu ý: Mermaid dùng `-->` hoặc `->>` để làm mũi tên, KHÔNG DÙNG `--->` sẽ gây lỗi cú pháp 404)*
 
 **Cách chèn sơ đồ vào báo cáo:**
-Tại vị trí bạn muốn hiển thị sơ đồ (ví dụ trong file `03_Software_Design_Description.md`), đặt placeholder:
+Tại bất kỳ file Markdown báo cáo nào (ví dụ `03_Software_Design_Description.md`), chèn cú pháp:
 ```text
-{{DIAGRAM:flow_vnpay}}
+{{DIAGRAM:payment_flow}}
 ```
-Hệ thống sẽ tự động gọi API vẽ sơ đồ, lưu thành ảnh và chèn đúng vào vị trí đó!
+Hệ thống sẽ tự động gọi API vẽ sơ đồ, xuất ra ảnh chất lượng cao và nhúng vào vị trí bạn yêu cầu.
 
-## 5. Cấu hình GitHub Secrets cần thiết
+---
 
-- `GDRIVE_CREDENTIALS`: Chuỗi JSON Service Account GCP.
-- `GDRIVE_FILE_ID`: ID của file Google Docx trống để ghi đè (Cách khắc phục lỗi Quota 0 bytes).
-- `GDRIVE_ASSETS_FOLDER_ID`: ID của thư mục Drive chứa ảnh dự án.
+## 4. Danh Sách GitHub Secrets Bắt Buộc
+
+Để workflow hoạt động trơn tru, bạn cần cài đặt đủ 3 Secrets trong kho lưu trữ GitHub:
+
+- `GDRIVE_CREDENTIALS`: Nội dung file JSON chứa khóa của GCP Service Account (Dùng để xác thực API Google Drive).
+- `GDRIVE_FILE_ID`: ID của tệp tin Word `.docx` rỗng có sẵn trên Drive mà bạn là chủ sở hữu (Khắc phục lỗi Quota 0 bytes của Service Account). Tài liệu sẽ được ghi đè liên tục vào file này.
+- `GDRIVE_ASSETS_FOLDER_ID`: ID của thư mục Drive chứa ảnh dự án để chèn vào báo cáo.

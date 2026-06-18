@@ -70,15 +70,15 @@ graph TD
     readme_rot_dir["📄 README.md"]
 
     %% Thiết lập các kết nối phân cấp
-    root ---> network
-    root ---> router
-    root ---> readme_root
+    root --> network
+    root --> router
+    root --> readme_root
 
-    network ---> net_test
-    network ---> readme_net
+    network --> net_test
+    network --> readme_net
 
-    router ---> rot_test
-    router ---> readme_rot_dir
+    router --> rot_test
+    router --> readme_rot_dir
 
     %% Tùy chỉnh phong cách giao diện (Màu sắc hiện đại)
     style root fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
