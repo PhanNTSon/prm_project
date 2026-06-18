@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'role/tech-lead'
+      - 'main'
     paths:
       - 'reports/flutter_app/**'
       - '.github/workflows/generate_report.yml'
