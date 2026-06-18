@@ -1,0 +1,53 @@
+name: Generate and Upload Report
+
+on:
+  push:
+    branches:
+      - 'role/tech-lead'
+    paths:
+      - 'reports/flutter_app/**'
+      - '.github/workflows/generate_report.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Pandoc
+        uses: pandoc/actions/setup@v1
+        with:
+          pandoc-version: 'latest'
+
+      - name: Verify files exist
+        run: |
+          ls -l reports/
+          ls -l reports/flutter_app/
+
+      - name: Generate docx using Pandoc
+        run: |
+          pandoc --reference-doc="reports/SAP341 Project Report.docx" \
+            reports/flutter_app/01_Introduction.md \
+            reports/flutter_app/02_Software_Requirement_Specification.md \
+            reports/flutter_app/03_Software_Design_Description.md \
+            reports/flutter_app/04_Software_Testing_Documentation.md \
+            -o reports/SAP341_Project_Report_Generated.docx
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+      - name: Upload Report to Google Drive
+        env:
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: |
+          python scripts/upload_to_gdrive.py
