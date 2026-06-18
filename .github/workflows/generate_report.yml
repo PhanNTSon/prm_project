@@ -26,9 +26,12 @@ jobs:
         run: |
           pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib python-docx requests
 
-      - name: Fetch Mermaid Diagram Image
+      - name: Build Unified Report and Assets
+        env:
+          GDRIVE_CREDENTIALS: ${{ secrets.GDRIVE_CREDENTIALS }}
+          GDRIVE_ASSETS_FOLDER_ID: ${{ secrets.GDRIVE_ASSETS_FOLDER_ID }}
         run: |
-          python scripts/fetch_mermaid.py
+          python scripts/build_report.py
 
       - name: Set up Pandoc
         uses: pandoc/actions/setup@v1
@@ -43,10 +46,7 @@ jobs:
       - name: Generate docx using Pandoc
         run: |
           pandoc --reference-doc="reports/SAP341 Project Report.docx" \
-            reports/flutter_app/01_Introduction.md \
-            reports/flutter_app/02_Software_Requirement_Specification.md \
-            reports/flutter_app/03_Software_Design_Description.md \
-            reports/flutter_app/04_Software_Testing_Documentation.md \
+            reports/unified_report.md \
             -o reports/SAP341_Project_Report_Generated.docx
 
       - name: Post-process document
