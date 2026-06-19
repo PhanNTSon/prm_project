@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SecureStorageService {
   // Constants for storage keys
@@ -7,46 +7,52 @@ class SecureStorageService {
   static const String _keyRole = 'user_role';
   static const String _keyUsername = 'username';
 
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
 
-  /// Save authentication data securely
+  /// Save authentication data securely (using SharedPreferences for simplicity and reliability)
   Future<void> saveAuthData({
     required String token,
     required String userId,
     required String role,
     required String username,
   }) async {
-    await _storage.write(key: _keyToken, value: token);
-    await _storage.write(key: _keyUserId, value: userId);
-    await _storage.write(key: _keyRole, value: role);
-    await _storage.write(key: _keyUsername, value: username);
+    final prefs = await _prefs;
+    await prefs.setString(_keyToken, token);
+    await prefs.setString(_keyUserId, userId);
+    await prefs.setString(_keyRole, role);
+    await prefs.setString(_keyUsername, username);
   }
 
   /// Get the JWT token
   Future<String?> getToken() async {
-    return await _storage.read(key: _keyToken);
+    final prefs = await _prefs;
+    return prefs.getString(_keyToken);
   }
 
   /// Get the user ID
   Future<String?> getUserId() async {
-    return await _storage.read(key: _keyUserId);
+    final prefs = await _prefs;
+    return prefs.getString(_keyUserId);
   }
 
   /// Get the user role
   Future<String?> getRole() async {
-    return await _storage.read(key: _keyRole);
+    final prefs = await _prefs;
+    return prefs.getString(_keyRole);
   }
 
   /// Get the username
   Future<String?> getUsername() async {
-    return await _storage.read(key: _keyUsername);
+    final prefs = await _prefs;
+    return prefs.getString(_keyUsername);
   }
 
   /// Clear all authentication data (Logout or Token Expired)
   Future<void> clearAuthData() async {
-    await _storage.delete(key: _keyToken);
-    await _storage.delete(key: _keyUserId);
-    await _storage.delete(key: _keyRole);
-    await _storage.delete(key: _keyUsername);
+    final prefs = await _prefs;
+    await prefs.remove(_keyToken);
+    await prefs.remove(_keyUserId);
+    await prefs.remove(_keyRole);
+    await prefs.remove(_keyUsername);
   }
 }

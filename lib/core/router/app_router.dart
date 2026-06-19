@@ -37,8 +37,8 @@ class AppRouter {
         }
 
         if (!isAuthenticated) {
-          // Chưa đăng nhập mà vào trang không phải Auth -> đá về Login
-          if (!isAuthRoute && state.matchedLocation != '/splash') {
+          // Chưa đăng nhập mà đang ở trang không phải Auth -> đá về Login (giúp thoát khỏi /splash)
+          if (!isAuthRoute) {
             return '/login';
           }
         } else {

@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prm_project/core/network/secure_storage_service.dart';
 import 'package:prm_project/features/auth/providers/auth_provider.dart';
 
@@ -8,30 +8,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('AuthProvider Tests', () {
-    const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
-    final Map<String, String> storageMap = {};
-
     setUp(() {
-      storageMap.clear();
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'write') {
-          storageMap[methodCall.arguments['key']] = methodCall.arguments['value'];
-          return null;
-        }
-        if (methodCall.method == 'read') {
-          return storageMap[methodCall.arguments['key']];
-        }
-        if (methodCall.method == 'delete') {
-          storageMap.remove(methodCall.arguments['key']);
-          return null;
-        }
-        if (methodCall.method == 'deleteAll') {
-          storageMap.clear();
-          return null;
-        }
-        return null;
-      });
+      SharedPreferences.setMockInitialValues({});
     });
 
     test('loginSuccess should update state and storage', () async {
@@ -41,7 +19,7 @@ void main() {
       
       // Tạo token không hết hạn
       final futureTime = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 3600;
-      final payloadStr = jsonEncode({"sub": "tester", "userId": "100", "exp": futureTime});
+      final payloadStr = jsonEncode({"sub": "tester", "userId": "100", "role": "STANDARD", "exp": futureTime});
       final encodedPayload = base64UrlEncode(utf8.encode(payloadStr));
       final fakeToken = 'header.$encodedPayload.signature';
 
@@ -51,9 +29,9 @@ void main() {
       expect(authProvider.currentUser?.username, 'tester');
       expect(authProvider.currentUser?.userId, '100');
       
-      // Kiểm tra xem đã lưu storage chưa
-      expect(storageMap['jwt_token'], fakeToken);
-      expect(storageMap['user_id'], '100');
+      // Kiểm tra xem đã lưu storage chưa thông qua service
+      expect(await storage.getToken(), fakeToken);
+      expect(await storage.getUserId(), '100');
     });
 
     test('logout should clear state and storage', () async {
@@ -62,8 +40,12 @@ void main() {
       addTearDown(() => authProvider.dispose());
       
       // Giả lập trạng thái đã đăng nhập
-      storageMap['jwt_token'] = 'some_token';
-      storageMap['user_id'] = '100';
+      await storage.saveAuthData(
+        token: 'some_token',
+        userId: '100',
+        role: 'STANDARD',
+        username: 'tester',
+      );
       
       await authProvider.logout();
 
@@ -72,8 +54,8 @@ void main() {
       expect(authProvider.currentUser, isNull);
       
       // Storage bị xóa
-      expect(storageMap['jwt_token'], isNull);
-      expect(storageMap['user_id'], isNull);
+      expect(await storage.getToken(), isNull);
+      expect(await storage.getUserId(), isNull);
     });
   });
 }

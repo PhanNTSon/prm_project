@@ -78,7 +78,7 @@ def compile_mermaid_diagrams():
     for name, code in matches:
         code = code.strip()
         print(f"Compiling Mermaid diagram: {name}")
-        encoded = base64.b64encode(code.encode('utf-8')).decode('utf-8')
+        encoded = base64.urlsafe_b64encode(code.encode('utf-8')).decode('utf-8')
         url = f"https://mermaid.ink/img/{encoded}"
         response = requests.get(url)
         if response.status_code == 200:

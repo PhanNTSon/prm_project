@@ -6,6 +6,7 @@ import 'core/router/app_router.dart';
 import 'features/auth/providers/auth_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MainApp());
 }
 

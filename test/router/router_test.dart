@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:prm_project/core/router/app_router.dart';
 import 'package:prm_project/core/network/secure_storage_service.dart';
 import 'package:prm_project/features/auth/providers/auth_provider.dart';
@@ -10,30 +10,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('GoRouter Auth Guard Tests', () {
-    const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
-    final Map<String, String> storageMap = {};
-
     setUp(() {
-      storageMap.clear();
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'write') {
-          storageMap[methodCall.arguments['key']] = methodCall.arguments['value'];
-          return null;
-        }
-        if (methodCall.method == 'read') {
-          return storageMap[methodCall.arguments['key']];
-        }
-        if (methodCall.method == 'delete') {
-          storageMap.remove(methodCall.arguments['key']);
-          return null;
-        }
-        if (methodCall.method == 'deleteAll') {
-          storageMap.clear();
-          return null;
-        }
-        return null;
-      });
+      SharedPreferences.setMockInitialValues({});
     });
 
     testWidgets('Should redirect to /login when no token and accessing /home', (WidgetTester tester) async {

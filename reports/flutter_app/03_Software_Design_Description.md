@@ -8,7 +8,7 @@ Kiến trúc tổng thể của hệ thống dựa trên mô hình Client-Server
 
 {{DIAGRAM:system_architecture}}
 
-- **Mobile Client (Flutter):** Chịu trách nhiệm hiển thị giao diện người dùng, quản lý State cục bộ, điều hướng (GoRouter) và giao tiếp mạng (Dio). Mọi thông tin nhạy cảm (JWT Token) được lưu trữ mã hóa qua `flutter_secure_storage`.
+- **Mobile Client (Flutter):** Chịu trách nhiệm hiển thị giao diện người dùng, quản lý State cục bộ, điều hướng (GoRouter) và giao tiếp mạng (Dio). Thông tin phiên đăng nhập (JWT Token) được lưu trữ qua `shared_preferences`.
 - **VNPay Sandbox:** Khi cần nạp tiền, Flutter App mở một `InAppWebView` trỏ đến đường dẫn VNPay do Backend tạo ra. Người dùng thao tác thanh toán, sau đó VNPay chuyển hướng (callback) URL chứa tham số giao dịch. App đánh chặn URL này và báo cáo kết quả cho người dùng.
 - **Backend & Database:** Đóng vai trò là nguồn dữ liệu sự thật duy nhất (Single Source of Truth), quản lý nghiệp vụ, kiểm tra tính hợp lệ của giao dịch và lưu trữ trên PostgreSQL.
 

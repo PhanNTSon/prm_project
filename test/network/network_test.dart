@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prm_project/core/network/auth_interceptor.dart';
 import 'package:prm_project/core/network/secure_storage_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Fake class to mock secure storage behavior without real platform channels
 class FakeSecureStorageService implements SecureStorageService {
@@ -123,26 +124,10 @@ void main() {
   });
 
   group('SecureStorageService Tests', () {
-    const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
-    final Map<String, String> log = {};
     late SecureStorageService service;
 
     setUp(() {
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-        if (methodCall.method == 'write') {
-          log[methodCall.arguments['key']] = methodCall.arguments['value'];
-          return null;
-        }
-        if (methodCall.method == 'read') {
-          return log[methodCall.arguments['key']];
-        }
-        if (methodCall.method == 'delete') {
-          log.remove(methodCall.arguments['key']);
-          return null;
-        }
-        return null;
-      });
+      SharedPreferences.setMockInitialValues({});
       service = SecureStorageService();
     });
 
