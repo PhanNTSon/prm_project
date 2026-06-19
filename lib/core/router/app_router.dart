@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/providers/auth_provider.dart';
+import 'package:prm_project/features/storefront/home_screen.dart';
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
 import 'splash_screen.dart';
@@ -93,7 +94,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/home',
-                  builder: (context, state) => const HomePlaceholderScreen(),
+                  builder: (context, state) => const HomeScreen(),
                   routes: [
                     // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
                     GoRoute(
