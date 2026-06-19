@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prm_project/features/storefront/home_screen.dart';
 import '../network/secure_storage_service.dart';
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
@@ -23,10 +24,11 @@ class AppRouter {
       // Logic Auth Guard: Kiểm tra đăng nhập
       final secureStorage = SecureStorageService();
       final token = await secureStorage.getToken();
-      
-      final isAuthRoute = state.matchedLocation == '/login' || 
-                          state.matchedLocation == '/register' || 
-                          state.matchedLocation == '/verify-email';
+
+      final isAuthRoute =
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register' ||
+          state.matchedLocation == '/verify-email';
 
       if (token == null || token.isEmpty) {
         // Chưa đăng nhập mà vào trang không phải Auth -> đá về Login
@@ -58,7 +60,7 @@ class AppRouter {
         parentNavigatorKey: rootNavigatorKey,
         builder: (context, state) => const VerifyEmailPlaceholderScreen(),
       ),
-      
+
       // 2. Trang Payment WebView - Fullscreen
       GoRoute(
         path: '/payment-webview',
@@ -78,7 +80,7 @@ class AppRouter {
             routes: [
               GoRoute(
                 path: '/home',
-                builder: (context, state) => const HomePlaceholderScreen(),
+                builder: (context, state) => const HomeScreen(),
                 routes: [
                   // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
                   GoRoute(
@@ -93,7 +95,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Tab 1: Giỏ hàng
           StatefulShellBranch(
             navigatorKey: _shellNavigatorCart,
@@ -104,7 +106,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Tab 2: Thư viện
           StatefulShellBranch(
             navigatorKey: _shellNavigatorLibrary,
@@ -115,7 +117,7 @@ class AppRouter {
               ),
             ],
           ),
-          
+
           // Tab 3: Cá nhân
           StatefulShellBranch(
             navigatorKey: _shellNavigatorProfile,
