@@ -1,10 +1,10 @@
 ## **2\. Non-Functional Requirements**
 
 ### **2.1 External Interfaces**
-- **User Interface (UI):** Thiết kế tối màu (Dark Mode) theo chuẩn màu của hệ thống Steam (`Color(0xFF1B2838)`). Sử dụng Material 3 Design với `BottomNavigationBar`.
-- **Software Interfaces:** Giao tiếp hoàn toàn qua RESTful API với Backend (Spring Boot). Định dạng dữ liệu trao đổi là JSON.
+- **User Interface (UI):** Dark mode design matching the Steam system theme (`Color(0xFF1B2838)`). Uses Material 3 Design with a `BottomNavigationBar`.
+- **Software Interfaces:** Interacts with the Backend (Spring Boot) entirely via RESTful APIs. Exchange data format is JSON.
 
 ### **2.2 Quality Attributes**
-- **Security:** Mọi HTTP Request sau khi đăng nhập phải được đính kèm Header `Authorization: Bearer <token>`. Nếu Backend trả về HTTP 401 (Unauthorized), hệ thống tự động xóa bộ nhớ và đá người dùng về trang Đăng nhập.
-- **Usability:** Chuyển đổi giữa 4 Tab chính (Store, Cart, Library, Profile) không được gây load lại trang từ đầu (giữ nguyên State bằng `StatefulShellRoute` của GoRouter).
-- **Performance:** Hình ảnh tải về phải được cache lại bằng thư viện `cached_network_image` để giảm băng thông và tăng tốc độ hiển thị.
+- **Security:** All HTTP requests after logging in must include the `Authorization: Bearer <token>` header. If the Backend returns an HTTP 401 (Unauthorized) error, the system automatically clears local storage and redirects the user back to the Login page.
+- **Usability:** Switching between the 4 main tabs (Store, Cart, Library, Profile) must not cause the page to reload from scratch (State is preserved using GoRouter's `StatefulShellRoute`).
+- **Performance:** Downloaded images must be cached using the `cached_network_image` library to reduce network bandwidth usage and accelerate image rendering.

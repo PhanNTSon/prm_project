@@ -1,6 +1,6 @@
 # **Acknowledgement**
 
-Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu yêu cầu (RDS/SRS) của phiên bản web cũ, hiện đã được thiết kế lại để tối ưu hóa cho ứng dụng di động đa nền tảng bằng Flutter.
+The project is implemented by Group 1 - SE1933 based on the requirements documentation (RDS/SRS) of the old web version, which has been redesigned and optimized for the cross-platform mobile application using Flutter.
 
 # **Definition and Acronyms**
 
@@ -30,7 +30,7 @@ Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu y
 - **Prepared by:** SE1933 - Group 1
 
 ### **1.2 Project Team**
-| *STT* | *Member* | *Task/Screen* |
+| *No.* | *Member* | *Task/Screen* |
 | :---- | :---- | :---- |
 | *1* | Nguyễn Văn A | Authentication & Profile |
 | *2* | Nguyễn Văn B | Storefront (Home, Search, Game Details) |
@@ -40,26 +40,26 @@ Dự án được thực hiện bởi Group 1 - SE1933 dựa trên tài liệu y
 
 ## **2\. Product Background**
 
-Thị trường game kỹ thuật số đang ngày càng mở rộng, tuy nhiên người dùng di động thường gặp khó khăn khi muốn theo dõi, mua sắm và quản lý thư viện game PC/Console của họ một cách nhanh chóng. Dự án **Centurion Store Mobile App** được xây dựng nhằm cung cấp một nền tảng di động tiện lợi, cho phép người dùng (game thủ) truy cập vào cửa hàng game, nạp tiền vào ví điện tử thông qua VNPay, mua sắm trò chơi, và xem thư viện game đã sở hữu mọi lúc mọi nơi thông qua ứng dụng điện thoại.
+The digital game market is constantly expanding; however, mobile users often encounter difficulties in tracking, shopping, and managing their PC/Console game library quickly on the go. The **Centurion Store Mobile App** project is built to provide a convenient mobile platform, allowing users (gamers) to access the game store, top up their wallet balance via the VNPay gateway, purchase games, and view their owned game library anytime and anywhere via their mobile application.
 
 ## **3\. Existing Solutions**
 
-- **Steam Mobile App:** Ứng dụng chính thức của Steam cho phép mua sắm và xác thực, tuy nhiên giao diện đôi khi phức tạp và nặng nề.
-- **PlayStation App / Xbox App:** Cho phép mua sắm và quản lý thư viện game trên console.
-Centurion Store Mobile App học hỏi từ các hệ thống này bằng cách tối giản hóa trải nghiệm UI/UX thành kiến trúc 4 tab chính: Cửa hàng, Giỏ hàng, Thư viện, và Cá nhân.
+- **Steam Mobile App:** The official Steam application allows shopping and authentication, but the interface is sometimes complex and heavy.
+- **PlayStation App / Xbox App:** Allows shopping and console game library management.
+Centurion Store Mobile App learns from these systems by simplifying the UI/UX experience into 4 main tabs: Store, Cart, Library, and Profile.
 
 ## **4\. Project Scope & Limitations**
 
 **In Scope:**
-- Ứng dụng di động (Android/iOS) được phát triển bằng Flutter.
-- Đăng ký, Đăng nhập, Quản lý hồ sơ người dùng (Auth).
-- Duyệt danh mục trò chơi (Home, Top Selling, Under $5, v.v.).
-- Xem chi tiết trò chơi.
-- Quản lý giỏ hàng và thanh toán bằng số dư Ví (Wallet).
-- Nạp tiền vào ví thông qua cổng thanh toán VNPay (hiển thị InAppWebView).
-- Quản lý Thư viện Game đã mua (Library).
+- Mobile application (Android/iOS) developed using Flutter.
+- Registration, Login, User profile management (Auth).
+- Browse game categories (Home, Top Selling, Under $5, etc.).
+- View game details.
+- Manage cart and payment using Wallet balance.
+- Top up wallet via the VNPay payment gateway (displayed via InAppWebView).
+- Manage purchased Game Library (Library).
 
 **Out of Scope (Limitations):**
-- Không hỗ trợ tải xuống và chơi game trực tiếp trên điện thoại (vì hệ thống là cửa hàng bán game PC/Desktop).
-- Không bao gồm các chức năng quản lý cao cấp dành cho Publisher và Admin (Quản lý và upload game mới sẽ được thực hiện trên phiên bản Web/Desktop cũ).
-- Không hỗ trợ chat realtime trong phiên bản di động V1.0 (sẽ xem xét bổ sung sau).
+- No support for downloading and playing games directly on the mobile phone (as the system is a PC/Desktop game store).
+- Advanced publisher/admin management functions are not included (Managing and uploading new games will be performed on the old Web/Desktop version).
+- No real-time chat support in mobile version V1.0 (to be considered for future additions).

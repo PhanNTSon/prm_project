@@ -2,45 +2,45 @@
 
 ## **1\. Scope of Testing**
 
-Phạm vi kiểm thử tập trung vào tính đúng đắn của logic nội bộ ứng dụng Flutter Mobile, đặc biệt là các thành phần cốt lõi: Tầng kết nối mạng (Network Layer) và Định tuyến hệ thống (Routing Guard).
+The scope of testing focuses on the correctness of the internal logic of the Flutter Mobile application, especially the core components: the Network Layer and the Routing Guard.
 
-- **In Scope:** Unit Test cho các cơ chế gán Token tự động (AuthInterceptor), lưu trữ bảo mật (SecureStorageService) và điều hướng GoRouter (Auth Guard).
-- **Out of Scope:** Các chức năng thuộc về Backend (đã có bộ kiểm thử Postman/Backend riêng), UI Test chi tiết cho từng màn hình (sẽ thực hiện manual test ở giai đoạn này).
+- **In Scope:** Unit Tests for automatic Token assignment mechanisms (AuthInterceptor), local storage management (SecureStorageService), and GoRouter navigation logic (Auth Guard).
+- **Out of Scope:** Backend-related functions (which have separate Postman/Backend test suites), and detailed UI testing for each screen (manual testing will be performed at this stage).
 
 ## **2\. Test Strategy**
 
 ### **2.1 Testing Types**
 
-- **Functional Testing:** Đảm bảo hệ thống điều hướng đúng mục tiêu (ví dụ: mất token thì trả về `/login`).
-- **Security Testing:** Đảm bảo token JWT được lưu trữ và truy xuất an toàn, không bị rò rỉ. Đảm bảo ứng dụng từ chối mở trang `/home` nếu không có token.
+- **Functional Testing:** Ensures that the navigation system directs to the correct destination (e.g., redirecting to `/login` when the token is missing).
+- **Security Testing:** Ensures that the JWT token is stored and retrieved securely without leakage. Verifies that the app denies access to the `/home` page when no token is present.
 
 ### **2.2 Test Levels**
 
-- **Unit Testing:** Kiểm tra độc lập các component cốt lõi (`DioClient`, `AuthInterceptor`).
-- **Widget Testing:** Bơm (Pump) hệ thống GoRouter vào một cây Widget ảo để giả lập sự kiện chuyển trang và xác minh logic Guard hoạt động bình thường.
-- **Manual Testing:** Cài đặt ứng dụng trên Emulator hoặc thiết bị thật để kiểm tra luồng trải nghiệm thực tế (chạm, cuộn, hiệu ứng).
+- **Unit Testing:** Independently tests the core components (`DioClient`, `AuthInterceptor`).
+- **Widget Testing:** Pumps the GoRouter system into a virtual Widget tree to simulate screen transitions and verify that the Guard logic works as expected.
+- **Manual Testing:** Installs the application on an Emulator or a physical device to verify the actual user experience flow (taps, scrolls, transitions).
 
 ### **2.3 Supporting Tools**
 
-- Thư viện `flutter_test` (Mặc định của SDK Flutter).
-- `SharedPreferences Mock`: Sử dụng `SharedPreferences.setMockInitialValues({})` để giả lập bộ nhớ tĩnh khi chạy Unit Test nhằm cách ly hệ thống lưu trữ thật mà không cần thiết bị.
+- The `flutter_test` library (Default library from the Flutter SDK).
+- `SharedPreferences Mock`: Uses `SharedPreferences.setMockInitialValues({})` to simulate local storage when running Unit Tests to isolate the real storage system without a device.
 
 ## **3\. Test Cases**
 
-Các bài kiểm thử tự động (Automated Test) đã được triển khai trong dự án theo cấu trúc:
+Automated tests have been deployed in the project according to the following structure:
 
 {{DIAGRAM:testcase_architecture}}
 
-### Chi tiết các Test Case quan trọng:
+### Important Test Case Details:
 
-1. **TC_NET_01 (Header Injection):** Gửi Request API bất kỳ -> Kỳ vọng tự động chèn `Authorization: Bearer <token>`.
-2. **TC_NET_03 (401 Error Clean):** Giả lập Backend trả về lỗi HTTP 401 -> Kỳ vọng App tự động gọi hàm xóa sạch Token trong Secure Storage.
-3. **TC_RTE_01 (Redirect No Token):** Mở App nhưng bộ nhớ rỗng -> Kỳ vọng `GoRouter` chặn truy cập trang Chủ và hất văng về màn hình Đăng nhập.
-4. **TC_RTE_02 (Direct Token Exists):** Mở App khi bộ nhớ có Token hợp lệ -> Kỳ vọng `GoRouter` cho phép bỏ qua trang Đăng nhập và đi thẳng vào Trang Chủ.
+1. **TC_NET_01 (Header Injection):** Send any API request -> Expect automatic injection of `Authorization: Bearer <token>`.
+2. **TC_NET_03 (401 Error Clean):** Simulate Backend returning HTTP 401 error -> Expect the App to automatically invoke the function to clear all token data in Secure Storage.
+3. **TC_RTE_01 (Redirect No Token):** Open the App with empty storage -> Expect `GoRouter` to block access to the Home page and redirect to the Login screen.
+4. **TC_RTE_02 (Direct Token Exists):** Open the App when a valid Token exists in storage -> Expect `GoRouter` to bypass the Login page and navigate directly to the Home page.
 
 ## **4\. Test Reports**
 
-Hiện tại (Phiên bản V1.0 Foundation):
+Current State (V1.0 Foundation Version):
 
-- **Unit/Widget Tests:** Chạy lệnh `flutter test` báo cáo 100% Pass (Thành công) cho mọi bài kiểm thử Tầng Mạng và Định Tuyến.
-- **Manual Tests:** Các kịch bản KeepAlive của BottomNavigationBar, lồng ghép trang chi tiết (Nested Routing) và hiển thị WebView VNPay đã được xác minh thành công trên Android Emulator (Pixel 7 API 34).
+- **Unit/Widget Tests:** Running `flutter test` reports 100% Pass (Success) for all Network and Routing tests.
+- **Manual Tests:** KeepAlive behaviors of the BottomNavigationBar, nested details navigation (Nested Routing), and VNPay WebView integration have been successfully verified on the Android Emulator (Pixel 7 API 34).

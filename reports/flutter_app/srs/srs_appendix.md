@@ -1,19 +1,19 @@
 ## **3\. Requirement Appendix**
 
 ### **3.1 Business Rules**
-- **BR1:** Người dùng không được phép thêm một game đã có trong Library vào Cart. Cần gọi API `/user/library/contain/{gameId}` để kiểm tra trước khi hiện nút "Add to Cart".
-- **BR2:** Tổng tiền thanh toán giỏ hàng không được vượt quá số dư ví hiện tại. Nếu vượt quá, vô hiệu hóa nút Checkout và yêu cầu Nạp tiền.
+- **BR1:** Users are not allowed to add a game that is already in their Library to the Cart. Call the API `/user/library/contain/{gameId}` to verify ownership before displaying the "Add to Cart" button.
+- **BR2:** The total checkout price of the cart must not exceed the current wallet balance. If exceeded, disable the Checkout button and prompt the user to deposit funds.
 
 ### **3.2 Common Requirements**
-- Mọi API call cần được cấu hình timeout là 10 giây.
-- Hiển thị màn hình Loading Spinner khi đang tải dữ liệu từ server.
+- All API calls must configure a timeout limit of 10 seconds.
+- Display a Loading Spinner while fetching data from the server.
 
 ### **3.3 Application Messages List**
-- "Registration successful!" - Đăng ký thành công.
-- "Invalid username or password." - Sai tài khoản hoặc mật khẩu.
-- "OTP verified successfully." - Xác thực OTP thành công.
-- "Adding game to cart successfully." - Thêm vào giỏ hàng thành công.
-- "Checkout successfully." - Thanh toán thành công.
+- "Registration successful!"
+- "Invalid username or password."
+- "OTP verified successfully."
+- "Adding game to cart successfully."
+- "Checkout successfully."
 
 ### **3.4 Other Requirements…**
-- Không có yêu cầu đặc biệt khác.
+- No other special requirements.

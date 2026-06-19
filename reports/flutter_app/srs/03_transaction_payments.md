@@ -3,23 +3,23 @@
 #### ***1.3.1 Cart Operations***
 
 ##### 1.3.1.1 Cart Screen
-###### a. UI Specifications
-**Cart Screen**
-- **Brief Description:** Quản lý giỏ hàng hiện tại.
-- **Mockup UI Layout:** `[Mockup: Danh sách các game trong giỏ hàng, tổng tiền, nút Checkout]`
-- **Component Requirements:**
-  - `Remove Button`: Xóa game khỏi giỏ hàng.
-  - `Checkout Button`: Thanh toán toàn bộ game bằng số dư ví.
+- **Function Description:** Manages the user's current shopping cart.
+- **Screen Layout:**
+  {{IMAGE:cart_screen.png}}
+  `[Mockup: List of games in cart, total price, and Checkout button]`
+- **Function Detail:**
+  - `Remove Button`: Removes the selected game from the cart.
+  - `Checkout Button`: Purchases all games in the cart using the wallet balance.
 
 #### ***1.3.2 Payouts & Topups***
 
 ##### 1.3.2.1 Wallet Screen & Payment WebView
-###### a. UI Specifications
-**Wallet & VNPay Screen**
-- **Brief Description:** Nạp tiền vào tài khoản thông qua VNPay Sandbox.
-- **Mockup UI Layout:** `[Mockup: Giao diện nhập số tiền cần nạp, sau đó mở InAppWebView kết nối với cổng thanh toán VNPay]`
-- **Component Requirements:**
-  - `Amount Input`: Nhập số tiền (USD).
-  - `VNPay InAppWebView`: Chạy trang thanh toán và tự động bắt URL IPN (`/vnpay-ipn`) để đóng webview khi hoàn thành.
+- **Function Description:** Tops up the user's wallet balance via VNPay Sandbox.
+- **Screen Layout:**
+  {{IMAGE:wallet_screen.png}}
+  `[Mockup: Screen to input deposit amount, opening an InAppWebView connecting to the VNPay gateway]`
+- **Function Detail:**
+  - `Amount Input`: Input field for the deposit amount (USD).
+  - `VNPay InAppWebView`: Renders the payment gateway page and intercepts the IPN callback URL (`/vnpay-ipn`) to automatically close the webview on completion.
 
 ---

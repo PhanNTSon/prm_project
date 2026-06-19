@@ -1,4 +1,4 @@
-# Danh Sách Sơ Đồ Hệ Thống
+# System Diagrams List
 
 ## package_diagram
 ```mermaid
@@ -27,18 +27,18 @@ graph TD
 ## system_architecture
 ```mermaid
 graph TD
-    %% Định nghĩa các nút chính
+    %% Define main nodes
     A["📱 Mobile Client<br>(Flutter App)"]
     B["☕ Spring Boot Backend<br>(Centurion API)"]
     C["🌐 VNPay Sandbox<br>(Payment Gateway)"]
     D["🐘 PostgreSQL Database<br>(Managed by Railway)"]
 
-    %% Thiết lập các kết nối kết hợp nhãn mô tả (Đã sửa <=> thành --> và <-->)
+    %% Establish connections with description labels
     A <-->|HTTP/REST<br>JSON payloads| B
     A -->|InAppWebView| C
     B -->|JDBC| D
 
-    %% Tùy chỉnh màu sắc hiển thị (Styles)
+    %% Customize display colors (Styles)
     classDef client fill:#e1f5fe,stroke:#03a9f4,stroke-width:2px,color:#000;
     classDef backend fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000;
     classDef gateway fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000;
@@ -53,23 +53,23 @@ graph TD
 ## testcase_architecture
 ```mermaid
 graph TD
-    %% Định nghĩa cấu trúc cây thư mục
+    %% Directory structure definition
     root["📁 test/"]
 
-    %% Tầng 1
+    %% Level 1
     network["📁 network/"]
     router["📁 router/"]
     readme_root["📄 README.md"]
 
-    %% Tầng 2 (Bên trong network/)
+    %% Level 2 (Inside network/)
     net_test["📄 network_test.dart"]
     readme_net["📄 README.md"]
 
-    %% Tầng 2 (Bên trong router/)
+    %% Level 2 (Inside router/)
     rot_test["📄 router_test.dart"]
     readme_rot_dir["📄 README.md"]
 
-    %% Thiết lập các kết nối phân cấp
+    %% Establish hierarchy connections
     root --> network
     root --> router
     root --> readme_root
@@ -80,7 +80,7 @@ graph TD
     router --> rot_test
     router --> readme_rot_dir
 
-    %% Tùy chỉnh phong cách giao diện (Màu sắc hiện đại)
+    %% Customize UI styles (Modern colors)
     style root fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
     style network fill:#fff3e0,stroke:#ff9800,stroke-width:1px,color:#000
     style router fill:#fff3e0,stroke:#ff9800,stroke-width:1px,color:#000
