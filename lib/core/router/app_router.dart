@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../network/secure_storage_service.dart';
+import '../../features/auth/providers/auth_provider.dart';
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
+import 'splash_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -16,118 +17,132 @@ class AppRouter {
   static final GlobalKey<NavigatorState> _shellNavigatorProfile =
       GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
 
-  static final GoRouter router = GoRouter(
-    navigatorKey: rootNavigatorKey,
-    initialLocation: '/home',
-    redirect: (context, state) async {
-      // Logic Auth Guard: Kiểm tra đăng nhập
-      final secureStorage = SecureStorageService();
-      final token = await secureStorage.getToken();
-      
-      final isAuthRoute = state.matchedLocation == '/login' || 
-                          state.matchedLocation == '/register' || 
-                          state.matchedLocation == '/verify-email';
+  static GoRouter createRouter(AuthProvider authProvider) {
+    return GoRouter(
+      navigatorKey: rootNavigatorKey,
+      initialLocation: '/home',
+      refreshListenable: authProvider,
+      redirect: (context, state) {
+        // Logic Auth Guard đồng bộ với AuthProvider
+        final bool isInitialized = authProvider.isInitialized;
+        final bool isAuthenticated = authProvider.isAuthenticated;
+        
+        final isAuthRoute = state.matchedLocation == '/login' || 
+                            state.matchedLocation == '/register' || 
+                            state.matchedLocation == '/verify-email';
 
-      if (token == null || token.isEmpty) {
-        // Chưa đăng nhập mà vào trang không phải Auth -> đá về Login
-        if (!isAuthRoute) {
-          return '/login';
+        // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
+        if (!isInitialized) {
+          return '/splash';
         }
-      } else {
-        // Đã đăng nhập mà vào trang Auth -> đá về Home
-        if (isAuthRoute) {
-          return '/home';
-        }
-      }
-      return null;
-    },
-    routes: [
-      // 1. Các trang xác thực (Auth) - Nằm ngoài Bottom Navigation
-      GoRoute(
-        path: '/login',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const LoginPlaceholderScreen(),
-      ),
-      GoRoute(
-        path: '/register',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const RegisterPlaceholderScreen(),
-      ),
-      GoRoute(
-        path: '/verify-email',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const VerifyEmailPlaceholderScreen(),
-      ),
-      
-      // 2. Trang Payment WebView - Fullscreen
-      GoRoute(
-        path: '/payment-webview',
-        parentNavigatorKey: rootNavigatorKey,
-        builder: (context, state) => const PaymentWebViewPlaceholder(),
-      ),
 
-      // 3. Shell Layout chứa Bottom Navigation Bar
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return MainShellScreen(navigationShell: navigationShell);
-        },
-        branches: [
-          // Tab 0: Cửa hàng
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorHome,
-            routes: [
-              GoRoute(
-                path: '/home',
-                builder: (context, state) => const HomePlaceholderScreen(),
-                routes: [
-                  // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
-                  GoRoute(
-                    path: 'game-detail/:id',
-                    // Không dùng rootNavigatorKey ở đây để giữ lại BottomNavigationBar
-                    builder: (context, state) {
-                      final id = state.pathParameters['id']!;
-                      return GameDetailPlaceholderScreen(gameId: id);
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          
-          // Tab 1: Giỏ hàng
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorCart,
-            routes: [
-              GoRoute(
-                path: '/cart',
-                builder: (context, state) => const CartPlaceholderScreen(),
-              ),
-            ],
-          ),
-          
-          // Tab 2: Thư viện
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorLibrary,
-            routes: [
-              GoRoute(
-                path: '/library',
-                builder: (context, state) => const LibraryPlaceholderScreen(),
-              ),
-            ],
-          ),
-          
-          // Tab 3: Cá nhân
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorProfile,
-            routes: [
-              GoRoute(
-                path: '/profile',
-                builder: (context, state) => const ProfilePlaceholderScreen(),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
-  );
+        if (!isAuthenticated) {
+          // Chưa đăng nhập mà vào trang không phải Auth -> đá về Login
+          if (!isAuthRoute && state.matchedLocation != '/splash') {
+            return '/login';
+          }
+        } else {
+          // Đã đăng nhập mà vào trang Auth hoặc Splash -> đá về Home
+          if (isAuthRoute || state.matchedLocation == '/splash') {
+            return '/home';
+          }
+        }
+        return null;
+      },
+      routes: [
+        // Màn hình chờ khởi tạo
+        GoRoute(
+          path: '/splash',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const SplashPlaceholderScreen(),
+        ),
+
+        // 1. Các trang xác thực (Auth) - Nằm ngoài Bottom Navigation
+        GoRoute(
+          path: '/login',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const LoginPlaceholderScreen(),
+        ),
+        GoRoute(
+          path: '/register',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const RegisterPlaceholderScreen(),
+        ),
+        GoRoute(
+          path: '/verify-email',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const VerifyEmailPlaceholderScreen(),
+        ),
+        
+        // 2. Trang Payment WebView - Fullscreen
+        GoRoute(
+          path: '/payment-webview',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const PaymentWebViewPlaceholder(),
+        ),
+
+        // 3. Shell Layout chứa Bottom Navigation Bar
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, navigationShell) {
+            return MainShellScreen(navigationShell: navigationShell);
+          },
+          branches: [
+            // Tab 0: Cửa hàng
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorHome,
+              routes: [
+                GoRoute(
+                  path: '/home',
+                  builder: (context, state) => const HomePlaceholderScreen(),
+                  routes: [
+                    // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
+                    GoRoute(
+                      path: 'game-detail/:id',
+                      builder: (context, state) {
+                        final id = state.pathParameters['id']!;
+                        return GameDetailPlaceholderScreen(gameId: id);
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            
+            // Tab 1: Giỏ hàng
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorCart,
+              routes: [
+                GoRoute(
+                  path: '/cart',
+                  builder: (context, state) => const CartPlaceholderScreen(),
+                ),
+              ],
+            ),
+            
+            // Tab 2: Thư viện
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorLibrary,
+              routes: [
+                GoRoute(
+                  path: '/library',
+                  builder: (context, state) => const LibraryPlaceholderScreen(),
+                ),
+              ],
+            ),
+            
+            // Tab 3: Cá nhân
+            StatefulShellBranch(
+              navigatorKey: _shellNavigatorProfile,
+              routes: [
+                GoRoute(
+                  path: '/profile',
+                  builder: (context, state) => const ProfilePlaceholderScreen(),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }

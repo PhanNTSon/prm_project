@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../network/secure_storage_service.dart';
+import 'package:provider/provider.dart';
+import '../../features/auth/providers/auth_provider.dart';
 
 class LoginPlaceholderScreen extends StatelessWidget {
   const LoginPlaceholderScreen({Key? key}) : super(key: key);
@@ -17,15 +19,13 @@ class LoginPlaceholderScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                final storage = SecureStorageService();
-                await storage.saveAuthData(
-                  token: 'fake_jwt_token',
-                  userId: '1',
-                  role: 'STANDARD',
-                  username: 'tester',
-                );
-                if (context.mounted) {
-                  context.go('/home');
+                // Tạo một token JWT giả định hợp lệ
+                const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJ1c2VySWQiOjEsInJvbGUiOiJTVEFOREFSRCIsImV4cCI6OTk5OTk5OTk5OX0.fakesignature';
+                try {
+                  await context.read<AuthProvider>().loginSuccess(fakeJwt);
+                  // Không cần gọi context.go('/home') vì AuthProvider notifyListeners -> Router tự động redirect!
+                } catch (e) {
+                  debugPrint('Login error: $e');
                 }
               },
               child: const Text('Đăng nhập giả lập (Lưu token & Tới Home)'),
@@ -213,11 +213,8 @@ class ProfilePlaceholderScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              final storage = SecureStorageService();
-              await storage.clearAuthData();
-              if (context.mounted) {
-                context.go('/login');
-              }
+              await context.read<AuthProvider>().logout();
+              // Router sẽ tự động văng ra login do redirect lắng nghe sự thay đổi của AuthProvider
             },
           )
         ],

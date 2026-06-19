@@ -5,6 +5,7 @@
 ##### 1.1.1.1 Login Screen
 ###### a. UI Specifications
 **Login Screen**
+{{IMAGE:login_screen.png}}
 - **Brief Description:** Cho phép người dùng đăng nhập vào hệ thống bằng tài khoản (Username/Password) hoặc tài khoản Google.
 - **Mockup UI Layout:** `[Mockup: Login Screen với nền sẫm màu Steam, logo Centurion, các trường input Username, Password, nút Đăng nhập và nút Đăng nhập bằng Google]`
 - **Component Requirements:**

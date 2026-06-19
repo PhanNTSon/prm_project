@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 import 'package:prm_project/core/router/app_router.dart';
 import 'package:prm_project/core/network/secure_storage_service.dart';
+import 'package:prm_project/features/auth/providers/auth_provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -36,45 +38,63 @@ void main() {
 
     testWidgets('Should redirect to /login when no token and accessing /home', (WidgetTester tester) async {
       // 1. Arrange: No token in storage
+      final storage = SecureStorageService();
+      final authProvider = AuthProvider(storage);
+      await authProvider.initializeAuth(); // Sẽ gán isInitialized = true, isAuthenticated = false
+      final router = AppRouter.createRouter(authProvider);
 
       // 2. Act: Pump the app with the router
       await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: AppRouter.router,
+        ChangeNotifierProvider.value(
+          value: authProvider,
+          child: MaterialApp.router(
+            routerConfig: router,
+          ),
         ),
       );
       
-      // Chờ router xử lý chuyển hướng (await cho future của redirect)
-      await tester.pumpAndSettle();
+      // Chờ router xử lý chuyển hướng
+      await tester.pump();
+      await tester.pump();
 
       // 3. Assert: Phải thấy chữ 'Login Page' của LoginPlaceholderScreen
       expect(find.text('Đây là màn hình Đăng nhập (Chưa có UI)'), findsOneWidget);
+      
+      authProvider.dispose();
     });
 
     testWidgets('Should go to /home directly when token exists', (WidgetTester tester) async {
-      // 1. Arrange: Have token in storage
+      // 1. Arrange: Have fake JWT in storage (must have valid payload for JwtDecoder)
       final storage = SecureStorageService();
+      const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJ1c2VySWQiOjEsInJvbGUiOiJTVEFOREFSRCIsImV4cCI6OTk5OTk5OTk5OX0.fakesignature';
+      
       await storage.saveAuthData(
-        token: 'valid_token',
+        token: fakeJwt,
         userId: '1',
         role: 'STANDARD',
-        username: 'test_user',
+        username: 'tester',
       );
 
-      // Force router refresh or recreate router?
-      // Since AppRouter is static and initial location is /home, it will evaluate redirect again.
-      AppRouter.router.go('/home');
+      final authProvider = AuthProvider(storage);
+      await authProvider.initializeAuth(); // Sẽ decode fakeJwt -> isAuthenticated = true
+      final router = AppRouter.createRouter(authProvider);
 
       // 2. Act
       await tester.pumpWidget(
-        MaterialApp.router(
-          routerConfig: AppRouter.router,
+        ChangeNotifierProvider.value(
+          value: authProvider,
+          child: MaterialApp.router(
+            routerConfig: router,
+          ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump();
 
       // 3. Assert: Phải thấy 'Storefront (Home)' của HomePlaceholderScreen
       expect(find.text('Danh sách Game'), findsOneWidget);
+      
+      authProvider.dispose();
     });
   });
 }
