@@ -5,9 +5,9 @@ class MainShellScreen extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   const MainShellScreen({
-    Key? key,
+    super.key,
     required this.navigationShell,
-  }) : super(key: key);
+  });
 
   void _onTap(int index) {
     navigationShell.goBranch(

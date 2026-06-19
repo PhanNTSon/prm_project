@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../network/secure_storage_service.dart';
 import 'package:provider/provider.dart';
 import '../../features/auth/providers/auth_provider.dart';
 
 class LoginPlaceholderScreen extends StatelessWidget {
-  const LoginPlaceholderScreen({Key? key}) : super(key: key);
+  const LoginPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,7 @@ class LoginPlaceholderScreen extends StatelessWidget {
 }
 
 class RegisterPlaceholderScreen extends StatelessWidget {
-  const RegisterPlaceholderScreen({Key? key}) : super(key: key);
+  const RegisterPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +66,7 @@ class RegisterPlaceholderScreen extends StatelessWidget {
 }
 
 class VerifyEmailPlaceholderScreen extends StatelessWidget {
-  const VerifyEmailPlaceholderScreen({Key? key}) : super(key: key);
+  const VerifyEmailPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +90,7 @@ class VerifyEmailPlaceholderScreen extends StatelessWidget {
 }
 
 class HomePlaceholderScreen extends StatelessWidget {
-  const HomePlaceholderScreen({Key? key}) : super(key: key);
+  const HomePlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +115,7 @@ class HomePlaceholderScreen extends StatelessWidget {
 
 class GameDetailPlaceholderScreen extends StatelessWidget {
   final String gameId;
-  const GameDetailPlaceholderScreen({Key? key, required this.gameId}) : super(key: key);
+  const GameDetailPlaceholderScreen({super.key, required this.gameId});
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +139,7 @@ class GameDetailPlaceholderScreen extends StatelessWidget {
 }
 
 class CartPlaceholderScreen extends StatelessWidget {
-  const CartPlaceholderScreen({Key? key}) : super(key: key);
+  const CartPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +163,7 @@ class CartPlaceholderScreen extends StatelessWidget {
 }
 
 class PaymentWebViewPlaceholder extends StatelessWidget {
-  const PaymentWebViewPlaceholder({Key? key}) : super(key: key);
+  const PaymentWebViewPlaceholder({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -188,7 +187,7 @@ class PaymentWebViewPlaceholder extends StatelessWidget {
 }
 
 class LibraryPlaceholderScreen extends StatelessWidget {
-  const LibraryPlaceholderScreen({Key? key}) : super(key: key);
+  const LibraryPlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -202,7 +201,7 @@ class LibraryPlaceholderScreen extends StatelessWidget {
 }
 
 class ProfilePlaceholderScreen extends StatelessWidget {
-  const ProfilePlaceholderScreen({Key? key}) : super(key: key);
+  const ProfilePlaceholderScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
