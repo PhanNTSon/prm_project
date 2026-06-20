@@ -29,7 +29,7 @@
   {{IMAGE:user_profile_screen.png}}
   `[Mockup: User profile screen showing Avatar, Username, Email, Wallet balance, and Logout button]`
 - **Function Detail:**
-  - `Wallet Balance Display`: Displays the current balance of the account.
-  - `Logout Button`: Clears JWT token from local storage and redirects to `/login`.
+  - `Wallet Balance Display`: Displays the current balance of the account (automatically updated in real-time via WebSocket STOMP subscription on `/user/queue/wallet.balance`).
+  - `Logout Button`: Clears JWT token from local storage (SharedPreferences) and redirects to `/login`.
 
 ---
