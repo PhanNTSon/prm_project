@@ -46,6 +46,10 @@ void main() {
       final storage = SecureStorageService();
       const fakeJwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0ZXIiLCJ1c2VySWQiOjEsInJvbGUiOiJTVEFOREFSRCIsImV4cCI6OTk5OTk5OTk5OX0.fakesignature';
       
+      // Thiết lập màn hình đủ rộng để tránh lỗi tràn giao diện (overflow) của Appbar
+      await tester.binding.setSurfaceSize(const Size(1400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
       await storage.saveAuthData(
         token: fakeJwt,
         userId: '1',
@@ -69,8 +73,8 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      // 3. Assert: Phải thấy 'Storefront (Home)' của HomePlaceholderScreen
-      expect(find.text('Danh sách Game'), findsOneWidget);
+      // 3. Assert: Phải thấy 'Steam Store' của HomeScreen thực tế
+      expect(find.text('Steam Store'), findsOneWidget);
       
       authProvider.dispose();
     });
