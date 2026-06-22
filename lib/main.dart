@@ -8,6 +8,7 @@ import 'core/router/app_router.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/profile/providers/wallet_provider.dart';
 import 'features/profile/providers/notification_provider.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +30,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   late final AuthProvider _authProvider;
   late final GoRouter _router;
-  
+
   // Realtime Services & Providers
   late final WebSocketService _webSocketService;
   late final WalletProvider _walletProvider;
@@ -41,7 +42,7 @@ class _MainAppState extends State<MainApp> {
     // Khởi tạo các Service và Provider cốt lõi
     final secureStorage = SecureStorageService();
     _authProvider = AuthProvider(secureStorage);
-    
+
     _webSocketService = WebSocketService();
     _walletProvider = WalletProvider();
     _notificationProvider = NotificationProvider();
@@ -60,10 +61,11 @@ class _MainAppState extends State<MainApp> {
     if (_authProvider.isAuthenticated && _authProvider.token != null) {
       if (!_webSocketService.isConnected) {
         _webSocketService.connect(_authProvider.token!);
-        
+
         // Đăng ký nhận bản tin ví
         _webSocketService.subscribe('/user/queue/wallet.balance', (data) {
-          final balance = double.tryParse(data['balance']?.toString() ?? '0.0') ?? 0.0;
+          final balance =
+              double.tryParse(data['balance']?.toString() ?? '0.0') ?? 0.0;
           _walletProvider.updateBalance(balance);
         });
 
@@ -98,15 +100,15 @@ class _MainAppState extends State<MainApp> {
       providers: [
         ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<WalletProvider>.value(value: _walletProvider),
-        ChangeNotifierProvider<NotificationProvider>.value(value: _notificationProvider),
+        ChangeNotifierProvider<NotificationProvider>.value(
+          value: _notificationProvider,
+        ),
         Provider<WebSocketService>.value(value: _webSocketService),
       ],
       child: MaterialApp.router(
         title: 'Steam Clone',
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          scaffoldBackgroundColor: const Color(0xFF1B2838), // Nền xanh sẫm Steam
-        ),
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
         routerConfig: _router,
       ),
     );
