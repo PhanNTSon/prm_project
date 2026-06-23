@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prm_project/features/cart_payment/screens/cart_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import 'package:prm_project/features/storefront/home_screen.dart';
 import 'main_shell_screen.dart';
@@ -115,7 +116,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/cart',
-                  builder: (context, state) => const CartPlaceholderScreen(),
+                  builder: (context, state) => const CartScreen(),
                 ),
               ],
             ),
