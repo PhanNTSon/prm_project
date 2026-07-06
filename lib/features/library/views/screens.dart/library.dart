@@ -18,13 +18,34 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   final searchController = TextEditingController();
 
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      context.read<LibraryProvider>().loadLibrary();
-    });
+    final provider = context.read<LibraryProvider>();
+
+    provider.loadLibrary(refresh: true);
+
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+
+    final provider = context.read<LibraryProvider>();
+
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 300) {
+      provider.loadLibrary();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -58,10 +79,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
               Expanded(
                 child: ListView.builder(
-                  itemCount: provider.games.length,
+                  itemCount: provider.sortedGames.length,
 
                   itemBuilder: (_, index) {
-                    return OwnedGameTile(game: provider.games[index]);
+                    final game = provider.sortedGames[index];
+
+                    return OwnedGameTile(game: game);
                   },
                 ),
               ),

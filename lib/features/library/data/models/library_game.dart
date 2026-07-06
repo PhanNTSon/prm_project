@@ -1,15 +1,21 @@
 class LibraryGame {
-  final int id;
-  final String title;
-  final String imageUrl;
-  final double playHours;
-  final String lastPlayed;
+  final int gameId;
+  final String name;
+  final double price;
+  final String iconUrl;
+  final String publisherName;
+  final int playtimeInMillis;
+  final DateTime? lastTimePlayed;
 
   const LibraryGame({
-    required this.id,
-    required this.title,
-    required this.imageUrl,
-    required this.playHours,
-    required this.lastPlayed,
+    required this.gameId,
+    required this.name,
+    required this.price,
+    required this.iconUrl,
+    required this.publisherName,
+    required this.playtimeInMillis,
+    this.lastTimePlayed,
   });
+
+  double get playHours => playtimeInMillis / 1000 / 60 / 60;
 }

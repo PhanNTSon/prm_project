@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../features/library/data/models/library_game.dart';
+import 'package:prm_project/features/library/data/models/library_game.dart';
 
 class OwnedGameTile extends StatelessWidget {
   final LibraryGame game;
@@ -18,10 +17,10 @@ class OwnedGameTile extends StatelessWidget {
         leading: ClipRRect(
           borderRadius: BorderRadius.circular(8),
 
-          child: Image.network(game.imageUrl, width: 90, fit: BoxFit.cover),
+          child: Image.network(game.iconUrl, width: 90, fit: BoxFit.cover),
         ),
 
-        title: Text(game.title),
+        title: Text(game.name),
 
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,7 +34,7 @@ class OwnedGameTile extends StatelessWidget {
             ),
 
             Text(
-              "Last played: ${game.lastPlayed}",
+              "Last played: ${game.lastTimePlayed}",
               style: theme.textTheme.bodySmall,
             ),
           ],

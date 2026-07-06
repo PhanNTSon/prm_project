@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../inputs/custom_text_field.dart';
+import '../../../../core/widgets/inputs/custom_text_field.dart';
 
 class LibrarySearchBar extends StatelessWidget {
   final TextEditingController controller;
