@@ -17,9 +17,9 @@ class CartProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isCheckingOut => _isCheckingOut;
   String? get errorMessage => _errorMessage;
+  int get itemCount => _items.length;
 
-  double get totalPrice =>
-      _items.fold(0, (sum, item) => sum + item.price);
+  double get totalPrice => _items.fold(0, (sum, item) => sum + item.price);
 
   Future<void> loadCart() async {
     _isLoading = true;
@@ -59,15 +59,11 @@ class CartProvider extends ChangeNotifier {
     } catch (e) {
       final msg = e.toString().toLowerCase();
       _isCheckingOut = false;
-      if (msg.contains('insufficient') ||
-          msg.contains('balance') ||
-          msg.contains('không đủ')) {
-        _errorMessage = e.toString();
-        notifyListeners();
-        return CheckoutResult.insufficientBalance;
-      }
       _errorMessage = e.toString();
       notifyListeners();
+      if (msg.contains('insufficient') || msg.contains('balance')) {
+        return CheckoutResult.insufficientBalance;
+      }
       return CheckoutResult.error;
     }
   }

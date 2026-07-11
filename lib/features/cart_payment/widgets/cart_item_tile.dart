@@ -21,79 +21,116 @@ class CartItemTile extends StatelessWidget {
       buf.write(s[i]);
       if (fromEnd > 1 && fromEnd % 3 == 1) buf.write('.');
     }
-    return '$buf ₫';
+    return '$buf₫';
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(3),
         border: Border.all(color: AppColors.borderColor),
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Thumbnail
           ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(4),
-              bottomLeft: Radius.circular(4),
+              topLeft: Radius.circular(3),
+              bottomLeft: Radius.circular(3),
             ),
             child: item.thumbnailUrl != null
                 ? CachedNetworkImage(
                     imageUrl: item.thumbnailUrl!,
-                    width: 160,
-                    height: 90,
+                    width: 150,
                     fit: BoxFit.cover,
-                    placeholder: (_, __) => _ThumbnailPlaceholder(),
-                    errorWidget: (_, __, ___) => _ThumbnailPlaceholder(),
+                    placeholder: (_, __) => const _ThumbnailPlaceholder(),
+                    errorWidget: (_, __, ___) => const _ThumbnailPlaceholder(),
                   )
-                : _ThumbnailPlaceholder(),
+                : const _ThumbnailPlaceholder(),
           ),
-          // Game info
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     item.gameName,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.primaryTextColor,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: const TextStyle(
+                      color: AppColors.primaryTextColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatVnd(item.price),
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
+                  const SizedBox(height: 10),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      alignment: Alignment.centerLeft,
+                    ),
+                    onPressed: onRemove,
+                    child: const Text(
+                      'Remove',
+                      style: TextStyle(
+                        color: AppColors.secondaryTextColor,
+                        fontSize: 12,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          // Remove button
           Padding(
-            padding: const EdgeInsets.all(8),
-            child: TextButton(
-              onPressed: onRemove,
-              child: Text(
-                'Remove',
-                style: TextStyle(
-                  color: AppColors.secondaryTextColor,
-                  fontSize: 12,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (item.hasDiscount) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.successColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: Text(
+                      '-${(100 * item.discountPrice / item.originalPrice).round()}%',
+                      style: const TextStyle(
+                        color: AppColors.primaryTextColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatVnd(item.originalPrice),
+                    style: const TextStyle(
+                      color: AppColors.secondaryTextColor,
+                      fontSize: 11,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                ],
+                Text(
+                  _formatVnd(item.price),
+                  style: const TextStyle(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
@@ -103,13 +140,14 @@ class CartItemTile extends StatelessWidget {
 }
 
 class _ThumbnailPlaceholder extends StatelessWidget {
+  const _ThumbnailPlaceholder();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160,
-      height: 90,
-      color: AppColors.cardColor,
-      child: Icon(
+      width: 150,
+      color: AppColors.surfaceColor,
+      child: const Icon(
         Icons.videogame_asset_outlined,
         color: AppColors.secondaryTextColor,
         size: 32,

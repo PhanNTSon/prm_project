@@ -5,16 +5,10 @@ class CartRepository {
   final DioClient _dioClient;
   CartRepository(this._dioClient);
 
-  /// GET /user/cart
   Future<List<CartItemModel>> getCart() async {
     try {
       final response = await _dioClient.get('/user/cart');
       final data = response.data;
-      if (data is List) {
-        return data
-            .map((e) => CartItemModel.fromJson(e as Map<String, dynamic>))
-            .toList();
-      }
       if (data is Map && data['data'] is List) {
         return (data['data'] as List)
             .map((e) => CartItemModel.fromJson(e as Map<String, dynamic>))
@@ -26,7 +20,6 @@ class CartRepository {
     }
   }
 
-  /// POST /user/cart/add?gameId=
   Future<void> addToCart(int gameId) async {
     try {
       await _dioClient.post(
@@ -38,7 +31,6 @@ class CartRepository {
     }
   }
 
-  /// DELETE /user/cart/remove?gameId=
   Future<void> removeFromCart(int gameId) async {
     try {
       await _dioClient.delete(
@@ -50,7 +42,6 @@ class CartRepository {
     }
   }
 
-  /// POST /user/cart/checkout
   Future<void> checkout() async {
     try {
       await _dioClient.post('/user/cart/checkout');

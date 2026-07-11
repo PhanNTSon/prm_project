@@ -23,16 +23,8 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-  String _formatVnd(double amount) {
-    final s = amount.round().toString();
-    final buf = StringBuffer();
-    for (int i = 0; i < s.length; i++) {
-      final fromEnd = s.length - i;
-      buf.write(s[i]);
-      if (fromEnd > 1 && fromEnd % 3 == 1) buf.write('.');
-    }
-    return '$buf ₫';
-  }
+
+  String _formatUsd(double amount) => '\$${amount.toStringAsFixed(2)}';
 
   Future<void> _onPurchase() async {
     final provider = context.read<CartProvider>();
@@ -42,7 +34,10 @@ class _CartScreenState extends State<CartScreen> {
 
     switch (result) {
       case CheckoutResult.success:
-        context.go('/payment-result');
+        context.push('/payment-result', extra: const {
+          'type': 'purchase',
+          'success': true,
+        });
         break;
       case CheckoutResult.insufficientBalance:
         _showInsufficientBalanceDialog();
@@ -83,7 +78,7 @@ class _CartScreenState extends State<CartScreen> {
           ElevatedButton(
             onPressed: () {
               context.pop();
-              context.go('/account/wallet');
+              context.push('/account/wallet');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
@@ -98,7 +93,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<CartProvider>();
-    final walletBalance = context.watch<WalletProvider>().balance;
+    final walletBalanceUsd = context.watch<WalletProvider>().balance;
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
@@ -107,12 +102,9 @@ class _CartScreenState extends State<CartScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Store  >  Your Cart',
-              style: TextStyle(
-                color: AppColors.secondaryTextColor,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 11),
             ),
             const Text(
               'Your Cart',
@@ -125,72 +117,80 @@ class _CartScreenState extends State<CartScreen> {
           ],
         ),
       ),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : provider.items.isEmpty
-              ? const _EmptyCart()
-              : _CartContent(
-                  provider: provider,
-                  formatVnd: _formatVnd,
-                  walletBalance: walletBalance,
-                  onRemove: (gameId) => provider.removeItem(gameId),
-                  onPurchase: _onPurchase,
-                ),
+      body: RefreshIndicator(
+        onRefresh: () => context.read<CartProvider>().loadCart(),
+        child: provider.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : provider.items.isEmpty
+                ? const _EmptyCart()
+                : _CartContent(
+                    provider: provider,
+                    formatUsd: _formatUsd,
+                    walletBalanceUsd: walletBalanceUsd,
+                    onRemove: (gameId) => provider.removeItem(gameId),
+                    onPurchase: _onPurchase,
+                  ),
+      ),
     );
   }
 }
 
-// ── Empty state ──────────────────────────────────────────────────────────────
+// ── Empty state ─────────────────────────────────────────────────────────
 
 class _EmptyCart extends StatelessWidget {
   const _EmptyCart();
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.shopping_cart_outlined,
-            size: 64,
-            color: AppColors.secondaryTextColor,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Your cart is empty',
-            style: TextStyle(
-              color: AppColors.secondaryTextColor,
-              fontSize: 16,
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.shopping_cart_outlined,
+                  size: 64,
+                  color: AppColors.secondaryTextColor,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Your cart is empty',
+                  style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 16),
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.go('/home'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                  ),
+                  child: const Text('Continue Shopping'),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => context.go('/store'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-            ),
-            child: const Text('Continue Shopping'),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
-// ── Cart content ─────────────────────────────────────────────────────────────
+// ── Cart content ─────────────────────────────────────────────────────────
 
 class _CartContent extends StatelessWidget {
   final CartProvider provider;
-  final String Function(double) formatVnd;
-  final double walletBalance;
+  final String Function(double) formatUsd;
+  final double walletBalanceUsd;
   final void Function(int) onRemove;
   final VoidCallback onPurchase;
 
   const _CartContent({
     required this.provider,
-    required this.formatVnd,
-    required this.walletBalance,
+    required this.formatUsd,
+    required this.walletBalanceUsd,
     required this.onRemove,
     required this.onPurchase,
   });
@@ -201,6 +201,7 @@ class _CartContent extends StatelessWidget {
       children: [
         Expanded(
           child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
             itemCount: provider.items.length,
             itemBuilder: (_, index) {
@@ -213,11 +214,11 @@ class _CartContent extends StatelessWidget {
           ),
         ),
         _CartSummaryBar(
-          totalPrice: formatVnd(provider.totalPrice),
-          walletBalance: formatVnd(walletBalance),
-          isEnough: walletBalance >= provider.totalPrice,
+          totalPrice: formatUsd(provider.totalPrice),
+          walletBalance: formatUsd(walletBalanceUsd),
+          isEnough: walletBalanceUsd >= provider.totalPrice,
           isLoading: provider.isCheckingOut,
-          onContinueShopping: () => context.go('/store'),
+          onContinueShopping: () => context.go('/home'),
           onPurchase: onPurchase,
         ),
       ],
@@ -225,7 +226,7 @@ class _CartContent extends StatelessWidget {
   }
 }
 
-// ── Summary bar ──────────────────────────────────────────────────────────────
+// ── Summary bar ──────────────────────────────────────────────────────────
 
 class _CartSummaryBar extends StatelessWidget {
   final String totalPrice;
@@ -255,7 +256,6 @@ class _CartSummaryBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Số dư ví
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -266,16 +266,13 @@ class _CartSummaryBar extends StatelessWidget {
               Text(
                 walletBalance,
                 style: TextStyle(
-                  color: isEnough
-                      ? AppColors.successColor
-                      : AppColors.errorColor,
+                  color: isEnough ? AppColors.successColor : AppColors.errorColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          // Tổng tiền
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -293,21 +290,6 @@ class _CartSummaryBar extends StatelessWidget {
               ),
             ],
           ),
-          if (!isEnough) ...[
-            const SizedBox(height: 6),
-            const Row(
-              children: [
-                Icon(Icons.warning_amber_rounded,
-                    size: 14, color: AppColors.warningColor),
-                SizedBox(width: 4),
-                Text(
-                  'Insufficient balance',
-                  style: TextStyle(
-                      color: AppColors.warningColor, fontSize: 12),
-                ),
-              ],
-            ),
-          ],
           const SizedBox(height: 12),
           Row(
             children: [
@@ -340,10 +322,7 @@ class _CartSummaryBar extends StatelessWidget {
                             color: AppColors.backgroundColor,
                           ),
                         )
-                      : const Text(
-                          'Purchase',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                      : const Text('Purchase', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
