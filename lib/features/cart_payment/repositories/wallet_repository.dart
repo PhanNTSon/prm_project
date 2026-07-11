@@ -48,4 +48,34 @@ class WalletRepository {
     }
   }
 
+  /// POST /api/v1/payments/create-vnpay-payment?amount=&bankCode=&language=
+  /// Trả về paymentUrl để mở trong InAppWebView.
+  ///
+  /// Lưu ý: BE hiện là bản "simulated bypass" — paymentUrl trả về đã chứa
+  /// sẵn vnp_ResponseCode=00, trỏ thẳng về return URL, KHÔNG thật sự đi qua
+  /// cổng VNPay sandbox.
+  Future<String> createVnpayPayment({
+    required double amountUsd,
+    String? bankCode,
+    String language = 'vn',
+  }) async {
+    try {
+      final response = await _dioClient.post(
+        '/api/v1/payments/create-vnpay-payment',
+        queryParameters: {
+          'amount': amountUsd,
+          if (bankCode != null && bankCode.isNotEmpty) 'bankCode': bankCode,
+          'language': language,
+        },
+      );
+      final data = response.data;
+      final url = data is Map ? data['paymentUrl'] as String? : null;
+      if (url == null || url.isEmpty) {
+        throw Exception('BE không trả về paymentUrl hợp lệ');
+      }
+      return url;
+    } catch (e) {
+      throw Exception('Failed to create VNPay payment: ${e.toString()}');
+    }
+  }
 }
