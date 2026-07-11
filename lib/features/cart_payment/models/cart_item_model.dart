@@ -13,10 +13,10 @@ class CartItemModel {
 
   factory CartItemModel.fromJson(Map<String, dynamic> json) {
     return CartItemModel(
-      gameId: json['gameId'] as int,
-      gameName: json['gameName'] as String? ?? 'Unknown Game',
+      gameId: json['id'] as int,                           // BE trả về 'id'
+      gameName: json['title'] as String? ?? 'Unknown Game', // BE trả về 'title'
       price: (json['price'] as num?)?.toDouble() ?? 0,
-      thumbnailUrl: json['thumbnailUrl'] as String?,
+      thumbnailUrl: json['imageUrl'] as String?,            // BE trả về 'imageUrl'
     );
   }
 }
