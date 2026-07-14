@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeAppbar extends StatelessWidget {
   final String currentPage;
@@ -41,17 +42,12 @@ class HomeAppbar extends StatelessWidget {
           SteamNavButton(
             title: "LIBRARY",
             isSelected: currentPage == 'library',
-            onTap: () {},
+            onTap: () => context.push('/library'),
           ),
           SteamNavButton(
-            title: "COMMUNITY",
-            isSelected: currentPage == 'community',
-            onTap: () {},
-          ),
-          SteamNavButton(
-            title: "NEWS",
-            isSelected: currentPage == 'news',
-            onTap: () {},
+            title: "ALL GAMES",
+            isSelected: currentPage == 'all-games',
+            onTap: () => context.push('/all-games'),
           ),
 
           const Spacer(),
@@ -64,8 +60,11 @@ class HomeAppbar extends StatelessWidget {
 
           const SizedBox(width: 20),
 
-          // Search Bar
-          _buildSearchBar(),
+
+          // Thay vì gọi _buildSearchBar(context) trực tiếp
+          Expanded( // Sử dụng Expanded để nó tự co lại khi màn hình hẹp
+            child: _buildSearchBar(context),
+          ),
 
           const SizedBox(width: 20),
 
@@ -95,53 +94,44 @@ class HomeAppbar extends StatelessWidget {
     );
   }
 
-  Widget _navButton(String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: TextButton(
-        onPressed: () {},
-        child: Text(
-          title,
-          style: const TextStyle(
-            color: Color(0xFF66C0F4),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-Widget _buildSearchBar() {
-  return SizedBox(
-    height: 40,
-    width: 300,
-    child: Row(
-      children: [
-        Expanded(
-          child: TextField(
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: "Search games...",
-              hintStyle: const TextStyle(color: Colors.white54),
-              filled: true,
-              fillColor: const Color(0xFF2A475E),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(0),
-                borderSide: BorderSide.none,
+Widget _buildSearchBar(BuildContext context) {
+  return GestureDetector(
+    onTap: () => context.push('/search'),
+    child: SizedBox(
+      height: 40,
+
+      child: Row(
+        children: [
+          Expanded(
+            child: AbsorbPointer(
+              child: TextField(
+                readOnly: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Search games...",
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  filled: true,
+                  fillColor: const Color(0xFF2A475E),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12),
             ),
           ),
-        ),
 
-        Container(
-          width: 40,
-          height: 40,
-          decoration: const BoxDecoration(color: Color(0xFF66C0F4)),
-          child: const Icon(Icons.search, color: Colors.white, size: 20),
-        ),
-      ],
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(color: Color(0xFF66C0F4)),
+            child: const Icon(Icons.search, color: Colors.white, size: 20),
+          ),
+        ],
+      ),
     ),
   );
 }

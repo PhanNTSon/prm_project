@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import 'package:prm_project/features/storefront/home_screen.dart';
+import 'package:prm_project/features/storefront/views/screens/game_search_screen.dart';
+import 'package:prm_project/features/storefront/views/screens/all_games_screen.dart';
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
 import 'splash_screen.dart';
@@ -82,7 +84,21 @@ class AppRouter {
           builder: (context, state) => const PaymentWebViewPlaceholder(),
         ),
 
-        // 3. Shell Layout chứa Bottom Navigation Bar
+        // 3. Tìm kiếm Game - Fullscreen (không hiện Bottom Navigation)
+        GoRoute(
+          path: '/search',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const GameSearchScreen(),
+        ),
+
+        // 4. Tất cả Game - Fullscreen (không hiện Bottom Navigation)
+        GoRoute(
+          path: '/all-games',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const AllGamesScreen(),
+        ),
+
+        // 5. Shell Layout chứa Bottom Navigation Bar
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
             return MainShellScreen(navigationShell: navigationShell);
