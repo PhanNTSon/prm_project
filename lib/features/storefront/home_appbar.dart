@@ -65,8 +65,11 @@ class HomeAppbar extends StatelessWidget {
 
           const SizedBox(width: 20),
 
-          // Search Bar - Tap để mở màn hình tìm kiếm
-          _buildSearchBar(context),
+
+          // Thay vì gọi _buildSearchBar(context) trực tiếp
+          Expanded( // Sử dụng Expanded để nó tự co lại khi màn hình hẹp
+            child: _buildSearchBar(context),
+          ),
 
           const SizedBox(width: 20),
 
@@ -103,7 +106,7 @@ Widget _buildSearchBar(BuildContext context) {
     onTap: () => context.push('/search'),
     child: SizedBox(
       height: 40,
-      width: 300,
+
       child: Row(
         children: [
           Expanded(
