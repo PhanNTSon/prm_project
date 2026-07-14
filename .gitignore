@@ -48,6 +48,4 @@ app.*.map.json
 
 .env
 /android
-/windows
-/windows
-*.cc
+
