@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'core/network/dio_client.dart';
 import 'core/network/secure_storage_service.dart';
 import 'core/network/websocket_service.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/profile/providers/wallet_provider.dart';
 import 'features/profile/providers/notification_provider.dart';
+import 'features/storefront/data/repositories/game_repository.dart';
+import 'features/storefront/providers/game_search_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +37,7 @@ class _MainAppState extends State<MainApp> {
   late final WebSocketService _webSocketService;
   late final WalletProvider _walletProvider;
   late final NotificationProvider _notificationProvider;
+  late final GameSearchProvider _gameSearchProvider;
 
   @override
   void initState() {
@@ -45,6 +49,11 @@ class _MainAppState extends State<MainApp> {
     _webSocketService = WebSocketService();
     _walletProvider = WalletProvider();
     _notificationProvider = NotificationProvider();
+
+    // Khởi tạo DioClient, Repository và Provider cho Game Search
+    final dioClient = DioClient(AppRouter.rootNavigatorKey);
+    final gameRepository = GameRepository(dioClient);
+    _gameSearchProvider = GameSearchProvider(gameRepository);
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -99,6 +108,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<WalletProvider>.value(value: _walletProvider),
         ChangeNotifierProvider<NotificationProvider>.value(value: _notificationProvider),
+        ChangeNotifierProvider<GameSearchProvider>.value(value: _gameSearchProvider),
         Provider<WebSocketService>.value(value: _webSocketService),
       ],
       child: MaterialApp.router(
