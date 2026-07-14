@@ -42,17 +42,12 @@ class HomeAppbar extends StatelessWidget {
           SteamNavButton(
             title: "LIBRARY",
             isSelected: currentPage == 'library',
-            onTap: () {},
+            onTap: () => context.push('/library'),
           ),
           SteamNavButton(
-            title: "COMMUNITY",
-            isSelected: currentPage == 'community',
-            onTap: () {},
-          ),
-          SteamNavButton(
-            title: "NEWS",
-            isSelected: currentPage == 'news',
-            onTap: () {},
+            title: "ALL GAMES",
+            isSelected: currentPage == 'all-games',
+            onTap: () => context.push('/all-games'),
           ),
 
           const Spacer(),

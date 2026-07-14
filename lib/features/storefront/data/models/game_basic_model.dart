@@ -22,12 +22,20 @@ class GameBasicModel {
   });
 
   factory GameBasicModel.fromJson(Map<String, dynamic> json) {
-    // Parse danh sách tags nếu có
+    // Backend trả về tags là List<String> (vd: ["RTS", "Multiplayer"])
+    // chứ không phải List<Map> như dự kiến ban đầu
     List<TagModel> parsedTags = [];
     if (json['tags'] != null && json['tags'] is List) {
-      parsedTags = (json['tags'] as List)
-          .map((tag) => TagModel.fromJson(tag as Map<String, dynamic>))
-          .toList();
+      parsedTags = (json['tags'] as List).map((tag) {
+        if (tag is String) {
+          // Format thực tế từ backend: String
+          return TagModel(tagId: 0, tagName: tag);
+        } else if (tag is Map<String, dynamic>) {
+          // Format dự phòng nếu backend trả về object
+          return TagModel.fromJson(tag);
+        }
+        return TagModel(tagId: 0, tagName: tag.toString());
+      }).toList();
     }
 
     return GameBasicModel(
