@@ -7,6 +7,12 @@ import 'package:prm_project/features/storefront/views/screens/all_games_screen.d
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
 import 'splash_screen.dart';
+import 'package:prm_project/features/auth/views/screens/login_screen.dart';
+import 'package:prm_project/features/auth/views/screens/register_screen.dart';
+import 'package:prm_project/features/auth/views/screens/verify_email_screen.dart';
+import 'package:prm_project/features/auth/views/screens/register_details_screen.dart';
+import 'package:prm_project/features/auth/views/screens/forgot_password_screen.dart';
+import 'package:prm_project/features/auth/views/screens/reset_password_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -29,10 +35,11 @@ class AppRouter {
         // Logic Auth Guard đồng bộ với AuthProvider
         final bool isInitialized = authProvider.isInitialized;
         final bool isAuthenticated = authProvider.isAuthenticated;
-        
-        final isAuthRoute = state.matchedLocation == '/login' || 
-                            state.matchedLocation == '/register' || 
-                            state.matchedLocation == '/verify-email';
+
+        final isAuthRoute =
+            state.matchedLocation == '/login' ||
+            state.matchedLocation == '/register' ||
+            state.matchedLocation == '/verify-email';
 
         // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
         if (!isInitialized) {
@@ -64,19 +71,37 @@ class AppRouter {
         GoRoute(
           path: '/login',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const LoginPlaceholderScreen(),
+          builder: (context, state) => const LoginScreen(),
         ),
         GoRoute(
           path: '/register',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const RegisterPlaceholderScreen(),
+          builder: (context, state) => const RegisterScreen(),
         ),
         GoRoute(
           path: '/verify-email',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const VerifyEmailPlaceholderScreen(),
+          builder: (context, state) =>
+              VerifyEmailScreen(email: state.extra as String),
         ),
-        
+        GoRoute(
+          path: '/register-details',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              RegisterDetailsScreen(email: state.extra as String),
+        ),
+        GoRoute(
+          path: '/forgot-password',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ForgotPasswordScreen(),
+        ),
+        GoRoute(
+          path: '/reset-password',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              ResetPasswordScreen(email: state.extra as String),
+        ),
+
         // 2. Trang Payment WebView - Fullscreen
         GoRoute(
           path: '/payment-webview',
@@ -124,7 +149,7 @@ class AppRouter {
                 ),
               ],
             ),
-            
+
             // Tab 1: Giỏ hàng
             StatefulShellBranch(
               navigatorKey: _shellNavigatorCart,
@@ -135,7 +160,7 @@ class AppRouter {
                 ),
               ],
             ),
-            
+
             // Tab 2: Thư viện
             StatefulShellBranch(
               navigatorKey: _shellNavigatorLibrary,
@@ -146,7 +171,7 @@ class AppRouter {
                 ),
               ],
             ),
-            
+
             // Tab 3: Cá nhân
             StatefulShellBranch(
               navigatorKey: _shellNavigatorProfile,
