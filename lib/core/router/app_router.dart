@@ -11,6 +11,7 @@ import 'package:prm_project/features/storefront/views/screens/all_games_screen.d
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
 import 'splash_screen.dart';
+import 'package:prm_project/features/library/views/screens/library.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =

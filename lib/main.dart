@@ -15,10 +15,11 @@ import 'features/cart_payment/providers/cart_provider.dart';
 import 'features/cart_payment/repositories/cart_repository.dart';
 import 'features/cart_payment/providers/payment_provider.dart';
 import 'features/cart_payment/repositories/wallet_repository.dart';
-import 'core/network/dio_client.dart';
 import 'features/storefront/data/repositories/game_repository.dart';
 import 'features/storefront/providers/game_search_provider.dart';
 import 'features/storefront/providers/game_list_provider.dart';
+import 'features/storefront/providers/home_provider.dart';
+import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +51,7 @@ class _MainAppState extends State<MainApp> {
   late final NotificationProvider _notificationProvider;
   late final GameSearchProvider _gameSearchProvider;
   late final GameListProvider _gameListProvider;
+  late final HomeProvider _homeProvider;
 
   @override
   void initState() {
@@ -70,6 +72,7 @@ class _MainAppState extends State<MainApp> {
     final gameRepository = GameRepository(dioClient);
     _gameSearchProvider = GameSearchProvider(gameRepository);
     _gameListProvider = GameListProvider(gameRepository);
+    _homeProvider = HomeProvider(gameRepository);
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -135,6 +138,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<GameListProvider>.value(
           value: _gameListProvider,
         ),
+        ChangeNotifierProvider<HomeProvider>.value(value: _homeProvider),
         Provider<WebSocketService>.value(value: _webSocketService),
         ChangeNotifierProvider(
           create: (_) => LibraryProvider(LibraryRepository()),
