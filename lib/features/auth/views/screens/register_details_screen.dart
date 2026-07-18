@@ -3,13 +3,14 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../models/register_request_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../widgets/auth_text_field.dart';
 
 class RegisterDetailsScreen extends StatefulWidget {
-  final String email;
+  final RegisterRequestModel data;
 
-  const RegisterDetailsScreen({super.key, required this.email});
+  const RegisterDetailsScreen({super.key, required this.data});
 
   @override
   State<RegisterDetailsScreen> createState() => _RegisterDetailsScreenState();
@@ -53,10 +54,11 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
     });
 
     try {
-      await _authRepository.registerDetails(
-        widget.email,
-        _usernameController.text.trim(),
-        _passwordController.text,
+      await _authRepository.register(
+        email: widget.data.email,
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+        country: widget.data.country,
       );
 
       if (!mounted) return;
@@ -134,7 +136,7 @@ class _RegisterDetailsScreenState extends State<RegisterDetailsScreen> {
         ),
         const SizedBox(height: 12),
         Text(
-          widget.email,
+          widget.data.email,
           style: const TextStyle(
             color: AppColors.primaryColor,
             fontSize: 14,

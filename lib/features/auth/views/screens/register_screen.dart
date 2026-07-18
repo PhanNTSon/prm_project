@@ -5,6 +5,7 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
+import '../../models/register_request_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../widgets/auth_text_field.dart';
 
@@ -71,7 +72,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     await _authRepository.sendVerificationOtp(_emailController.text.trim());
 
     if (!mounted) return;
-    context.push('/verify-email', extra: _emailController.text.trim());
+    context.push(
+      '/verify-email',
+      extra: RegisterRequestModel(
+        email: _emailController.text.trim(),
+        country: _selectedCountry,
+      ),
+    );
   } catch (e) {
     if (!mounted) return;
     setState(() { _errorMessage = e.toString(); _isLoading = false; });

@@ -77,9 +77,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     try {
       await _authRepository.resetPassword(
-        widget.email,
-        _otpCode,
-        _passwordController.text,
+        email: widget.email,
+        otp: _otpCode,
+        newPassword: _passwordController.text,
       );
 
       if (!mounted) return;

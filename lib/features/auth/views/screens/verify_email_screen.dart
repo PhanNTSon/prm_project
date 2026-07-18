@@ -4,12 +4,13 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../models/register_request_model.dart';
 import '../../repositories/auth_repository.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
-  final String email;
+  final RegisterRequestModel data;
 
-  const VerifyEmailScreen({super.key, required this.email});
+  const VerifyEmailScreen({super.key, required this.data});
 
   @override
   State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
@@ -66,10 +67,10 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     });
 
     try {
-      await _authRepository.verifyOtp(widget.email, _otpCode);
+      await _authRepository.verifyOtp(widget.data.email, _otpCode);
 
       if (!mounted) return;
-      context.push('/register-details', extra: widget.email);
+      context.push('/register-details', extra: widget.data);
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -149,7 +150,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             children: [
               const TextSpan(text: 'Mã xác thực đã được gửi đến\n'),
               TextSpan(
-                text: widget.email,
+                text: widget.data.email,
                 style: const TextStyle(
                   color: AppColors.primaryColor,
                   fontWeight: FontWeight.bold,

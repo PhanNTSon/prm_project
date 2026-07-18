@@ -15,6 +15,7 @@ import 'package:prm_project/features/auth/views/screens/forgot_password_screen.d
 import 'package:prm_project/features/auth/views/screens/reset_password_screen.dart';
 import 'package:prm_project/features/auth/views/screens/profile_screen.dart';
 import 'package:prm_project/features/auth/views/screens/account_detail_screen.dart';
+import 'package:prm_project/features/auth/models/register_request_model.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -84,13 +85,13 @@ class AppRouter {
           path: '/verify-email',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) =>
-              VerifyEmailScreen(email: state.extra as String),
+              VerifyEmailScreen(data: state.extra as RegisterRequestModel),
         ),
         GoRoute(
           path: '/register-details',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) =>
-              RegisterDetailsScreen(email: state.extra as String),
+              RegisterDetailsScreen(data: state.extra as RegisterRequestModel),
         ),
         GoRoute(
           path: '/forgot-password',
