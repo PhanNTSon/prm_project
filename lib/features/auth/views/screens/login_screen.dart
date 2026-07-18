@@ -17,13 +17,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController(); // ← username
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _errorMessage;
 
-  // Repository khởi tạo local, dùng DioClient của Tech Lead
   late final AuthRepository _authRepository;
 
   @override
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -50,21 +49,19 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Gọi API lấy token
       final token = await _authRepository.login(
-        _emailController.text.trim(),
+        _usernameController.text.trim(),
         _passwordController.text,
       );
 
       if (!mounted) return;
 
-      // Giao token cho AuthProvider xử lý lưu trữ + parse user
-      // Router sẽ tự redirect về /home sau khi notifyListeners()
+      // Giao token cho AuthProvider → Router tự redirect về /home
       await context.read<AuthProvider>().loginSuccess(token);
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _errorMessage = 'Email hoặc mật khẩu không chính xác';
+        _errorMessage = 'Tên đăng nhập hoặc mật khẩu không chính xác';
         _isLoading = false;
       });
     }
@@ -85,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   _buildHeader(),
                   const SizedBox(height: 40),
-                  _buildEmailField(),
+                  _buildUsernameField(),
                   const SizedBox(height: 16),
                   _buildPasswordField(),
                   const SizedBox(height: 8),
@@ -110,11 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        const Icon(
-          Icons.sports_esports,
-          size: 64,
-          color: AppColors.primaryColor,
-        ),
+        const Icon(Icons.sports_esports,
+            size: 64, color: AppColors.primaryColor),
         const SizedBox(height: 16),
         Text(
           'ĐĂNG NHẬP',
@@ -127,17 +121,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildEmailField() {
+  Widget _buildUsernameField() {
     return AuthTextField(
       // TODO: Thay bằng CustomTextField của Dev D
-      controller: _emailController,
-      label: 'Email',
-      hint: 'Nhập địa chỉ email',
-      keyboardType: TextInputType.emailAddress,
+      controller: _usernameController,
+      label: 'Tên đăng nhập',
+      hint: 'Nhập tên đăng nhập',
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Vui lòng nhập email';
-        if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-          return 'Email không hợp lệ';
+        if (value == null || value.isEmpty) {
+          return 'Vui lòng nhập tên đăng nhập';
         }
         return null;
       },
@@ -161,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Vui lòng nhập mật khẩu';
-        if (value.length < 6) return 'Mật khẩu tối thiểu 6 ký tự';
         return null;
       },
     );
@@ -204,21 +195,19 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: AppColors.primaryColor,
         foregroundColor: AppColors.backgroundColor,
         padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
       child: _isLoading
           ? const SizedBox(
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.backgroundColor,
-              ),
+                  strokeWidth: 2, color: AppColors.backgroundColor),
             )
-          : const Text(
-              'ĐĂNG NHẬP',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
+          : const Text('ĐĂNG NHẬP',
+              style:
+                  TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -226,16 +215,12 @@ class _LoginScreenState extends State<LoginScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
-          'Chưa có tài khoản?',
-          style: TextStyle(color: AppColors.secondaryTextColor),
-        ),
+        const Text('Chưa có tài khoản?',
+            style: TextStyle(color: AppColors.secondaryTextColor)),
         TextButton(
           onPressed: () => context.push('/register'),
-          child: const Text(
-            'Đăng ký ngay',
-            style: TextStyle(color: AppColors.primaryColor),
-          ),
+          child: const Text('Đăng ký ngay',
+              style: TextStyle(color: AppColors.primaryColor)),
         ),
       ],
     );

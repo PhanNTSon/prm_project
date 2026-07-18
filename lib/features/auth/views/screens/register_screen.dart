@@ -49,41 +49,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
+  if (!_agreedToTerms) { /* snackbar */ return; }
 
-    if (!_agreedToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng đồng ý với điều khoản sử dụng'),
-          backgroundColor: AppColors.errorColor,
-        ),
-      );
+  setState(() { _isLoading = true; _errorMessage = null; });
+
+  try {
+    
+    final available = await _authRepository.checkEmailAvailable(
+      _emailController.text.trim(),
+    );
+    if (!available) {
+      setState(() {
+        _errorMessage = 'Email này đã được sử dụng.';
+        _isLoading = false;
+      });
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+    
+    await _authRepository.sendVerificationOtp(_emailController.text.trim());
 
-    try {
-      await _authRepository.register(
-        _emailController.text.trim(),
-        _selectedCountry,
-      );
-
-      if (!mounted) return;
-
-      // Chuyển sang màn hình OTP, truyền email qua extra
-      context.push('/verify-email', extra: _emailController.text.trim());
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = 'Đăng ký thất bại. Vui lòng thử lại.';
-        _isLoading = false;
-      });
-    }
+    if (!mounted) return;
+    context.push('/verify-email', extra: _emailController.text.trim());
+  } catch (e) {
+    if (!mounted) return;
+    setState(() { _errorMessage = e.toString(); _isLoading = false; });
   }
+}
 
   @override
   Widget build(BuildContext context) {

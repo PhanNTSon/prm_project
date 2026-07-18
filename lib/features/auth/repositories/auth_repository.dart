@@ -1,95 +1,125 @@
 import '../../../core/network/dio_client.dart';
-import '../models/register_request_model.dart';
-import '../models/verify_otp_model.dart';
-import '../models/register_details_model.dart';
-import '../models/forgot_password_model.dart';
-import '../models/reset_password_model.dart';
 
 class AuthRepository {
   final DioClient _dioClient;
 
   AuthRepository(this._dioClient);
 
-  Future<String> login(String email, String password) async {
+  // ── LOGIN dùng username, không phải email ──
+  Future<String> login(String username, String password) async {
     try {
       final response = await _dioClient.post(
         '/api/auth/login',
-        data: {'email': email, 'password': password},
+        data: {'username': username, 'password': password},
       );
       return response.data['token'] as String;
     } catch (e) {
-      throw Exception('Đăng nhập thất bại: ${e.toString()}');
+      throw Exception('Tên đăng nhập hoặc mật khẩu không chính xác');
     }
   }
 
-  Future<void> register(String email, String country) async {
+  // ── REGISTER Bước 1: Kiểm tra email available ──
+  Future<bool> checkEmailAvailable(String email) async {
+    try {
+      final response = await _dioClient.get(
+        '/api/auth/check-email',
+        queryParameters: {'email': email},
+      );
+      return response.data['available'] as bool;
+    } catch (e) {
+      throw Exception('Lỗi kiểm tra email');
+    }
+  }
+
+  // ── REGISTER Bước 2: Gửi OTP ──
+  Future<void> sendVerificationOtp(String email) async {
     try {
       await _dioClient.post(
-        '/api/auth/register',
-        data: RegisterRequestModel(email: email, country: country).toJson(),
+        '/api/auth/send-verification-otp',
+        data: {'email': email},
       );
     } catch (e) {
-      throw Exception('Đăng ký thất bại: ${e.toString()}');
+      throw Exception('Gửi OTP thất bại');
     }
   }
 
+  // ── REGISTER Bước 3: Verify OTP ──
   Future<void> verifyOtp(String email, String otp) async {
     try {
       await _dioClient.post(
-        '/api/auth/verify-email',
-        data: VerifyOtpModel(email: email, otp: otp).toJson(),
+        '/api/auth/verify-otp',
+        data: {'email': email, 'otp': otp},
       );
     } catch (e) {
-      throw Exception('Xác thực OTP thất bại: ${e.toString()}');
+      throw Exception('Mã OTP không hợp lệ hoặc đã hết hạn');
     }
   }
 
-  Future<void> registerDetails(
-    String email,
-    String username,
-    String password,
-  ) async {
+  // ── REGISTER Bước 4: Check username available (realtime) ──
+  Future<bool> checkUsernameAvailable(String username) async {
+    try {
+      final response = await _dioClient.get(
+        '/api/auth/check-username',
+        queryParameters: {'username': username},
+      );
+      return response.data['available'] as bool;
+    } catch (e) {
+      throw Exception('Lỗi kiểm tra tên tài khoản');
+    }
+  }
+
+  // ── REGISTER Bước 5: Đăng ký tài khoản ──
+  Future<void> register({
+    required String email,
+    required String username,
+    required String password,
+    required String country,
+  }) async {
     try {
       await _dioClient.post(
-        '/api/auth/register-details',
-        data: RegisterDetailsModel(
-          email: email,
-          username: username,
-          password: password,
-        ).toJson(),
+        '/api/auth/register',
+        data: {
+          'email': email,
+          'username': username,
+          'password': password,
+          'country': country,
+        },
       );
     } catch (e) {
-      throw Exception('Thiết lập tài khoản thất bại: ${e.toString()}');
+      throw Exception('Đăng ký thất bại');
     }
   }
 
+  // ── FORGOT PASSWORD ──
   Future<void> forgotPassword(String email) async {
     try {
       await _dioClient.post(
-        '/api/auth/forgot-password',
-        data: ForgotPasswordModel(email: email).toJson(),
+        '/api/password/request',
+        data: {'email': email},
       );
     } catch (e) {
-      throw Exception('Gửi yêu cầu thất bại: ${e.toString()}');
+      throw Exception('Email không tồn tại hoặc gửi yêu cầu thất bại');
     }
   }
 
-  Future<void> resetPassword(
-    String email,
-    String otp,
-    String newPassword,
-  ) async {
+  // ── RESET PASSWORD ──
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
     try {
       await _dioClient.post(
-        '/api/auth/reset-password',
-        data: ResetPasswordModel(
-          email: email,
-          otp: otp,
-          newPassword: newPassword,
-        ).toJson(),
+        '/api/password/reset',
+        data: {
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+          'confirmPassword': newPassword,
+        },
       );
     } catch (e) {
-      throw Exception('Đặt lại mật khẩu thất bại: ${e.toString()}');
+      throw Exception('Đặt lại mật khẩu thất bại');
     }
   }
 }

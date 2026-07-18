@@ -13,6 +13,8 @@ import 'package:prm_project/features/auth/views/screens/verify_email_screen.dart
 import 'package:prm_project/features/auth/views/screens/register_details_screen.dart';
 import 'package:prm_project/features/auth/views/screens/forgot_password_screen.dart';
 import 'package:prm_project/features/auth/views/screens/reset_password_screen.dart';
+import 'package:prm_project/features/auth/views/screens/profile_screen.dart';
+import 'package:prm_project/features/auth/views/screens/account_detail_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -102,6 +104,12 @@ class AppRouter {
               ResetPasswordScreen(email: state.extra as String),
         ),
 
+        GoRoute(
+          path: '/account',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const AccountDetailScreen(),
+        ),
+
         // 2. Trang Payment WebView - Fullscreen
         GoRoute(
           path: '/payment-webview',
@@ -178,7 +186,14 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/profile',
-                  builder: (context, state) => const ProfilePlaceholderScreen(),
+                  builder: (context, state) => const ProfileScreen(),
+                  routes: [
+                    GoRoute(
+                      path: ':userId',
+                      builder: (context, state) =>
+                          ProfileScreen(userId: state.pathParameters['userId']),
+                    ),
+                  ],
                 ),
               ],
             ),

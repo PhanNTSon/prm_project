@@ -1,6 +1,4 @@
 // TODO: Thay bằng CustomTextField của Dev D khi hoàn thành UI Kit
-// Cách thay: import 'package:prm_project/core/widgets/custom_text_field.dart';
-
 import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_colors.dart';
 
@@ -12,6 +10,7 @@ class AuthTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
   final TextInputType? keyboardType;
+  final void Function(String)? onChanged;
 
   const AuthTextField({
     super.key,
@@ -22,6 +21,7 @@ class AuthTextField extends StatelessWidget {
     this.suffixIcon,
     this.validator,
     this.keyboardType,
+    this.onChanged, // ← thêm mới
   });
 
   @override
@@ -31,6 +31,7 @@ class AuthTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       keyboardType: keyboardType,
+      onChanged: onChanged, // ← thêm mới
       style: const TextStyle(color: AppColors.primaryTextColor),
       decoration: InputDecoration(
         labelText: label,
