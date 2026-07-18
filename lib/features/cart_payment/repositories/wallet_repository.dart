@@ -1,6 +1,6 @@
 import '../../../../core/network/dio_client.dart';
 import '../models/wallet_transaction_model.dart';
-
+import 'api_error_util.dart';
 class WalletRepository {
   final DioClient _dioClient;
   WalletRepository(this._dioClient);
@@ -12,7 +12,7 @@ class WalletRepository {
       final response = await _dioClient.get('/user/wallet');
       return (response.data as num).toDouble();
     } catch (e) {
-      throw Exception('Failed to load wallet balance: ${e.toString()}');
+      throw Exception('Failed to load wallet balance: ${extractErrorMessage(e)}');
     }
   }
 
@@ -29,7 +29,7 @@ class WalletRepository {
       }
       return [];
     } catch (e) {
-      throw Exception('Failed to load transaction history: ${e.toString()}');
+      throw Exception('Failed to load transaction history: ${extractErrorMessage(e)}');
     }
   }
 
@@ -44,7 +44,7 @@ class WalletRepository {
       );
       return (response.data as num).toDouble();
     } catch (e) {
-      throw Exception('Failed to add balance: ${e.toString()}');
+      throw Exception('Failed to add balance: ${extractErrorMessage(e)}');
     }
   }
 
@@ -75,7 +75,7 @@ class WalletRepository {
       }
       return url;
     } catch (e) {
-      throw Exception('Failed to create VNPay payment: ${e.toString()}');
+      throw Exception('Failed to create VNPay payment: ${extractErrorMessage(e)}');
     }
   }
 }
