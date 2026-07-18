@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/game_basic_model.dart';
+import '../models/category_model.dart';
 
 /// Wrapper chứa kết quả phân trang từ backend (Spring Page object).
 class GamePage {
@@ -101,6 +102,53 @@ class GameRepository {
       debugPrint('Lỗi getGamesPaged: $e');
       // Trả về trang rỗng nếu lỗi
       return GamePage(games: [], currentPage: 0, totalPages: 0, totalElements: 0);
+    }
+  }
+
+  /// Lấy ngẫu nhiên [count] game để hiển thị ở phần Featured.
+  /// API: GET /game/random?count={count}
+  /// Nếu backend chưa có endpoint này, dùng getGamesPaged rồi shuffle phía client.
+  Future<List<GameBasicModel>> getRandomFeaturedGames({int count = 5}) async {
+    try {
+      // Thử gọi endpoint random nếu backend có
+      final response = await _dioClient.get(
+        '/game/random',
+        queryParameters: {'count': count},
+      );
+      if (response.data is List) {
+        return (response.data as List)
+            .map((json) => GameBasicModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Lỗi getRandomFeaturedGames (thử fallback): $e');
+      // Fallback: lấy trang đầu rồi shuffle
+      try {
+        final page = await getGamesPaged(page: 0, size: 50);
+        final list = List<GameBasicModel>.from(page.games)..shuffle();
+        return list.take(count).toList();
+      } catch (e2) {
+        debugPrint('Lỗi fallback getRandomFeaturedGames: $e2');
+        return [];
+      }
+    }
+  }
+
+  /// Lấy toàn bộ danh mục (category) của game.
+  /// API: GET /category (hoặc /game/categories)
+  Future<List<CategoryModel>> getAllCategories() async {
+    try {
+      final response = await _dioClient.get('/category');
+      if (response.data is List) {
+        return (response.data as List)
+            .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Lỗi getAllCategories: $e');
+      return [];
     }
   }
 }
