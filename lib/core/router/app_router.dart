@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prm_project/features/cart_payment/screens/cart_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/wallet_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/payment_webview_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/payment_result_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import 'package:prm_project/features/storefront/home_screen.dart';
 import 'package:prm_project/features/storefront/views/screens/game_search_screen.dart';
@@ -38,14 +42,10 @@ class AppRouter {
         // Logic Auth Guard đồng bộ với AuthProvider
         final bool isInitialized = authProvider.isInitialized;
         final bool isAuthenticated = authProvider.isAuthenticated;
-
-        final isAuthRoute =
-            state.matchedLocation == '/login' ||
-            state.matchedLocation == '/register' ||
-            state.matchedLocation == '/verify-email' ||
-            state.matchedLocation == '/register-details' ||
-            state.matchedLocation == '/forgot-password' ||
-            state.matchedLocation == '/reset-password';
+        
+        final isAuthRoute = state.matchedLocation == '/login' || 
+                            state.matchedLocation == '/register' || 
+                            state.matchedLocation == '/verify-email';
 
         // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
         if (!isInitialized) {
@@ -115,10 +115,29 @@ class AppRouter {
         ),
 
         // 2. Trang Payment WebView - Fullscreen
+        // [Dev C] Nhận paymentUrl qua `extra` khi push('/payment-webview', extra: paymentUrl)
         GoRoute(
           path: '/payment-webview',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const PaymentWebViewPlaceholder(),
+          builder: (context, state) {
+            final paymentUrl = state.extra as String? ?? '';
+            return PaymentWebViewScreen(paymentUrl: paymentUrl);
+          },
+        ),
+
+        // [Dev C] Trang kết quả thanh toán (mua game / nạp ví) - Fullscreen
+        GoRoute(
+          path: '/payment-result',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              PaymentResultScreen.fromExtra(state.extra),
+        ),
+
+        // [Dev C] Trang ví tiền - Fullscreen (push từ tab Cart hoặc Profile)
+        GoRoute(
+          path: '/account/wallet',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const WalletScreen(),
         ),
 
         // 3. Tìm kiếm Game - Fullscreen (không hiện Bottom Navigation)
@@ -168,7 +187,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/cart',
-                  builder: (context, state) => const CartPlaceholderScreen(),
+                  builder: (context, state) => const CartScreen(),
                 ),
               ],
             ),
@@ -179,7 +198,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/library',
-                  builder: (context, state) => const LibraryPlaceholderScreen(),
+                  builder: (context, state) => const LibraryScreen(),
                 ),
               ],
             ),
