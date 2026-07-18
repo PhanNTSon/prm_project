@@ -3,6 +3,7 @@ import 'package:prm_project/features/library/data/repositories/library_repositor
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'core/network/dio_client.dart';
 import 'core/network/secure_storage_service.dart';
 import 'core/network/websocket_service.dart';
 import 'core/router/app_router.dart';
@@ -10,7 +11,14 @@ import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/providers/library_provider.dart';
 import 'features/profile/providers/wallet_provider.dart';
 import 'features/profile/providers/notification_provider.dart';
-import 'core/theme/app_theme.dart';
+import 'features/cart_payment/providers/cart_provider.dart';
+import 'features/cart_payment/repositories/cart_repository.dart';
+import 'features/cart_payment/providers/payment_provider.dart';
+import 'features/cart_payment/repositories/wallet_repository.dart';
+import 'core/network/dio_client.dart';
+import 'features/storefront/data/repositories/game_repository.dart';
+import 'features/storefront/providers/game_search_provider.dart';
+import 'features/storefront/providers/game_list_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,9 +42,14 @@ class _MainAppState extends State<MainApp> {
   late final GoRouter _router;
 
   // Realtime Services & Providers
+  late final DioClient _dioClient;
   late final WebSocketService _webSocketService;
+  late final CartProvider _cartProvider;
   late final WalletProvider _walletProvider;
+  late final PaymentProvider _paymentProvider;
   late final NotificationProvider _notificationProvider;
+  late final GameSearchProvider _gameSearchProvider;
+  late final GameListProvider _gameListProvider;
 
   @override
   void initState() {
@@ -44,10 +57,19 @@ class _MainAppState extends State<MainApp> {
     // Khởi tạo các Service và Provider cốt lõi
     final secureStorage = SecureStorageService();
     _authProvider = AuthProvider(secureStorage);
+    _dioClient = DioClient(AppRouter.rootNavigatorKey);
+    _cartProvider = CartProvider(CartRepository(_dioClient));
+    _paymentProvider = PaymentProvider(WalletRepository(_dioClient));
 
     _webSocketService = WebSocketService();
     _walletProvider = WalletProvider();
     _notificationProvider = NotificationProvider();
+
+    // Khởi tạo DioClient, Repository và Provider cho Game Search
+    final dioClient = DioClient(AppRouter.rootNavigatorKey);
+    final gameRepository = GameRepository(dioClient);
+    _gameSearchProvider = GameSearchProvider(gameRepository);
+    _gameListProvider = GameListProvider(gameRepository);
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -102,8 +124,16 @@ class _MainAppState extends State<MainApp> {
       providers: [
         ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<WalletProvider>.value(value: _walletProvider),
+        ChangeNotifierProvider<CartProvider>.value(value: _cartProvider),
+        ChangeNotifierProvider<PaymentProvider>.value(value: _paymentProvider),
         ChangeNotifierProvider<NotificationProvider>.value(
           value: _notificationProvider,
+        ),
+        ChangeNotifierProvider<GameSearchProvider>.value(
+          value: _gameSearchProvider,
+        ),
+        ChangeNotifierProvider<GameListProvider>.value(
+          value: _gameListProvider,
         ),
         Provider<WebSocketService>.value(value: _webSocketService),
         ChangeNotifierProvider(

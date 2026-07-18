@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prm_project/features/cart_payment/screens/cart_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/wallet_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/payment_webview_screen.dart';
+import 'package:prm_project/features/cart_payment/screens/payment_result_screen.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import 'package:prm_project/features/storefront/home_screen.dart';
-import 'package:prm_project/features/library/views/screens/library.dart';
+import 'package:prm_project/features/storefront/views/screens/game_search_screen.dart';
+import 'package:prm_project/features/storefront/views/screens/all_games_screen.dart';
 import 'main_shell_screen.dart';
 import 'placeholder_screens.dart';
 import 'splash_screen.dart';
@@ -78,13 +83,46 @@ class AppRouter {
         ),
 
         // 2. Trang Payment WebView - Fullscreen
+        // [Dev C] Nhận paymentUrl qua `extra` khi push('/payment-webview', extra: paymentUrl)
         GoRoute(
           path: '/payment-webview',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const PaymentWebViewPlaceholder(),
+          builder: (context, state) {
+            final paymentUrl = state.extra as String? ?? '';
+            return PaymentWebViewScreen(paymentUrl: paymentUrl);
+          },
         ),
 
-        // 3. Shell Layout chứa Bottom Navigation Bar
+        // [Dev C] Trang kết quả thanh toán (mua game / nạp ví) - Fullscreen
+        GoRoute(
+          path: '/payment-result',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              PaymentResultScreen.fromExtra(state.extra),
+        ),
+
+        // [Dev C] Trang ví tiền - Fullscreen (push từ tab Cart hoặc Profile)
+        GoRoute(
+          path: '/account/wallet',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const WalletScreen(),
+        ),
+
+        // 3. Tìm kiếm Game - Fullscreen (không hiện Bottom Navigation)
+        GoRoute(
+          path: '/search',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const GameSearchScreen(),
+        ),
+
+        // 4. Tất cả Game - Fullscreen (không hiện Bottom Navigation)
+        GoRoute(
+          path: '/all-games',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const AllGamesScreen(),
+        ),
+
+        // 5. Shell Layout chứa Bottom Navigation Bar
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
             return MainShellScreen(navigationShell: navigationShell);
@@ -117,7 +155,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/cart',
-                  builder: (context, state) => const CartPlaceholderScreen(),
+                  builder: (context, state) => const CartScreen(),
                 ),
               ],
             ),
