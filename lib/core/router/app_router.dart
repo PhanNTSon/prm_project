@@ -33,10 +33,11 @@ class AppRouter {
         // Logic Auth Guard đồng bộ với AuthProvider
         final bool isInitialized = authProvider.isInitialized;
         final bool isAuthenticated = authProvider.isAuthenticated;
-        
-        final isAuthRoute = state.matchedLocation == '/login' || 
-                            state.matchedLocation == '/register' || 
-                            state.matchedLocation == '/verify-email';
+
+        final isAuthRoute =
+            state.matchedLocation == '/login' ||
+            state.matchedLocation == '/register' ||
+            state.matchedLocation == '/verify-email';
 
         // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
         if (!isInitialized) {
@@ -80,7 +81,7 @@ class AppRouter {
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) => const VerifyEmailPlaceholderScreen(),
         ),
-        
+
         // 2. Trang Payment WebView - Fullscreen
         // [Dev C] Nhận paymentUrl qua `extra` khi push('/payment-webview', extra: paymentUrl)
         GoRoute(
@@ -147,7 +148,7 @@ class AppRouter {
                 ),
               ],
             ),
-            
+
             // Tab 1: Giỏ hàng
             StatefulShellBranch(
               navigatorKey: _shellNavigatorCart,
@@ -158,18 +159,18 @@ class AppRouter {
                 ),
               ],
             ),
-            
+
             // Tab 2: Thư viện
             StatefulShellBranch(
               navigatorKey: _shellNavigatorLibrary,
               routes: [
                 GoRoute(
                   path: '/library',
-                  builder: (context, state) => const LibraryPlaceholderScreen(),
+                  builder: (context, state) => const LibraryScreen(),
                 ),
               ],
             ),
-            
+
             // Tab 3: Cá nhân
             StatefulShellBranch(
               navigatorKey: _shellNavigatorProfile,
