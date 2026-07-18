@@ -10,6 +10,8 @@ import 'features/profile/providers/wallet_provider.dart';
 import 'features/profile/providers/notification_provider.dart';
 import 'features/cart_payment/providers/cart_provider.dart';
 import 'features/cart_payment/repositories/cart_repository.dart';
+import 'features/cart_payment/providers/payment_provider.dart';
+import 'features/cart_payment/repositories/wallet_repository.dart';
 import 'core/network/dio_client.dart';
 
 void main() async {
@@ -38,6 +40,7 @@ class _MainAppState extends State<MainApp> {
   late final WebSocketService _webSocketService;
   late final CartProvider _cartProvider;
   late final WalletProvider _walletProvider;
+  late final PaymentProvider _paymentProvider;
   late final NotificationProvider _notificationProvider;
 
   @override
@@ -48,6 +51,7 @@ class _MainAppState extends State<MainApp> {
     _authProvider = AuthProvider(secureStorage);
     _dioClient = DioClient(AppRouter.rootNavigatorKey);
     _cartProvider = CartProvider(CartRepository(_dioClient));
+    _paymentProvider = PaymentProvider(WalletRepository(_dioClient));
     
     _webSocketService = WebSocketService();
     _walletProvider = WalletProvider();
@@ -106,6 +110,7 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<AuthProvider>.value(value: _authProvider),
         ChangeNotifierProvider<WalletProvider>.value(value: _walletProvider),
         ChangeNotifierProvider<CartProvider>.value(value: _cartProvider),
+        ChangeNotifierProvider<PaymentProvider>.value(value: _paymentProvider),
         ChangeNotifierProvider<NotificationProvider>.value(value: _notificationProvider),
         Provider<WebSocketService>.value(value: _webSocketService),
       ],

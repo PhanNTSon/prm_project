@@ -28,7 +28,6 @@ class WalletTransactionModel {
     );
   }
 
-
   static DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
     try {
