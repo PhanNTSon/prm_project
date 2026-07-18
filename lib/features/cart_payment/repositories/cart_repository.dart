@@ -1,5 +1,6 @@
 import '../../../../core/network/dio_client.dart';
 import '../models/cart_item_model.dart';
+import 'api_error_util.dart';
 
 class CartRepository {
   final DioClient _dioClient;
@@ -16,7 +17,7 @@ class CartRepository {
       }
       return [];
     } catch (e) {
-      throw Exception('Failed to load cart: ${e.toString()}');
+      throw Exception('Failed to load cart: ${extractErrorMessage(e)}');
     }
   }
 
@@ -27,7 +28,7 @@ class CartRepository {
         queryParameters: {'gameId': gameId},
       );
     } catch (e) {
-      throw Exception('Failed to add to cart: ${e.toString()}');
+      throw Exception('Failed to add to cart: ${extractErrorMessage(e)}');
     }
   }
 
@@ -38,7 +39,7 @@ class CartRepository {
         queryParameters: {'gameId': gameId},
       );
     } catch (e) {
-      throw Exception('Failed to remove from cart: ${e.toString()}');
+      throw Exception('Failed to remove from cart: ${extractErrorMessage(e)}');
     }
   }
 
@@ -46,7 +47,7 @@ class CartRepository {
     try {
       await _dioClient.post('/user/cart/checkout');
     } catch (e) {
-      throw Exception(e.toString());
+      throw Exception('Failed to checkout: ${extractErrorMessage(e)}');
     }
   }
 }
