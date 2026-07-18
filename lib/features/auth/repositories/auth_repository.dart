@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../core/network/dio_client.dart';
 
 class AuthRepository {
@@ -37,6 +38,7 @@ class AuthRepository {
       await _dioClient.post(
         '/api/auth/send-verification-otp',
         data: {'email': email},
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (e) {
       throw Exception('Gửi OTP thất bại');
@@ -49,6 +51,7 @@ class AuthRepository {
       await _dioClient.post(
         '/api/auth/verify-otp',
         data: {'email': email, 'otp': otp},
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (e) {
       throw Exception('Mã OTP không hợp lệ hoặc đã hết hạn');
@@ -84,6 +87,7 @@ class AuthRepository {
           'password': password,
           'country': country,
         },
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (e) {
       throw Exception('Đăng ký thất bại');
@@ -96,6 +100,7 @@ class AuthRepository {
       await _dioClient.post(
         '/api/password/request',
         data: {'email': email},
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (e) {
       throw Exception('Email không tồn tại hoặc gửi yêu cầu thất bại');
@@ -117,6 +122,7 @@ class AuthRepository {
           'newPassword': newPassword,
           'confirmPassword': newPassword,
         },
+        options: Options(responseType: ResponseType.plain),
       );
     } catch (e) {
       throw Exception('Đặt lại mật khẩu thất bại');

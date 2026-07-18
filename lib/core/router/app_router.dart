@@ -42,7 +42,10 @@ class AppRouter {
         final isAuthRoute =
             state.matchedLocation == '/login' ||
             state.matchedLocation == '/register' ||
-            state.matchedLocation == '/verify-email';
+            state.matchedLocation == '/verify-email' ||
+            state.matchedLocation == '/register-details' ||
+            state.matchedLocation == '/forgot-password' ||
+            state.matchedLocation == '/reset-password';
 
         // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
         if (!isInitialized) {
