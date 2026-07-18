@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prm_project/features/library/data/repositories/library_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -6,6 +7,7 @@ import 'core/network/secure_storage_service.dart';
 import 'core/network/websocket_service.dart';
 import 'core/router/app_router.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'features/auth/providers/library_provider.dart';
 import 'features/profile/providers/wallet_provider.dart';
 import 'features/profile/providers/notification_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -104,6 +106,9 @@ class _MainAppState extends State<MainApp> {
           value: _notificationProvider,
         ),
         Provider<WebSocketService>.value(value: _webSocketService),
+        ChangeNotifierProvider(
+          create: (_) => LibraryProvider(LibraryRepository()),
+        ),
       ],
       child: MaterialApp.router(
         title: 'Steam Clone',

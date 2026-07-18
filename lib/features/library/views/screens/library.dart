@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../features/auth/providers/library_provider.dart';
+import '../../../auth/providers/library_provider.dart';
 import '../../../../core/widgets/library_page/empty_library.dart';
 import '../../../../core/widgets/library_page/library_header.dart';
 import '../../../../core/widgets/library_page/library_searchbar.dart';
