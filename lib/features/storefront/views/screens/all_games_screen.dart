@@ -35,9 +35,9 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'All Games',
-          style: TextStyle(
+        title: Text(
+          context.watch<GameListProvider>().currentCategoryName ?? 'All Games',
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -163,7 +163,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
         final game = provider.games[index];
         return GameSearchResultItem(
           game: game,
-          onTap: () => context.push('/home/game-detail/${game.id}'),
+          onTap: () => context.push('/game-detail/${game.id}'),
         );
       },
     );

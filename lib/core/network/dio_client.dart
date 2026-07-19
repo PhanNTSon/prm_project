@@ -15,6 +15,8 @@ class DioClient {
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
+        followRedirects: false, // Ngăn Dio tự follow 302 redirect (tránh bị đá sang Google OAuth)
+        validateStatus: (status) => status != null && status < 400,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',

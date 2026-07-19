@@ -38,8 +38,9 @@ class HomeProvider extends ChangeNotifier {
         _repository.getAllCategories(),
       ]);
 
-      _featuredGames = results[0] as List<GameBasicModel>;
-      _categories = results[1] as List<CategoryModel>;
+      final allCategories = results[1] as List<CategoryModel>;
+      allCategories.shuffle();
+      _categories = allCategories.take(5).toList();
     } catch (e) {
       _errorMessage = 'Không thể tải dữ liệu trang chủ.';
       debugPrint('HomeProvider loadHomeData error: $e');

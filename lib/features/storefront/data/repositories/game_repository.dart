@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/game_basic_model.dart';
 import '../models/category_model.dart';
+import '../models/game_detail_model.dart';
 
 /// Wrapper chứa kết quả phân trang từ backend (Spring Page object).
 class GamePage {
@@ -57,17 +58,26 @@ class GameRepository {
     int size = 20,
     String sort = 'name',
     String dir = 'asc',
+    int? tagId,
   }) async {
     try {
-      final response = await _dioClient.get(
-        '/game',
-        queryParameters: {
-          'page': page,
-          'size': size,
-          'sort': sort,
-          'dir': dir,
-        },
-      );
+      final response = tagId != null
+          ? await _dioClient.get(
+              '/game/tag/$tagId',
+              queryParameters: {
+                'page': page,
+                'size': size,
+              },
+            )
+          : await _dioClient.get(
+              '/game',
+              queryParameters: {
+                'page': page,
+                'size': size,
+                'sort': sort,
+                'dir': dir,
+              },
+            );
 
       // === DEBUG: In ra JSON thực tế backend trả về ===
       debugPrint('=== [GameRepository] Raw response type: ${response.data.runtimeType}');
@@ -107,48 +117,58 @@ class GameRepository {
 
   /// Lấy ngẫu nhiên [count] game để hiển thị ở phần Featured.
   /// API: GET /game/random?count={count}
-  /// Nếu backend chưa có endpoint này, dùng getGamesPaged rồi shuffle phía client.
+  /// Backend chưa có endpoint này, nên dùng getGamesPaged rồi shuffle.
   Future<List<GameBasicModel>> getRandomFeaturedGames({int count = 5}) async {
     try {
-      // Thử gọi endpoint random nếu backend có
-      final response = await _dioClient.get(
-        '/game/random',
-        queryParameters: {'count': count},
-      );
-      if (response.data is List) {
-        return (response.data as List)
-            .map((json) => GameBasicModel.fromJson(json as Map<String, dynamic>))
-            .toList();
-      }
-      return [];
+      final page = await getGamesPaged(page: 0, size: 50);
+      final list = List<GameBasicModel>.from(page.games)..shuffle();
+      return list.take(count).toList();
     } catch (e) {
-      debugPrint('Lỗi getRandomFeaturedGames (thử fallback): $e');
-      // Fallback: lấy trang đầu rồi shuffle
-      try {
-        final page = await getGamesPaged(page: 0, size: 50);
-        final list = List<GameBasicModel>.from(page.games)..shuffle();
-        return list.take(count).toList();
-      } catch (e2) {
-        debugPrint('Lỗi fallback getRandomFeaturedGames: $e2');
-        return [];
-      }
+      debugPrint('Lỗi getRandomFeaturedGames: $e');
+      return [];
     }
   }
 
   /// Lấy toàn bộ danh mục (category) của game.
-  /// API: GET /category (hoặc /game/categories)
+  /// API: GET /tags
   Future<List<CategoryModel>> getAllCategories() async {
     try {
-      final response = await _dioClient.get('/category');
+      final response = await _dioClient.get('/tags');
       if (response.data is List) {
         return (response.data as List)
             .map((json) => CategoryModel.fromJson(json as Map<String, dynamic>))
             .toList();
       }
-      return [];
+      return _getFallbackCategories();
     } catch (e) {
-      debugPrint('Lỗi getAllCategories: $e');
-      return [];
+      debugPrint('Lỗi getAllCategories, trả về fallback: $e');
+      return _getFallbackCategories();
+    }
+  }
+
+  List<CategoryModel> _getFallbackCategories() {
+    return [
+      CategoryModel(id: 1, name: 'Action', imageAsset: 'assets/images/action.webp'),
+      CategoryModel(id: 2, name: 'Adventure', imageAsset: 'assets/images/adventure.webp'),
+      CategoryModel(id: 3, name: 'RPG', imageAsset: 'assets/images/rpg.webp'),
+      CategoryModel(id: 4, name: 'Strategy', imageAsset: 'assets/images/strategy.webp'),
+      CategoryModel(id: 5, name: 'Sports', imageAsset: 'assets/images/sports.webp'),
+    ];
+  }
+
+  /// Lấy chi tiết game theo ID.
+  /// API: GET /game/detail/{id}
+  Future<GameDetailModel?> getGameDetail(int gameId) async {
+    try {
+      final response = await _dioClient.get('/game/detail/$gameId');
+      if (response.data is Map<String, dynamic>) {
+        return GameDetailModel.fromJson(
+            response.data as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Lỗi getGameDetail($gameId): $e');
+      return null;
     }
   }
 }
