@@ -466,6 +466,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             content: Text('${game.title} added to cart!'),
             backgroundColor: const Color(0xFF4C6B22),
             behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 5),
             action: SnackBarAction(
               label: 'VIEW CART',
               textColor: const Color(0xFFBEEE11),
