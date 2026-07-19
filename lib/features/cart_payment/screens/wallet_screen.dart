@@ -84,6 +84,9 @@ class _WalletScreenState extends State<WalletScreen> {
         'type': 'topup',
         'success': confirmed,
         'amount': amount,
+        'transactionNo': result['transactionNo'],
+        'bankCode': result['bankCode'],
+        'payDate': result['payDate'],
       });
     } else if (result != null) {
       // Người dùng đóng WebView hoặc thanh toán thất bại
@@ -175,31 +178,50 @@ class _BalanceCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.borderColor),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.primaryColor.withOpacity(0.35)),
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Your Wallet Balance',
-            style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          isLoading
-              ? const SizedBox(
-                  height: 28,
-                  width: 28,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(
-                  '\$${balance.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    color: AppColors.primaryColor,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Your Wallet Balance',
+                  style: TextStyle(color: AppColors.secondaryTextColor, fontSize: 13),
                 ),
+                const SizedBox(height: 8),
+                isLoading
+                    ? const SizedBox(
+                        height: 28,
+                        width: 28,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(
+                        '\$${balance.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 34,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primaryColor.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.account_balance_wallet_rounded,
+              color: AppColors.primaryColor,
+              size: 26,
+            ),
+          ),
         ],
       ),
     );
