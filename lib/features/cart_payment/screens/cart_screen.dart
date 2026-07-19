@@ -81,23 +81,44 @@ class _CartScreenState extends State<CartScreen> {
           'Would you like to top up your wallet?',
           style: TextStyle(color: AppColors.secondaryTextColor),
         ),
+        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: const Text(
-              'No',
-              style: TextStyle(color: AppColors.secondaryTextColor),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.pop();
-              context.push('/account/wallet');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-            ),
-            child: const Text('Top Up'),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => context.pop(),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.surfaceColor,
+                    side: const BorderSide(color: AppColors.borderColor),
+                    foregroundColor: AppColors.primaryTextColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: const Text('No'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.pop();
+                    context.push('/account/wallet');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: AppColors.backgroundColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: const Text('Top Up', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
