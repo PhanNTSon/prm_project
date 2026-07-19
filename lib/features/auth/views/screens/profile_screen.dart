@@ -5,7 +5,6 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../auth/providers/auth_provider.dart';
-import '../../../profile/providers/wallet_provider.dart';
 import '../../../profile/providers/notification_provider.dart';
 import '../../models/profile_model.dart';
 import '../../repositories/profile_repository.dart';

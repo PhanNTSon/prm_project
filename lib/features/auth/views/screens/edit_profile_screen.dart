@@ -211,7 +211,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(height: 8),
           TextButton(
             onPressed: () {
-              // TODO: Nối API upload avatar khi backend cung cấp endpoint riêng
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Tính năng tải ảnh đại diện sẽ được bổ sung sau'),
@@ -228,7 +227,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildProfileNameField() {
     return AuthTextField(
-      // TODO: Thay bằng CustomTextField của Dev D
       controller: _profileNameController,
       label: 'Tên hiển thị',
       hint: 'Tên hiển thị với người dùng khác',
@@ -303,7 +301,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Widget _buildSummaryField() {
     return AuthTextField(
-      // TODO: Thay bằng CustomTextField của Dev D
       controller: _summaryController,
       label: 'Giới thiệu bản thân',
       hint: 'Cho người khác biết một chút về bạn',

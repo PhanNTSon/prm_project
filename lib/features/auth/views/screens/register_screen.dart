@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../providers/auth_provider.dart';
 import '../../models/register_request_model.dart';
 import '../../repositories/auth_repository.dart';
 import '../widgets/auth_text_field.dart';
@@ -149,7 +147,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildEmailField() {
     return AuthTextField(
-      // TODO: Thay bằng CustomTextField của Dev D
       controller: _emailController,
       label: 'Địa chỉ email',
       hint: '',
@@ -166,7 +163,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildConfirmEmailField() {
     return AuthTextField(
-      // TODO: Thay bằng CustomTextField của Dev D
       controller: _confirmEmailController,
       label: 'Xác nhận địa chỉ email của bạn',
       hint: '',
@@ -227,7 +223,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildCaptchaPlaceholder() {
-    // TODO: Tích hợp hCaptcha thực tế nếu có package
     return Container(
       decoration: BoxDecoration(
         color: AppColors.inputFillColor,
@@ -338,7 +333,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildSubmitButton() {
-    // TODO: Thay bằng CustomButton của Dev D
     return ElevatedButton(
       onPressed: _isLoading ? null : _handleRegister,
       style: ElevatedButton.styleFrom(

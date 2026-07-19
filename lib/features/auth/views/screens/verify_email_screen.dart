@@ -225,7 +225,6 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Widget _buildVerifyButton() {
-    // TODO: Thay bằng CustomButton của Dev D
     return ElevatedButton(
       onPressed: _isLoading ? null : _handleVerify,
       style: ElevatedButton.styleFrom(
