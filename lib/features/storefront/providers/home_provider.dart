@@ -13,12 +13,18 @@ class HomeProvider extends ChangeNotifier {
   // === STATE ===
   List<GameBasicModel> _featuredGames = [];
   List<CategoryModel> _categories = [];
+  List<GameBasicModel> _specialOffers = [];
+  List<GameBasicModel> _under5Games = [];
+  List<GameBasicModel> _freeGames = [];
   bool _isLoading = false;
   String? _errorMessage;
 
   // === GETTERS ===
   List<GameBasicModel> get featuredGames => _featuredGames;
   List<CategoryModel> get categories => _categories;
+  List<GameBasicModel> get specialOffers => _specialOffers;
+  List<GameBasicModel> get under5Games => _under5Games;
+  List<GameBasicModel> get freeGames => _freeGames;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -34,9 +40,25 @@ class HomeProvider extends ChangeNotifier {
 
     try {
       final results = await Future.wait([
-        _repository.getRandomFeaturedGames(count: 5),
+        _repository.getGamesPaged(page: 0, size: 50),
         _repository.getAllCategories(),
       ]);
+
+      final gamePage = results[0] as GamePage;
+      final allGames = gamePage.games;
+      
+      // Lấy 5 game random cho Featured
+      final shuffledGames = List<GameBasicModel>.from(allGames)..shuffle();
+      _featuredGames = shuffledGames.take(5).toList();
+
+      // Lọc Special Offers (đang giảm giá)
+      _specialOffers = allGames.where((g) => g.isOnSale).take(10).toList();
+
+      // Lọc Under $5 (giá dưới $5 và lớn hơn 0)
+      _under5Games = allGames.where((g) => g.displayPrice < 5.0 && g.displayPrice > 0).take(10).toList();
+
+      // Lọc Free to Play (giá = 0)
+      _freeGames = allGames.where((g) => g.displayPrice == 0).take(10).toList();
 
       final allCategories = results[1] as List<CategoryModel>;
       allCategories.shuffle();

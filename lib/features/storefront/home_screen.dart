@@ -5,7 +5,9 @@ import 'package:provider/provider.dart';
 import 'package:prm_project/features/storefront/providers/home_provider.dart';
 import 'package:prm_project/features/storefront/views/widgets/featured_game_card.dart';
 import 'package:prm_project/features/storefront/views/widgets/category_card.dart';
+import 'package:prm_project/features/storefront/views/widgets/horizontal_game_card.dart';
 import 'package:prm_project/features/storefront/providers/game_list_provider.dart';
+import 'package:prm_project/features/storefront/data/models/game_basic_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -77,6 +79,36 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildCategorySection(provider),
 
                         const SizedBox(height: 32),
+
+                        // ─── SECTION: Special Offers ─────────────────────────
+                        if (provider.specialOffers.isNotEmpty) ...[
+                          _buildHorizontalListSection(
+                            title: 'Special Offers',
+                            accentColor: const Color(0xFFBEEE11),
+                            games: provider.specialOffers,
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+
+                        // ─── SECTION: Under $5 ───────────────────────────────
+                        if (provider.under5Games.isNotEmpty) ...[
+                          _buildHorizontalListSection(
+                            title: 'Under \$5',
+                            accentColor: const Color(0xFFFF9900),
+                            games: provider.under5Games,
+                          ),
+                          const SizedBox(height: 32),
+                        ],
+
+                        // ─── SECTION: Free to Play ───────────────────────────
+                        if (provider.freeGames.isNotEmpty) ...[
+                          _buildHorizontalListSection(
+                            title: 'Free to Play',
+                            accentColor: const Color(0xFF66C0F4),
+                            games: provider.freeGames,
+                          ),
+                          const SizedBox(height: 32),
+                        ],
                       ],
                     ),
                   ),
@@ -296,6 +328,65 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
+    );
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // HORIZONTAL GAME LIST SECTION HELPER
+  // ──────────────────────────────────────────────────────────────────────────
+  Widget _buildHorizontalListSection({
+    required String title,
+    required Color accentColor,
+    required List<GameBasicModel> games,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          child: Row(
+            children: [
+              Container(
+                width: 4,
+                height: 22,
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Horizontal List
+        SizedBox(
+          height: 250,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            physics: const BouncingScrollPhysics(),
+            itemCount: games.length,
+            itemBuilder: (context, index) {
+              final game = games[index];
+              return HorizontalGameCard(
+                game: game,
+                onTap: () => context.push('/game-detail/${game.id}'),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

@@ -9,7 +9,6 @@ import 'package:prm_project/features/storefront/home_screen.dart';
 import 'package:prm_project/features/storefront/views/screens/game_search_screen.dart';
 import 'package:prm_project/features/storefront/views/screens/all_games_screen.dart';
 import 'main_shell_screen.dart';
-import 'placeholder_screens.dart';
 import 'splash_screen.dart';
 import 'package:prm_project/features/auth/views/screens/login_screen.dart';
 import 'package:prm_project/features/auth/views/screens/register_screen.dart';
@@ -24,6 +23,8 @@ import 'package:prm_project/features/auth/models/profile_model.dart';
 import 'package:prm_project/features/auth/models/register_request_model.dart';
 import 'package:prm_project/features/library/views/screens/library.dart';
 import 'package:prm_project/features/storefront/views/screens/game_detail_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_list_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_detail_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -180,6 +181,31 @@ class AppRouter {
           },
         ),
 
+        // Chat Detail
+        GoRoute(
+          path: '/chat/detail/:username',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final username = state.pathParameters['username'] ?? '';
+            return ChatDetailScreen(username: username);
+          },
+        ),
+
+        // Profile top-level
+        GoRoute(
+          path: '/profile',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ProfileScreen(),
+          routes: [
+            GoRoute(
+              path: ':userId',
+              parentNavigatorKey: rootNavigatorKey,
+              builder: (context, state) =>
+                  ProfileScreen(userId: state.pathParameters['userId']),
+            ),
+          ],
+        ),
+
         // 5. Shell Layout chứa Bottom Navigation Bar
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
@@ -219,20 +245,13 @@ class AppRouter {
               ],
             ),
 
-            // Tab 3: Cá nhân
+            // Tab 3: Chat
             StatefulShellBranch(
               navigatorKey: _shellNavigatorProfile,
               routes: [
                 GoRoute(
-                  path: '/profile',
-                  builder: (context, state) => const ProfileScreen(),
-                  routes: [
-                    GoRoute(
-                      path: ':userId',
-                      builder: (context, state) =>
-                          ProfileScreen(userId: state.pathParameters['userId']),
-                    ),
-                  ],
+                  path: '/chat',
+                  builder: (context, state) => const ChatListScreen(),
                 ),
               ],
             ),

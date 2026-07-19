@@ -8,7 +8,6 @@ import '../../../auth/providers/auth_provider.dart';
 import '../../models/profile_model.dart';
 import '../../repositories/profile_repository.dart';
 import '../widgets/profile_avatar.dart';
-import '../../../profile/providers/wallet_provider.dart';
 import '../../../cart_payment/providers/payment_provider.dart';
 
 class AccountDetailScreen extends StatefulWidget {
@@ -186,7 +185,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () {
-            // TODO: context.push('/account/history') khi Dev C làm xong
           },
           child: const Text(
             'Xem lịch sử giao dịch',
@@ -266,7 +264,6 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
         const SizedBox(height: 12),
         GestureDetector(
           onTap: () {
-            // TODO: context.push('/change-email')
           },
           child: const Text(
             'Quản lý email',
