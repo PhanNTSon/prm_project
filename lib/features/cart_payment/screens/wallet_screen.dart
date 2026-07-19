@@ -1,3 +1,4 @@
+// lib/features/cart_payment/screens/wallet_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +62,6 @@ class _WalletScreenState extends State<WalletScreen> {
       return;
     }
 
-    // Mở WebView VNPay, chờ kết quả trả về qua pop({success, responseCode})
     final result = await context.push<Map<String, dynamic>>(
       '/payment-webview',
       extra: paymentUrl,
@@ -74,8 +74,6 @@ class _WalletScreenState extends State<WalletScreen> {
       final confirmed = await provider.confirmTopUp(amount);
       if (!mounted) return;
       if (confirmed) {
-        // Đồng bộ số dư sang WalletProvider toàn cục để các màn khác
-        // (Cart, Profile...) cũng cập nhật realtime mà không cần sửa file đó.
         context.read<global_wallet.WalletProvider>().updateBalance(provider.balance);
         provider.loadTransactions();
       }
@@ -106,6 +104,16 @@ class _WalletScreenState extends State<WalletScreen> {
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.surfaceColor,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.primaryTextColor),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
         title: const Text(
           'Wallet',
           style: TextStyle(color: AppColors.primaryTextColor),

@@ -1,3 +1,4 @@
+// lib/features/cart_payment/screens/cart_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:prm_project/features/profile/providers/wallet_provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../providers/cart_provider.dart';
+import '../providers/payment_provider.dart';
 import '../widgets/cart_item_tile.dart';
 
 class CartScreen extends StatefulWidget {
@@ -20,13 +22,14 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CartProvider>().loadCart();
+      context.read<PaymentProvider>().loadBalance().then((_) {
+        if (!mounted) return;
+        context
+            .read<WalletProvider>()
+            .updateBalance(context.read<PaymentProvider>().balance);
+      });
     });
   }
-
-  /// Toàn bộ hệ thống (giá game, số dư ví, top-up VNPay) dùng chung 1 đơn vị
-  /// USD (field `price`/`walletBalance` ở BE được so sánh trực tiếp với
-  /// nhau, và endpoint tạo thanh toán VNPay nhận `amountUsd`), nên hiển thị
-  /// thống nhất dạng USD ở đây thay vì VNĐ.
   String _formatUsd(double amount) => '\$${amount.toStringAsFixed(2)}';
 
   Future<void> _onPurchase() async {
@@ -37,6 +40,14 @@ class _CartScreenState extends State<CartScreen> {
 
     switch (result) {
       case CheckoutResult.success:
+        final paymentProvider = context.read<PaymentProvider>();
+        await paymentProvider.loadBalance();
+        if (!context.mounted) return;
+        context
+            .read<WalletProvider>()
+            .updateBalance(paymentProvider.balance);
+
+        if (!context.mounted) return;
         context.push('/payment-result', extra: const {
           'type': 'purchase',
           'success': true,
@@ -143,8 +154,6 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
-// ── Error state ─────────────────────────────────────────────────────────
-
 class _ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
@@ -205,8 +214,6 @@ class _ErrorState extends StatelessWidget {
   }
 }
 
-// ── Empty state ─────────────────────────────────────────────────────────
-
 class _EmptyCart extends StatelessWidget {
   const _EmptyCart();
 
@@ -247,8 +254,6 @@ class _EmptyCart extends StatelessWidget {
     );
   }
 }
-
-// ── Cart content ─────────────────────────────────────────────────────────
 
 class _CartContent extends StatelessWidget {
   final CartProvider provider;
@@ -295,8 +300,6 @@ class _CartContent extends StatelessWidget {
     );
   }
 }
-
-// ── Summary bar ──────────────────────────────────────────────────────────
 
 class _CartSummaryBar extends StatelessWidget {
   final String totalPrice;
