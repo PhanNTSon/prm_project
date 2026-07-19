@@ -149,7 +149,7 @@ class _MainAppState extends State<MainApp> {
         ),
         ChangeNotifierProvider<HomeProvider>.value(value: _homeProvider),
         ChangeNotifierProvider<GameDetailProvider>.value(value: _gameDetailProvider),
-        Provider<WebSocketService>.value(value: _webSocketService),
+        ChangeNotifierProvider<WebSocketService>.value(value: _webSocketService),
         ChangeNotifierProvider(
           create: (_) => LibraryProvider(LibraryRepository()),
         ),

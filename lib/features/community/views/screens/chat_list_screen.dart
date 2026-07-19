@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prm_project/features/community/providers/chat_provider.dart';
+import 'package:prm_project/core/network/websocket_service.dart';
+import 'package:prm_project/features/auth/providers/auth_provider.dart';
 
 class ChatListScreen extends StatelessWidget {
   const ChatListScreen({super.key});
@@ -14,13 +16,43 @@ class ChatListScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF171D25),
         elevation: 0,
       ),
-      body: Consumer<ChatProvider>(
-        builder: (context, chatProvider, child) {
+      body: Consumer2<ChatProvider, WebSocketService>(
+        builder: (context, chatProvider, webSocketService, child) {
           final onlineUsers = chatProvider.onlineUsers;
           final recentUsers = chatProvider.getRecentChatUsers();
 
           return CustomScrollView(
             slivers: [
+              if (webSocketService.hasConnectionError)
+                SliverToBoxAdapter(
+                  child: Container(
+                    color: Colors.red.shade900,
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'Mất kết nối với máy chủ (Socket Timeout).',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            final token = context.read<AuthProvider>().token;
+                            if (token != null) {
+                              webSocketService.connect(token);
+                            }
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Thử kết nối lại'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red.shade700,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               if (onlineUsers.isNotEmpty) ...[
                 const SliverToBoxAdapter(
                   child: Padding(

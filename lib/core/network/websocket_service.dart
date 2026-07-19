@@ -4,10 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
-class WebSocketService {
+class WebSocketService extends ChangeNotifier {
   StompClient? _client;
   bool _isConnected = false;
   Timer? _mockTimer;
+  Timer? _timeoutTimer;
+  bool hasConnectionError = false;
   
   // Lưu trữ các hàm callback được đăng ký theo destination
   final Map<String, List<Function(dynamic)>> _subscriptions = {};
@@ -22,6 +24,8 @@ class WebSocketService {
     if (useMock) {
       debugPrint('🔌 Bật chế độ GIẢ LẬP WebSocket (Offline Simulator Mode)');
       _isConnected = true;
+      hasConnectionError = false;
+      notifyListeners();
       Future.delayed(const Duration(milliseconds: 500), () {
         if (_isConnected) {
           _onConnect(StompFrame(command: 'CONNECTED', headers: {}, body: ''));
@@ -45,7 +49,20 @@ class WebSocketService {
     }
     
     // Gắn token vào query parameter để dễ dàng vượt qua các filter Authentication
-    final wsUrl = '$baseUrl/ws-community?token=$token';
+    final wsUrl = '$baseUrl/ws-community/websocket?token=$token';
+
+    hasConnectionError = false;
+    notifyListeners();
+
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer(const Duration(minutes: 2), () {
+      if (!_isConnected) {
+        debugPrint('Quá 2 phút không thể kết nối, ngắt socket ngầm.');
+        disconnect();
+        hasConnectionError = true;
+        notifyListeners();
+      }
+    });
 
     _client = StompClient(
       config: StompConfig(
@@ -60,6 +77,7 @@ class WebSocketService {
         },
         onDisconnect: (StompFrame frame) {
           _isConnected = false;
+          notifyListeners();
           debugPrint('Đã ngắt kết nối WebSocket.');
         },
       ),
@@ -70,6 +88,9 @@ class WebSocketService {
 
   void _onConnect(StompFrame frame) {
     _isConnected = true;
+    _timeoutTimer?.cancel();
+    hasConnectionError = false;
+    notifyListeners();
     debugPrint('Kết nối WebSocket STOMP thành công!');
 
     // Tự động subscribe lại các topic đã đăng ký trước đó (nếu có)
@@ -115,8 +136,10 @@ class WebSocketService {
     _client?.deactivate();
     _mockTimer?.cancel();
     _mockTimer = null;
+    _timeoutTimer?.cancel();
     _isConnected = false;
     _subscriptions.clear();
+    notifyListeners();
   }
 
   /// Đăng ký nhận tin nhắn từ một destination

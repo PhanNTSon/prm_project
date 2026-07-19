@@ -182,12 +182,7 @@ class AppRouter {
           },
         ),
 
-        // Chat List & Detail
-        GoRoute(
-          path: '/chat',
-          parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const ChatListScreen(),
-        ),
+        // Chat Detail
         GoRoute(
           path: '/chat/detail/:username',
           parentNavigatorKey: rootNavigatorKey,
@@ -195,6 +190,21 @@ class AppRouter {
             final username = state.pathParameters['username'] ?? '';
             return ChatDetailScreen(username: username);
           },
+        ),
+
+        // Profile top-level
+        GoRoute(
+          path: '/profile',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ProfileScreen(),
+          routes: [
+            GoRoute(
+              path: ':userId',
+              parentNavigatorKey: rootNavigatorKey,
+              builder: (context, state) =>
+                  ProfileScreen(userId: state.pathParameters['userId']),
+            ),
+          ],
         ),
 
         // 5. Shell Layout chứa Bottom Navigation Bar
@@ -236,20 +246,13 @@ class AppRouter {
               ],
             ),
 
-            // Tab 3: Cá nhân
+            // Tab 3: Chat
             StatefulShellBranch(
               navigatorKey: _shellNavigatorProfile,
               routes: [
                 GoRoute(
-                  path: '/profile',
-                  builder: (context, state) => const ProfileScreen(),
-                  routes: [
-                    GoRoute(
-                      path: ':userId',
-                      builder: (context, state) =>
-                          ProfileScreen(userId: state.pathParameters['userId']),
-                    ),
-                  ],
+                  path: '/chat',
+                  builder: (context, state) => const ChatListScreen(),
                 ),
               ],
             ),
