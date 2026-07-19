@@ -45,33 +45,36 @@ class AppRouter {
       initialLocation: '/home',
       refreshListenable: authProvider,
       redirect: (context, state) {
-        // Logic Auth Guard đồng bộ với AuthProvider
         final bool isInitialized = authProvider.isInitialized;
         final bool isAuthenticated = authProvider.isAuthenticated;
-        
-        final isAuthRoute = state.matchedLocation == '/login' || 
-                            state.matchedLocation == '/register' || 
-                            state.matchedLocation == '/verify-email' ||
-                            state.matchedLocation == '/register-details' ||
-                            state.matchedLocation == '/forgot-password' ||
-                            state.matchedLocation == '/reset-password';
+        final String location = state.matchedLocation;
 
-        // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
+        // Chưa khởi tạo xong → chờ ở splash
         if (!isInitialized) {
-          return '/splash';
+          return location == '/splash' ? null : '/splash';
         }
 
-        if (!isAuthenticated) {
-          // Chưa đăng nhập mà đang ở trang không phải Auth -> đá về Login (giúp thoát khỏi /splash)
-          if (!isAuthRoute) {
-            return '/login';
-          }
-        } else {
-          // Đã đăng nhập mà vào trang Auth hoặc Splash -> đá về Home
-          if (isAuthRoute || state.matchedLocation == '/splash') {
-            return '/home';
-          }
+        // Danh sách route công khai không cần đăng nhập
+        final isPublicRoute = [
+          '/login',
+          '/register',
+          '/verify-email',
+          '/register-details',
+          '/forgot-password',
+          '/reset-password',
+          '/splash',
+        ].contains(location);
+
+        // Chưa đăng nhập mà vào route cần auth → đá về login
+        if (!isAuthenticated && !isPublicRoute) {
+          return '/login';
         }
+
+        // Đã đăng nhập mà vào public route → đá về home
+        if (isAuthenticated && isPublicRoute) {
+          return '/home';
+        }
+
         return null;
       },
       routes: [

@@ -171,5 +171,22 @@ class GameRepository {
       return null;
     }
   }
+
+  /// Kiểm tra xem game có trong thư viện của user không.
+  /// API: GET /user/library/contain/{gameId}
+  /// Trả về true nếu đã sở hữu, false nếu chưa hoặc lỗi.
+  Future<bool> isGameOwned(int gameId) async {
+    try {
+      final response = await _dioClient.get('/user/library/contain/$gameId');
+      if (response.data is bool) return response.data as bool;
+      if (response.data is Map) {
+        return response.data['data'] == true || response.data['result'] == true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Lỗi isGameOwned($gameId): $e');
+      return false;
+    }
+  }
 }
 

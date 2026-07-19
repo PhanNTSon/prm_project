@@ -9,6 +9,7 @@ import '../../models/profile_model.dart';
 import '../../repositories/profile_repository.dart';
 import '../widgets/profile_avatar.dart';
 import '../../../profile/providers/wallet_provider.dart';
+import '../../../cart_payment/providers/payment_provider.dart';
 
 class AccountDetailScreen extends StatefulWidget {
   const AccountDetailScreen({super.key});
@@ -43,10 +44,16 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
       final userId = context.read<AuthProvider>().currentUser?.userId ?? '';
       final profile = await _profileRepository.getUserProfile(userId);
       if (!mounted) return;
+
       setState(() {
         _profile = profile;
         _isLoading = false;
       });
+
+      // ← Sync balance từ PaymentProvider để đồng bộ với WalletScreen của Dev C
+      if (mounted) {
+        await context.read<PaymentProvider>().loadBalance();
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -191,8 +198,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
   }
 
   Widget _buildWalletRow() {
-    return Consumer<WalletProvider>(
-      builder: (context, walletProvider, _) {
+    return Consumer<PaymentProvider>(
+      builder: (context, paymentProvider, _) {
         return Row(
           children: [
             Expanded(
@@ -207,14 +214,23 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
                       fontSize: 12,
                     ),
                   ),
-                  Text(
-                    '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
-                    style: const TextStyle(
-                      color: AppColors.primaryTextColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  paymentProvider.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primaryColor,
+                          ),
+                        )
+                      : Text(
+                          '\$${paymentProvider.balance.toStringAsFixed(2)}', // ← theo Dev C: USD
+                          style: const TextStyle(
+                            color: AppColors.primaryTextColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ],
               ),
             ),
