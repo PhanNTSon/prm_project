@@ -37,7 +37,10 @@ class HomeAppbar extends StatelessWidget {
                 _iconBtn(Icons.notifications_none_rounded, () {}),
 
                 // Cart
-                _iconBtn(Icons.shopping_cart_outlined, () => context.go('/cart')),
+                _iconBtn(
+                  Icons.shopping_cart_outlined,
+                  () => context.go('/cart'),
+                ),
 
                 const SizedBox(width: 4),
 
@@ -71,7 +74,10 @@ class HomeAppbar extends StatelessWidget {
                     title: 'ALL GAMES',
                     isSelected: currentPage == 'all-games',
                     onTap: () {
-                      context.read<GameListProvider>().setFilter(tagId: null, categoryName: null);
+                      context.read<GameListProvider>().setFilter(
+                        tagId: null,
+                        categoryName: null,
+                      );
                       context.push('/all-games');
                     },
                   ),
@@ -152,7 +158,10 @@ class _SearchBar extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
-              borderSide: const BorderSide(color: Color(0xFF66C0F4), width: 1.5),
+              borderSide: const BorderSide(
+                color: Color(0xFF66C0F4),
+                width: 1.5,
+              ),
             ),
           ),
         ),
@@ -168,15 +177,18 @@ class _AvatarChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: const [
-        CircleAvatar(
-          radius: 14,
-          backgroundColor: Color(0xFF2A475E),
-          child: Icon(Icons.person, size: 16, color: Colors.white70),
-        ),
-      ],
+    return GestureDetector(
+      onTap: () => context.go('/profile'), // ← thêm navigate về tab Profile
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          CircleAvatar(
+            radius: 14,
+            backgroundColor: Color(0xFF2A475E),
+            child: Icon(Icons.person, size: 16, color: Colors.white70),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -240,8 +252,11 @@ class _WalletLink extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: const [
-            Icon(Icons.account_balance_wallet_outlined,
-                color: Color(0xFFBEEE11), size: 14),
+            Icon(
+              Icons.account_balance_wallet_outlined,
+              color: Color(0xFFBEEE11),
+              size: 14,
+            ),
             SizedBox(width: 4),
             Text(
               'WALLET',

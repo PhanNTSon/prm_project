@@ -11,6 +11,7 @@ import '../../models/profile_model.dart';
 import '../../repositories/profile_repository.dart';
 import '../widgets/profile_avatar.dart';
 import '../widgets/profile_menu_item.dart';
+import '../../../cart_payment/providers/payment_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String? userId; // null = xem profile của chính mình
@@ -78,6 +79,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _profile = profile;
         _isLoading = false;
       });
+      if (mounted) {
+        await context.read<PaymentProvider>().loadBalance();
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -486,15 +490,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontSize: 12,
                   ),
                 ),
-                Consumer<WalletProvider>(
-                  builder: (context, walletProvider, _) => Text(
-                    '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
-                    style: const TextStyle(
-                      color: AppColors.primaryTextColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                Consumer<PaymentProvider>(
+                  // ← đổi sang PaymentProvider
+                  builder: (context, paymentProvider, _) =>
+                      paymentProvider.isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primaryColor,
+                          ),
+                        )
+                      : Text(
+                          '\$${paymentProvider.balance.toStringAsFixed(2)}', // ← USD theo Dev C
+                          style: const TextStyle(
+                            color: AppColors.primaryTextColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ],
             ),
@@ -502,9 +517,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           SizedBox(
             width: 100,
             child: ElevatedButton(
-              onPressed: () {
-                // TODO: Chuyển sang /account/wallet khi Dev C làm xong
-              },
+              onPressed: () => context.push('/account/wallet'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 foregroundColor: AppColors.backgroundColor,
