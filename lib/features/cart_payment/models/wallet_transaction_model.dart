@@ -17,6 +17,19 @@ class WalletTransactionModel {
 
   bool get isTopUp => gameId == null;
 
+  /// Trả về bản sao với `price` được thay bằng số tiền lấy từ cache local
+  /// (chỉ dùng cho giao dịch top-up mà BE không trả về "price").
+  WalletTransactionModel withCachedAmount(double amount) {
+    return WalletTransactionModel(
+      transactionId: transactionId,
+      dateCreated: dateCreated,
+      type: type,
+      gameId: gameId,
+      gameName: gameName,
+      price: amount,
+    );
+  }
+
   factory WalletTransactionModel.fromJson(Map<String, dynamic> json) {
     return WalletTransactionModel(
       transactionId: json['transactionId'] as int,
