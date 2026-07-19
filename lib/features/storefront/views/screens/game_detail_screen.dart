@@ -275,6 +275,9 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
   Widget _buildPriceAndCart(GameDetailModel game) {
     final isInCart = context.watch<CartProvider>().items
         .any((item) => item.gameId == game.id);
+    final provider = context.watch<GameDetailProvider>();
+    final isOwned = provider.isOwned;
+    final isCheckingOwnership = provider.isCheckingOwnership;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -290,8 +293,25 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
 
           const SizedBox(width: 12),
 
-          // Nút
-          _buildCartButton(game, isInCart),
+          // Nút — ưu tiên: In Library > In Cart > Add to Cart
+          if (isCheckingOwnership)
+            const SizedBox(
+              width: 160,
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF66C0F4),
+                  ),
+                ),
+              ),
+            )
+          else if (isOwned)
+            _buildInLibraryButton()
+          else
+            _buildCartButton(game, isInCart),
         ],
       ),
     );
@@ -361,6 +381,32 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
       '\$${game.price.toStringAsFixed(2)}',
       style: const TextStyle(
           color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+    );
+  }
+
+  /// Nút "In Library" — hiển thị khi user đã sở hữu game.
+  Widget _buildInLibraryButton() {
+    return SizedBox(
+      width: 160,
+      child: OutlinedButton.icon(
+        onPressed: () => context.go('/library'),
+        icon: const Icon(Icons.check_circle_outline,
+            size: 16, color: Color(0xFFBEEE11)),
+        label: const Text(
+          'In Library',
+          style: TextStyle(
+            color: Color(0xFFBEEE11),
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFFBEEE11)),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4)),
+        ),
+      ),
     );
   }
 

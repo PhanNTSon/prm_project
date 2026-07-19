@@ -14,9 +14,15 @@ class GameDetailProvider extends ChangeNotifier {
   GameDetailStatus _status = GameDetailStatus.initial;
   String? _errorMessage;
 
+  // ── Library ownership state ──────────────────────────────────────────────
+  bool _isOwned = false;
+  bool _isCheckingOwnership = false;
+
   GameDetailModel? get game => _game;
   GameDetailStatus get status => _status;
   String? get errorMessage => _errorMessage;
+  bool get isOwned => _isOwned;
+  bool get isCheckingOwnership => _isCheckingOwnership;
 
   bool get isLoading => _status == GameDetailStatus.loading;
   bool get hasData => _game != null;
@@ -29,6 +35,7 @@ class GameDetailProvider extends ChangeNotifier {
     _status = GameDetailStatus.loading;
     _errorMessage = null;
     _game = null;
+    _isOwned = false;
     notifyListeners();
 
     final result = await _repository.getGameDetail(gameId);
@@ -36,10 +43,25 @@ class GameDetailProvider extends ChangeNotifier {
     if (result != null) {
       _game = result;
       _status = GameDetailStatus.loaded;
+      notifyListeners();
+
+      // Check library ownership sau khi load game xong
+      await checkOwnership(gameId);
     } else {
       _status = GameDetailStatus.error;
       _errorMessage = 'Không tìm thấy thông tin game.';
+      notifyListeners();
     }
+  }
+
+  /// Gọi API kiểm tra xem game có trong thư viện không.
+  Future<void> checkOwnership(int gameId) async {
+    _isCheckingOwnership = true;
+    notifyListeners();
+
+    _isOwned = await _repository.isGameOwned(gameId);
+
+    _isCheckingOwnership = false;
     notifyListeners();
   }
 
@@ -47,5 +69,7 @@ class GameDetailProvider extends ChangeNotifier {
     _game = null;
     _status = GameDetailStatus.initial;
     _errorMessage = null;
+    _isOwned = false;
+    _isCheckingOwnership = false;
   }
 }
