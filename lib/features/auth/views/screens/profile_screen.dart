@@ -26,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   ProfileModel? _profile;
   bool _isLoading = true;
+  bool? _isOwnProfileCached;
+  bool get _isOwnProfile => _isOwnProfileCached ?? true;
   String? _errorMessage;
 
   @override
@@ -34,18 +36,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _profileRepository = ProfileRepository(
       DioClient(AppRouter.rootNavigatorKey),
     );
-    _loadProfile();
+    // Tính _isOwnProfile 1 lần duy nhất
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<AuthProvider>();
+      setState(() {
+        _isOwnProfileCached =
+            widget.userId == null ||
+            authProvider.currentUser?.userId == widget.userId;
+      });
+      _loadProfile();
+    });
   }
 
-  bool get _isOwnProfile {
-    final authProvider = context.read<AuthProvider>();
-    if (widget.userId == null) return true;
-    return authProvider.currentUser?.userId == widget.userId;
-  }
-
-  String get _targetUserId {
-    if (widget.userId != null) return widget.userId!;
-    return context.read<AuthProvider>().currentUser?.userId ?? '';
+  String? get _targetUserId {
+    if (widget.userId != null) return widget.userId;
+    final uid = context.read<AuthProvider>().currentUser?.userId;
+    if (uid == null || uid.isEmpty) return null;
+    return uid;
   }
 
   Future<void> _loadProfile() async {
@@ -54,8 +61,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _errorMessage = null;
     });
 
+    // ← Kiểm tra userId hợp lệ trước
+    final userId = _targetUserId;
+    if (userId == null || userId.isEmpty) {
+      setState(() {
+        _errorMessage = 'Không xác định được người dùng.';
+        _isLoading = false;
+      });
+      return;
+    }
+
     try {
-      final profile = await _profileRepository.getUserProfile(_targetUserId);
+      final profile = await _profileRepository.getUserProfile(userId);
       if (!mounted) return;
       setState(() {
         _profile = profile;
@@ -209,28 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_profile == null) return const SizedBox.shrink();
 
-    // ============ DEBUG TẠM - Bật Header + WalletCard ============
-    return RefreshIndicator(
-      color: AppColors.primaryColor,
-      onRefresh: _loadProfile,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            _buildProfileHeader(),
-            const SizedBox(height: 12),
-            if (_isOwnProfile) _buildWalletCard(),
-            const SizedBox(height: 12),
-            const Text(
-              'TEST 4: bật Header + WalletCard',
-              style: TextStyle(color: AppColors.primaryTextColor),
-            ),
-          ],
-        ),
-      ),
-    );
-    // ============ HẾT PHẦN DEBUG - CODE THẬT BÊN DƯỚI KHÔNG CHẠY ============
-    // ignore: dead_code
+    // ← Chỉ còn 1 return duy nhất, không còn block debug
     return RefreshIndicator(
       color: AppColors.primaryColor,
       onRefresh: _loadProfile,
@@ -260,6 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
       color: AppColors.surfaceColor,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           ProfileAvatar(
             avatarUrl: _profile!.avatarUrl,
@@ -375,19 +372,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppColors.borderColor),
       ),
-      child: Row(
-        children: [
-          _buildStatItem('Game', '${_profile!.totalGames}'),
-          _buildStatDivider(),
-          _buildStatItem('Đánh giá', '${_profile!.reviewCount}'),
-        ],
+      // ← Thêm constraints rõ ràng cho Row
+      child: SizedBox(
+        width: double.infinity,
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            _buildStatItem('Game', '${_profile!.totalGames}'),
+            _buildStatDivider(),
+            _buildStatItem('Đánh giá', '${_profile!.reviewCount}'),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildStatItem(String label, String value) {
     return Expanded(
+      // ← Giữ Expanded nhưng Row giờ đã có SizedBox bao ngoài
       child: Column(
+        mainAxisSize: MainAxisSize.min, // ← thêm dòng này
         children: [
           Text(
             value,
@@ -523,6 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: Border.all(color: AppColors.borderColor),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (_isOwnProfile) ...[

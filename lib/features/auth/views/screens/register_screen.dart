@@ -29,17 +29,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late final AuthRepository _authRepository;
 
   final List<String> _countries = [
-    'Việt Nam', 'Hoa Kỳ', 'Nhật Bản',
-    'Hàn Quốc', 'Trung Quốc', 'Anh',
-    'Pháp', 'Đức', 'Úc', 'Canada',
+    'Việt Nam',
+    'Hoa Kỳ',
+    'Nhật Bản',
+    'Hàn Quốc',
+    'Trung Quốc',
+    'Anh',
+    'Pháp',
+    'Đức',
+    'Úc',
+    'Canada',
   ];
 
   @override
   void initState() {
     super.initState();
-    _authRepository = AuthRepository(
-      DioClient(AppRouter.rootNavigatorKey),
-    );
+    _authRepository = AuthRepository(DioClient(AppRouter.rootNavigatorKey));
   }
 
   @override
@@ -50,40 +55,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
-  if (!_formKey.currentState!.validate()) return;
-  if (!_agreedToTerms) { /* snackbar */ return; }
-
-  setState(() { _isLoading = true; _errorMessage = null; });
-
-  try {
-    
-    final available = await _authRepository.checkEmailAvailable(
-      _emailController.text.trim(),
-    );
-    if (!available) {
-      setState(() {
-        _errorMessage = 'Email này đã được sử dụng.';
-        _isLoading = false;
-      });
+    if (!_formKey.currentState!.validate()) return;
+    if (!_agreedToTerms) {
+      /* snackbar */
       return;
     }
 
-    
-    await _authRepository.sendVerificationOtp(_emailController.text.trim());
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
-    if (!mounted) return;
-    context.push(
-      '/verify-email',
-      extra: RegisterRequestModel(
-        email: _emailController.text.trim(),
-        country: _selectedCountry,
-      ),
-    );
-  } catch (e) {
-    if (!mounted) return;
-    setState(() { _errorMessage = e.toString(); _isLoading = false; });
+    try {
+      final available = await _authRepository.checkEmailAvailable(
+        _emailController.text.trim(),
+      );
+      if (!available) {
+        setState(() {
+          _errorMessage = 'Email này đã được sử dụng.';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      await _authRepository.sendVerificationOtp(_emailController.text.trim());
+
+      if (!mounted) return;
+      // Truyền RegisterRequestModel thay vì String — đúng với router và VerifyEmailScreen
+      context.push(
+        '/verify-email',
+        extra: RegisterRequestModel(
+          email: _emailController.text.trim(),
+          country: _selectedCountry,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -128,9 +141,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Text(
       'TẠO TÀI KHOẢN CỦA BẠN',
       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppColors.primaryTextColor,
-            fontWeight: FontWeight.bold,
-          ),
+        color: AppColors.primaryTextColor,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
@@ -194,14 +207,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               borderRadius: BorderRadius.circular(4),
               borderSide: const BorderSide(color: AppColors.primaryColor),
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
           items: _countries
-              .map((country) => DropdownMenuItem(
-                    value: country,
-                    child: Text(country),
-                  ))
+              .map(
+                (country) =>
+                    DropdownMenuItem(value: country, child: Text(country)),
+              )
               .toList(),
           onChanged: (value) {
             if (value != null) setState(() => _selectedCountry = value);
@@ -235,8 +250,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
           const Spacer(),
           Column(
             children: [
-              const Icon(Icons.back_hand_outlined,
-                  color: AppColors.primaryColor),
+              const Icon(
+                Icons.back_hand_outlined,
+                color: AppColors.primaryColor,
+              ),
               const Text(
                 'hCaptcha',
                 style: TextStyle(
@@ -257,8 +274,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Checkbox(
           value: _agreedToTerms,
-          onChanged: (value) =>
-              setState(() => _agreedToTerms = value ?? false),
+          onChanged: (value) => setState(() => _agreedToTerms = value ?? false),
           fillColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
               return AppColors.primaryColor;
@@ -276,7 +292,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   fontSize: 13,
                 ),
                 children: [
-                  TextSpan(text: 'Tôi 13 tuổi hoặc lớn hơn và đồng ý với điều khoản trong '),
+                  TextSpan(
+                    text:
+                        'Tôi 13 tuổi hoặc lớn hơn và đồng ý với điều khoản trong ',
+                  ),
                   TextSpan(
                     text: 'Thỏa thuận người đăng ký Steam',
                     style: TextStyle(
