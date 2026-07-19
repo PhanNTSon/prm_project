@@ -16,6 +16,8 @@ class GameListProvider extends ChangeNotifier {
   int _currentPage = 0;
   int _totalPages = 1;
   int _totalElements = 0;
+  int? _currentTagId;
+  String? _currentCategoryName;
 
   // === GETTERS ===
   List<GameBasicModel> get games => _games;
@@ -24,12 +26,20 @@ class GameListProvider extends ChangeNotifier {
   int get currentPage => _currentPage;
   int get totalPages => _totalPages;
   int get totalElements => _totalElements;
+  int? get currentTagId => _currentTagId;
+  String? get currentCategoryName => _currentCategoryName;
 
   /// Có trang trước không
   bool get hasPreviousPage => _currentPage > 0;
 
   /// Có trang tiếp theo không
   bool get hasNextPage => _currentPage < _totalPages - 1;
+
+  /// Đặt bộ lọc (để rỗng nếu muốn xem tất cả game)
+  void setFilter({int? tagId, String? categoryName}) {
+    _currentTagId = tagId;
+    _currentCategoryName = categoryName;
+  }
 
   /// Tải trang đầu tiên (gọi khi vào màn hình lần đầu)
   Future<void> loadFirstPage() async {
@@ -67,6 +77,7 @@ class GameListProvider extends ChangeNotifier {
         size: 20,
         sort: 'name', // Sắp xếp theo tên A-Z
         dir: 'asc',
+        tagId: _currentTagId,
       );
 
       _games = result.games;

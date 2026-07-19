@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prm_project/core/widgets/appBar/home_appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:prm_project/features/storefront/providers/home_provider.dart';
 import 'package:prm_project/features/storefront/views/widgets/featured_game_card.dart';
 import 'package:prm_project/features/storefront/views/widgets/category_card.dart';
+import 'package:prm_project/features/storefront/providers/game_list_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -158,10 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 final game = provider.featuredGames[index];
                 return FeaturedGameCard(
                   game: game,
-                  onTap: () {
-                    // TODO: navigate to game detail
-                    // context.push('/home/game-detail/${game.id}');
-                  },
+                  onTap: () => context.push('/game-detail/${game.id}'),
                 );
               },
             ),
@@ -259,7 +258,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 return CategoryCard(
                   category: category,
                   onTap: () {
-                    // TODO: navigate to category page
+                    context.read<GameListProvider>().setFilter(
+                          tagId: category.id,
+                          categoryName: category.name,
+                        );
+                    context.push('/all-games');
                   },
                 );
               },
