@@ -24,6 +24,8 @@ import 'package:prm_project/features/auth/models/profile_model.dart';
 import 'package:prm_project/features/auth/models/register_request_model.dart';
 import 'package:prm_project/features/library/views/screens/library.dart';
 import 'package:prm_project/features/storefront/views/screens/game_detail_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_list_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_detail_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -174,6 +176,21 @@ class AppRouter {
           builder: (context, state) {
             final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
             return GameDetailScreen(gameId: id);
+          },
+        ),
+
+        // Chat List & Detail
+        GoRoute(
+          path: '/chat',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ChatListScreen(),
+        ),
+        GoRoute(
+          path: '/chat/detail/:username',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final username = state.pathParameters['username'] ?? '';
+            return ChatDetailScreen(username: username);
           },
         ),
 

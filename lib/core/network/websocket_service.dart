@@ -10,7 +10,7 @@ class WebSocketService {
   Timer? _mockTimer;
   
   // Lưu trữ các hàm callback được đăng ký theo destination
-  final Map<String, List<Function(Map<String, dynamic>)>> _subscriptions = {};
+  final Map<String, List<Function(dynamic)>> _subscriptions = {};
 
   bool get isConnected => _isConnected;
 
@@ -102,7 +102,7 @@ class WebSocketService {
     });
   }
 
-  void _triggerMockSubscription(String destination, Map<String, dynamic> data) {
+  void _triggerMockSubscription(String destination, dynamic data) {
     if (_subscriptions.containsKey(destination)) {
       for (var callback in _subscriptions[destination]!) {
         callback(data);
@@ -120,7 +120,7 @@ class WebSocketService {
   }
 
   /// Đăng ký nhận tin nhắn từ một destination
-  void subscribe(String destination, Function(Map<String, dynamic>) callback) {
+  void subscribe(String destination, Function(dynamic) callback) {
     if (!_subscriptions.containsKey(destination)) {
       _subscriptions[destination] = [];
       if (_isConnected) {
@@ -137,7 +137,7 @@ class WebSocketService {
       callback: (StompFrame frame) {
         if (frame.body != null) {
           try {
-            final Map<String, dynamic> data = json.decode(frame.body!);
+            final dynamic data = json.decode(frame.body!);
             // Gọi tất cả các callback đã đăng ký cho destination này
             if (_subscriptions.containsKey(destination)) {
               for (var callback in _subscriptions[destination]!) {
@@ -157,5 +157,17 @@ class WebSocketService {
     _subscriptions.remove(destination);
     // Lưu ý: stomp_dart_client trả về một Unsubscribe function khi gọi client.subscribe. 
     // Ở implementation đơn giản này, ta xóa khỏi Map để callback không được gọi nữa.
+  }
+
+  /// Gửi dữ liệu (tin nhắn) lên server
+  void send(String destination, Map<String, dynamic> body) {
+    if (_isConnected && _client != null) {
+      _client!.send(
+        destination: destination,
+        body: json.encode(body),
+      );
+    } else {
+      debugPrint('Không thể gửi tin nhắn, WebSocket chưa kết nối!');
+    }
   }
 }
