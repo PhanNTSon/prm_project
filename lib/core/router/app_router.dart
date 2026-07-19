@@ -183,11 +183,12 @@ class AppRouter {
 
         // Chat Detail
         GoRoute(
-          path: '/chat/detail/:username',
+          path: '/chat/detail/:friendId/:username',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) {
             final username = state.pathParameters['username'] ?? '';
-            return ChatDetailScreen(username: username);
+            final friendId = int.tryParse(state.pathParameters['friendId'] ?? '') ?? 0;
+            return ChatDetailScreen(username: username, friendId: friendId);
           },
         ),
 

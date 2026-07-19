@@ -6,7 +6,8 @@ import 'package:intl/intl.dart';
 
 class ChatDetailScreen extends StatefulWidget {
   final String username;
-  const ChatDetailScreen({super.key, required this.username});
+  final int friendId;
+  const ChatDetailScreen({super.key, required this.username, required this.friendId});
 
   @override
   State<ChatDetailScreen> createState() => _ChatDetailScreenState();
@@ -14,6 +15,14 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ChatProvider>().loadChatHistory(widget.friendId, widget.username);
+    });
+  }
 
   void _sendMessage() {
     final text = _textController.text.trim();
