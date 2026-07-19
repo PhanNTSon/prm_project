@@ -308,8 +308,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (_isOwnProfile) ...[
             const SizedBox(height: 16),
             OutlinedButton.icon(
-              onPressed: () {
-                // TODO: Chuyển sang /profile/:userId/edit/info
+              onPressed: () async {
+                final updated = await context.push(
+                  '/account/edit',
+                  extra: _profile,
+                );
+                if (updated is ProfileModel && mounted) {
+                  setState(() => _profile = updated);
+                }
               },
               icon: const Icon(
                 Icons.edit_outlined,
@@ -453,68 +459,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildWalletCard() {
-    return Consumer<WalletProvider>(
-      builder: (context, walletProvider, _) {
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.cardColor,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.borderColor),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardColor,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppColors.borderColor),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.account_balance_wallet,
+            color: AppColors.primaryColor,
           ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.primaryColor,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                // ← bọc Expanded thay Spacer
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Số dư ví',
-                      style: TextStyle(
-                        color: AppColors.secondaryTextColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                    Text(
-                      '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
-                      style: const TextStyle(
-                        color: AppColors.primaryTextColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Bỏ const Spacer() ← đã xóa
-              ElevatedButton(
-                onPressed: () {
-                  // TODO: Chuyển sang /account/wallet khi Dev C làm xong
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  foregroundColor: AppColors.backgroundColor,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Số dư ví',
+                  style: TextStyle(
+                    color: AppColors.secondaryTextColor,
+                    fontSize: 12,
                   ),
                 ),
-                child: const Text('Nạp tiền'),
-              ),
-            ],
+                Consumer<WalletProvider>(
+                  builder: (context, walletProvider, _) => Text(
+                    '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
+                    style: const TextStyle(
+                      color: AppColors.primaryTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        );
-      },
+          SizedBox(
+            width: 100,
+            child: ElevatedButton(
+              onPressed: () {
+                // TODO: Chuyển sang /account/wallet khi Dev C làm xong
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: AppColors.backgroundColor,
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              child: const Text('Nạp tiền'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

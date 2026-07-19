@@ -8,6 +8,7 @@ import '../../../auth/providers/auth_provider.dart';
 import '../../models/profile_model.dart';
 import '../../repositories/profile_repository.dart';
 import '../widgets/profile_avatar.dart';
+import '../../../profile/providers/wallet_provider.dart';
 
 class AccountDetailScreen extends StatefulWidget {
   const AccountDetailScreen({super.key});
@@ -39,10 +40,8 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
     });
 
     try {
-      final userId =
-          context.read<AuthProvider>().currentUser?.userId ?? '';
-      final profile =
-          await _profileRepository.getUserProfile(userId);
+      final userId = context.read<AuthProvider>().currentUser?.userId ?? '';
+      final profile = await _profileRepository.getUserProfile(userId);
       if (!mounted) return;
       setState(() {
         _profile = profile;
@@ -64,12 +63,13 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF171A21),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back,
-              color: AppColors.primaryTextColor),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primaryTextColor),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Thông tin tài khoản',
-            style: TextStyle(color: AppColors.primaryTextColor)),
+        title: const Text(
+          'Thông tin tài khoản',
+          style: TextStyle(color: AppColors.primaryTextColor),
+        ),
       ),
       body: _buildBody(),
     );
@@ -87,17 +87,23 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline,
-                color: AppColors.errorColor, size: 48),
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.errorColor,
+              size: 48,
+            ),
             const SizedBox(height: 16),
-            Text(_errorMessage!,
-                style: const TextStyle(
-                    color: AppColors.secondaryTextColor)),
+            Text(
+              _errorMessage!,
+              style: const TextStyle(color: AppColors.secondaryTextColor),
+            ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: _loadProfile,
-              child: const Text('Thử lại',
-                  style: TextStyle(color: AppColors.primaryColor)),
+              child: const Text(
+                'Thử lại',
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
             ),
           ],
         ),
@@ -142,14 +148,23 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           const SizedBox(height: 8),
           TextButton.icon(
             onPressed: () async {
-              final updated = await context.push('/account/edit', extra: _profile);
+              final updated = await context.push(
+                '/account/edit',
+                extra: _profile,
+              );
               if (updated is ProfileModel && mounted) {
                 setState(() => _profile = updated);
               }
             },
-            icon: const Icon(Icons.edit, size: 16, color: AppColors.primaryColor),
-            label: const Text('Chỉnh sửa hồ sơ',
-                style: TextStyle(color: AppColors.primaryColor)),
+            icon: const Icon(
+              Icons.edit,
+              size: 16,
+              color: AppColors.primaryColor,
+            ),
+            label: const Text(
+              'Chỉnh sửa hồ sơ',
+              style: TextStyle(color: AppColors.primaryColor),
+            ),
           ),
         ],
       ),
@@ -168,10 +183,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           },
           child: const Text(
             'Xem lịch sử giao dịch',
-            style: TextStyle(
-              color: AppColors.primaryColor,
-              fontSize: 14,
-            ),
+            style: TextStyle(color: AppColors.primaryColor, fontSize: 14),
           ),
         ),
       ],
@@ -179,38 +191,54 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
   }
 
   Widget _buildWalletRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Consumer<WalletProvider>(
+      builder: (context, walletProvider, _) {
+        return Row(
           children: [
-            const Text('Số dư ví',
-                style: TextStyle(
-                    color: AppColors.secondaryTextColor, fontSize: 12)),
-            Text(
-              '${_profile!.walletBalance.toStringAsFixed(0)} VNĐ',
-              style: const TextStyle(
-                color: AppColors.primaryTextColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Số dư ví',
+                    style: TextStyle(
+                      color: AppColors.secondaryTextColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
+                    style: const TextStyle(
+                      color: AppColors.primaryTextColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: 100,
+              child: ElevatedButton(
+                onPressed: () => context.push('/account/wallet'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: AppColors.backgroundColor,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                child: const Text('Nạp tiền'),
               ),
             ),
           ],
-        ),
-        ElevatedButton(
-          onPressed: () {
-            // TODO: Mở modal nạp tiền khi Dev C làm xong
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            foregroundColor: AppColors.backgroundColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4)),
-          ),
-          child: const Text('Nạp tiền'),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -241,10 +269,7 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
     );
   }
 
-  Widget _buildCard({
-    required String title,
-    required List<Widget> children,
-  }) {
+  Widget _buildCard({required String title, required List<Widget> children}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -280,14 +305,18 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
           child: Text(
             label,
             style: const TextStyle(
-                color: AppColors.secondaryTextColor, fontSize: 13),
+              color: AppColors.secondaryTextColor,
+              fontSize: 13,
+            ),
           ),
         ),
         Expanded(
           child: Text(
             value,
             style: const TextStyle(
-                color: AppColors.primaryTextColor, fontSize: 13),
+              color: AppColors.primaryTextColor,
+              fontSize: 13,
+            ),
           ),
         ),
       ],
