@@ -25,11 +25,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late final TextEditingController _summaryController;
 
   static const List<String> _countries = [
-    'Việt Nam', 'Hoa Kỳ', 'Nhật Bản',
-    'Hàn Quốc', 'Trung Quốc', 'Anh',
-    'Pháp', 'Đức', 'Úc', 'Canada',
+    'Việt Nam',
+    'Hoa Kỳ',
+    'Nhật Bản',
+    'Hàn Quốc',
+    'Trung Quốc',
+    'Anh',
+    'Pháp',
+    'Đức',
+    'Úc',
+    'Canada',
   ];
   static const List<String> _genders = ['Nam', 'Nữ', 'Khác'];
+
+  // Backend (UserUpdateDTO.gender) chỉ nhận đúng 1 ký tự (Character),
+  // không nhận cả chuỗi như "Nam"/"Nữ"/"Khác" -> phải quy đổi khi gửi đi.
+  static const Map<String, String> _genderLabelToCode = {
+    'Nam': 'M',
+    'Nữ': 'F',
+    'Khác': 'O',
+  };
+  static const Map<String, String> _genderCodeToLabel = {
+    'M': 'Nam',
+    'F': 'Nữ',
+    'O': 'Khác',
+  };
 
   late String _selectedCountry;
   late String _selectedGender;
@@ -48,15 +68,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       DioClient(AppRouter.rootNavigatorKey),
     );
 
-    _profileNameController =
-        TextEditingController(text: widget.profile.displayName);
-    _summaryController = TextEditingController(text: widget.profile.summary ?? '');
+    _profileNameController = TextEditingController(
+      text: widget.profile.displayName,
+    );
+    _summaryController = TextEditingController(
+      text: widget.profile.summary ?? '',
+    );
 
     _selectedCountry = _countries.contains(widget.profile.country)
         ? widget.profile.country!
         : _countries.first;
-    _selectedGender = _genders.contains(widget.profile.gender)
-        ? widget.profile.gender!
+    // profile.gender đến từ backend là mã 1 ký tự (VD "M"), cần đổi sang nhãn hiển thị
+    final genderLabel = _genderCodeToLabel[widget.profile.gender];
+    _selectedGender = _genders.contains(genderLabel)
+        ? genderLabel!
         : _genders.first;
     _selectedDob = _parseDob(widget.profile.dob);
   }
@@ -126,7 +151,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         userId: userId,
         profileName: _profileNameController.text.trim(),
         country: _selectedCountry,
-        gender: _selectedGender,
+        gender: _genderLabelToCode[_selectedGender] ?? 'O',
         dob: dobString,
         summary: _summaryController.text.trim(),
       );
@@ -186,7 +211,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(height: 12),
                   Text(
                     _errorMessage!,
-                    style: const TextStyle(color: AppColors.errorColor, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.errorColor,
+                      fontSize: 13,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 24),
@@ -213,12 +241,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Tính năng tải ảnh đại diện sẽ được bổ sung sau'),
+                  content: Text(
+                    'Tính năng tải ảnh đại diện sẽ được bổ sung sau',
+                  ),
                 ),
               );
             },
-            child: const Text('Tải ảnh lên',
-                style: TextStyle(color: AppColors.primaryColor)),
+            child: const Text(
+              'Tải ảnh lên',
+              style: TextStyle(color: AppColors.primaryColor),
+            ),
           ),
         ],
       ),
@@ -279,8 +311,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final label = _selectedDob == null
         ? 'Chọn ngày sinh'
         : '${_selectedDob!.day.toString().padLeft(2, '0')}/'
-            '${_selectedDob!.month.toString().padLeft(2, '0')}/'
-            '${_selectedDob!.year}';
+              '${_selectedDob!.month.toString().padLeft(2, '0')}/'
+              '${_selectedDob!.year}';
 
     return InkWell(
       onTap: _pickDob,
@@ -288,8 +320,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         decoration: const InputDecoration(
           labelText: 'Ngày sinh',
           labelStyle: TextStyle(color: AppColors.secondaryTextColor),
-          suffixIcon: Icon(Icons.calendar_today,
-              color: AppColors.secondaryTextColor, size: 18),
+          suffixIcon: Icon(
+            Icons.calendar_today,
+            color: AppColors.secondaryTextColor,
+            size: 18,
+          ),
         ),
         child: Text(
           label,
@@ -318,7 +353,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               foregroundColor: AppColors.backgroundColor,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
             child: _isSaving
                 ? const SizedBox(
@@ -329,8 +365,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       color: AppColors.backgroundColor,
                     ),
                   )
-                : const Text('Lưu thay đổi',
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                : const Text(
+                    'Lưu thay đổi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
           ),
         ),
         if (_savedSuccessfully) ...[
