@@ -15,7 +15,7 @@ def main():
             
         # Iterate through inline shapes (images) and adjust size
         max_width = Cm(16) # Approx max width for A4 with normal margins
-        max_height = Cm(25) # Approx 85% of A4 page height (29.7cm * 0.85)
+        max_height = Cm(22.2) # Approx 75% of A4 page height (29.7cm * 0.75)
         
         for i, shape in enumerate(doc.inline_shapes):
             # Scale to max_width first
