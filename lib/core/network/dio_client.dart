@@ -26,16 +26,6 @@ class DioClient {
 
     // Add interceptors
     _dio.interceptors.add(AuthInterceptor(navigatorKey));
-    
-    // Add LogInterceptor for debugging if needed
-    _dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: false,
-      responseBody: true,
-      error: true,
-    ));
   }
 
   /// Wrapper for GET request
