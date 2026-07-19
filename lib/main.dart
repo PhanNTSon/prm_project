@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/network/dio_client.dart';
+import 'core/theme/app_theme.dart';
 import 'core/network/secure_storage_service.dart';
 import 'core/network/websocket_service.dart';
 import 'core/router/app_router.dart';
