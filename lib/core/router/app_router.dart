@@ -23,6 +23,7 @@ import 'package:prm_project/features/auth/views/screens/edit_profile_screen.dart
 import 'package:prm_project/features/auth/models/profile_model.dart';
 import 'package:prm_project/features/auth/models/register_request_model.dart';
 import 'package:prm_project/features/library/views/screens/library.dart';
+import 'package:prm_project/features/storefront/views/screens/game_detail_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -166,6 +167,16 @@ class AppRouter {
           builder: (context, state) => const AllGamesScreen(),
         ),
 
+        // Game Detail - Fullscreen
+        GoRoute(
+          path: '/game-detail/:id',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+            return GameDetailScreen(gameId: id);
+          },
+        ),
+
         // 5. Shell Layout chứa Bottom Navigation Bar
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
@@ -179,16 +190,6 @@ class AppRouter {
                 GoRoute(
                   path: '/home',
                   builder: (context, state) => const HomeScreen(),
-                  routes: [
-                    // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
-                    GoRoute(
-                      path: 'game-detail/:id',
-                      builder: (context, state) {
-                        final id = state.pathParameters['id']!;
-                        return GameDetailPlaceholderScreen(gameId: id);
-                      },
-                    ),
-                  ],
                 ),
               ],
             ),

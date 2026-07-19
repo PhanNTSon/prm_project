@@ -23,7 +23,10 @@ class _CartScreenState extends State<CartScreen> {
     });
   }
 
-
+  /// Toàn bộ hệ thống (giá game, số dư ví, top-up VNPay) dùng chung 1 đơn vị
+  /// USD (field `price`/`walletBalance` ở BE được so sánh trực tiếp với
+  /// nhau, và endpoint tạo thanh toán VNPay nhận `amountUsd`), nên hiển thị
+  /// thống nhất dạng USD ở đây thay vì VNĐ.
   String _formatUsd(double amount) => '\$${amount.toStringAsFixed(2)}';
 
   Future<void> _onPurchase() async {
@@ -121,16 +124,83 @@ class _CartScreenState extends State<CartScreen> {
         onRefresh: () => context.read<CartProvider>().loadCart(),
         child: provider.isLoading
             ? const Center(child: CircularProgressIndicator())
-            : provider.items.isEmpty
-                ? const _EmptyCart()
-                : _CartContent(
-                    provider: provider,
-                    formatUsd: _formatUsd,
-                    walletBalanceUsd: walletBalanceUsd,
-                    onRemove: (gameId) => provider.removeItem(gameId),
-                    onPurchase: _onPurchase,
-                  ),
+            : provider.errorMessage != null && provider.items.isEmpty
+                ? _ErrorState(
+                    message: provider.errorMessage!,
+                    onRetry: () => context.read<CartProvider>().loadCart(),
+                  )
+                : provider.items.isEmpty
+                    ? const _EmptyCart()
+                    : _CartContent(
+                        provider: provider,
+                        formatUsd: _formatUsd,
+                        walletBalanceUsd: walletBalanceUsd,
+                        onRemove: (gameId) => provider.removeItem(gameId),
+                        onPurchase: _onPurchase,
+                      ),
       ),
+    );
+  }
+}
+
+// ── Error state ─────────────────────────────────────────────────────────
+
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.wifi_off_rounded,
+                    size: 56,
+                    color: AppColors.errorColor,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Failed to load cart',
+                    style: TextStyle(
+                      color: AppColors.primaryTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.secondaryTextColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: onRetry,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
