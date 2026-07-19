@@ -33,15 +33,23 @@ class CategoryCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // === Ảnh nền từ asset ===
-            if (category.imageAsset != null)
-              Image.asset(
-                category.imageAsset!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => _buildDefaultBg(),
-              )
-            else
-              _buildDefaultBg(),
+            // === Ảnh nền từ web Steam ===
+            Image.network(
+              _getSteamImageUrl(category.name),
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // Fallback 1: Local asset nếu có
+                if (category.imageAsset != null) {
+                  return Image.asset(
+                    category.imageAsset!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => _buildDefaultBg(),
+                  );
+                }
+                // Fallback 2: Màu nền mặc định
+                return _buildDefaultBg();
+              },
+            ),
 
             // === Gradient overlay ===
             DecoratedBox(
@@ -58,27 +66,30 @@ class CategoryCard extends StatelessWidget {
             ),
 
             // === Tên category ===
-            Padding(
-              padding: const EdgeInsets.all(12),
+            Positioned(
+              left: 8,
+              right: 8,
+              bottom: 8,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   // Icon tượng trưng
                   Icon(
                     _categoryIcon(category.name),
                     color: Colors.white.withValues(alpha: 0.85),
-                    size: 22,
+                    size: 18,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   // Tên
                   Text(
                     category.name,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 0.3,
+                      letterSpacing: 0.2,
+                      height: 1.15,
                       shadows: [
                         Shadow(blurRadius: 4, color: Colors.black),
                       ],
@@ -141,5 +152,13 @@ class CategoryCard extends StatelessWidget {
     if (lower.contains('fighting') || lower.contains('fight')) return Icons.sports_martial_arts;
     if (lower.contains('music') || lower.contains('rhythm')) return Icons.music_note;
     return Icons.sports_esports;
+  }
+
+  /// Format tên category thành dạng url slug an toàn
+  String _getSteamImageUrl(String name) {
+    // VD: "Action" -> "action", "Sports & Racing" -> "sportsracing"
+    // URL format: https://store.fastly.steamstatic.com/categories/homepageimage/category/[tên]?cc=us&l=tchinese&v=2
+    final safeName = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+    return 'https://store.fastly.steamstatic.com/categories/homepageimage/category/$safeName?cc=us&l=tchinese&v=2';
   }
 }
