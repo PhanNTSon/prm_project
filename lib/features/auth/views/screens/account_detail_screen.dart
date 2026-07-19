@@ -139,6 +139,18 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () async {
+              final updated = await context.push('/account/edit', extra: _profile);
+              if (updated is ProfileModel && mounted) {
+                setState(() => _profile = updated);
+              }
+            },
+            icon: const Icon(Icons.edit, size: 16, color: AppColors.primaryColor),
+            label: const Text('Chỉnh sửa hồ sơ',
+                style: TextStyle(color: AppColors.primaryColor)),
+          ),
         ],
       ),
     );

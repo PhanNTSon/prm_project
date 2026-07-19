@@ -86,13 +86,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Huỷ',
-                style: TextStyle(color: AppColors.secondaryTextColor)),
+            child: const Text(
+              'Huỷ',
+              style: TextStyle(color: AppColors.secondaryTextColor),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Đăng xuất',
-                style: TextStyle(color: AppColors.errorColor)),
+            child: const Text(
+              'Đăng xuất',
+              style: TextStyle(color: AppColors.errorColor),
+            ),
           ),
         ],
       ),
@@ -132,8 +136,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return Stack(
           children: [
             IconButton(
-              icon: const Icon(Icons.notifications_outlined,
-                  color: AppColors.primaryTextColor),
+              icon: const Icon(
+                Icons.notifications_outlined,
+                color: AppColors.primaryTextColor,
+              ),
               onPressed: () {
                 // TODO: Chuyển sang màn hình Notifications
               },
@@ -153,9 +159,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? '99+'
                         : '${notifProvider.unreadCount}',
                     style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -177,17 +184,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline,
-                color: AppColors.errorColor, size: 48),
+            const Icon(
+              Icons.error_outline,
+              color: AppColors.errorColor,
+              size: 48,
+            ),
             const SizedBox(height: 16),
-            Text(_errorMessage!,
-                style:
-                    const TextStyle(color: AppColors.secondaryTextColor)),
+            Text(
+              _errorMessage!,
+              style: const TextStyle(color: AppColors.secondaryTextColor),
+            ),
             const SizedBox(height: 16),
             TextButton(
               onPressed: _loadProfile,
-              child: const Text('Thử lại',
-                  style: TextStyle(color: AppColors.primaryColor)),
+              child: const Text(
+                'Thử lại',
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
             ),
           ],
         ),
@@ -196,6 +209,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_profile == null) return const SizedBox.shrink();
 
+    // ============ DEBUG TẠM - Bật Header + WalletCard ============
+    return RefreshIndicator(
+      color: AppColors.primaryColor,
+      onRefresh: _loadProfile,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            _buildProfileHeader(),
+            const SizedBox(height: 12),
+            if (_isOwnProfile) _buildWalletCard(),
+            const SizedBox(height: 12),
+            const Text(
+              'TEST 4: bật Header + WalletCard',
+              style: TextStyle(color: AppColors.primaryTextColor),
+            ),
+          ],
+        ),
+      ),
+    );
+    // ============ HẾT PHẦN DEBUG - CODE THẬT BÊN DƯỚI KHÔNG CHẠY ============
+    // ignore: dead_code
     return RefreshIndicator(
       color: AppColors.primaryColor,
       onRefresh: _loadProfile,
@@ -255,8 +290,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.location_on_outlined,
-                    color: AppColors.secondaryTextColor, size: 14),
+                const Icon(
+                  Icons.location_on_outlined,
+                  color: AppColors.secondaryTextColor,
+                  size: 14,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   _profile!.country!,
@@ -276,14 +314,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 // TODO: Chuyển sang /profile/:userId/edit/info
               },
-              icon: const Icon(Icons.edit_outlined,
-                  color: AppColors.primaryColor, size: 16),
-              label: const Text('Chỉnh sửa hồ sơ',
-                  style: TextStyle(color: AppColors.primaryColor)),
+              icon: const Icon(
+                Icons.edit_outlined,
+                color: AppColors.primaryColor,
+                size: 16,
+              ),
+              label: const Text(
+                'Chỉnh sửa hồ sơ',
+                style: TextStyle(color: AppColors.primaryColor),
+              ),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: AppColors.primaryColor),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4)),
+                  borderRadius: BorderRadius.circular(4),
+                ),
               ),
             ),
           ],
@@ -314,7 +358,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Text(
         label,
         style: TextStyle(
-            color: color, fontSize: 12, fontWeight: FontWeight.bold),
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
@@ -364,11 +411,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatDivider() {
-    return Container(
-      height: 32,
-      width: 1,
-      color: AppColors.borderColor,
-    );
+    return Container(height: 32, width: 1, color: AppColors.borderColor);
   }
 
   Widget _buildBioSection() {
@@ -418,27 +461,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.account_balance_wallet,
-                  color: AppColors.primaryColor),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Số dư ví',
-                      style: TextStyle(
-                          color: AppColors.secondaryTextColor,
-                          fontSize: 12)),
-                  Text(
-                    '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
-                    style: const TextStyle(
-                      color: AppColors.primaryTextColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              const Icon(
+                Icons.account_balance_wallet,
+                color: AppColors.primaryColor,
               ),
-              const Spacer(),
+              const SizedBox(width: 12),
+              Expanded(
+                // ← bọc Expanded thay Spacer
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Số dư ví',
+                      style: TextStyle(
+                        color: AppColors.secondaryTextColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      '${walletProvider.balance.toStringAsFixed(0)} VNĐ',
+                      style: const TextStyle(
+                        color: AppColors.primaryTextColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Bỏ const Spacer() ← đã xóa
               ElevatedButton(
                 onPressed: () {
                   // TODO: Chuyển sang /account/wallet khi Dev C làm xong
@@ -447,9 +498,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundColor: AppColors.primaryColor,
                   foregroundColor: AppColors.backgroundColor,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 8),
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4)),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
                 child: const Text('Nạp tiền'),
               ),

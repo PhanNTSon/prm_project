@@ -19,7 +19,10 @@ import 'package:prm_project/features/auth/views/screens/forgot_password_screen.d
 import 'package:prm_project/features/auth/views/screens/reset_password_screen.dart';
 import 'package:prm_project/features/auth/views/screens/profile_screen.dart';
 import 'package:prm_project/features/auth/views/screens/account_detail_screen.dart';
+import 'package:prm_project/features/auth/views/screens/edit_profile_screen.dart';
+import 'package:prm_project/features/auth/models/profile_model.dart';
 import 'package:prm_project/features/auth/models/register_request_model.dart';
+import 'package:prm_project/features/library/views/screens/library.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -45,7 +48,10 @@ class AppRouter {
         
         final isAuthRoute = state.matchedLocation == '/login' || 
                             state.matchedLocation == '/register' || 
-                            state.matchedLocation == '/verify-email';
+                            state.matchedLocation == '/verify-email' ||
+                            state.matchedLocation == '/register-details' ||
+                            state.matchedLocation == '/forgot-password' ||
+                            state.matchedLocation == '/reset-password';
 
         // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
         if (!isInitialized) {
@@ -112,6 +118,12 @@ class AppRouter {
           path: '/account',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) => const AccountDetailScreen(),
+        ),
+        GoRoute(
+          path: '/account/edit',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              EditProfileScreen(profile: state.extra as ProfileModel),
         ),
 
         // 2. Trang Payment WebView - Fullscreen
