@@ -46,6 +46,20 @@ class CartProvider extends ChangeNotifier {
     }
   }
 
+  /// Thêm game vào giỏ hàng qua API, trả về true nếu thành công.
+  Future<bool> addToCart(int gameId) async {
+    try {
+      await _repository.addToCart(gameId);
+      // Reload cart để đồng bộ
+      await loadCart();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
+
   Future<CheckoutResult> checkout() async {
     _isCheckingOut = true;
     _errorMessage = null;

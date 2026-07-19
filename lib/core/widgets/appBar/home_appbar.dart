@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:prm_project/features/storefront/providers/game_list_provider.dart';
 
 /// AppBar 2 dòng theo phong cách Steam:
 ///   Dòng 1: Logo | Search bar (chiếm toàn bộ chiều rộng còn lại) | Cart | Avatar
@@ -35,7 +37,7 @@ class HomeAppbar extends StatelessWidget {
                 _iconBtn(Icons.notifications_none_rounded, () {}),
 
                 // Cart
-                _iconBtn(Icons.shopping_cart_outlined, () => context.push('/cart')),
+                _iconBtn(Icons.shopping_cart_outlined, () => context.go('/cart')),
 
                 const SizedBox(width: 4),
 
@@ -68,7 +70,10 @@ class HomeAppbar extends StatelessWidget {
                   _NavLink(
                     title: 'ALL GAMES',
                     isSelected: currentPage == 'all-games',
-                    onTap: () => context.push('/all-games'),
+                    onTap: () {
+                      context.read<GameListProvider>().setFilter(tagId: null, categoryName: null);
+                      context.push('/all-games');
+                    },
                   ),
 
                   const Spacer(),
