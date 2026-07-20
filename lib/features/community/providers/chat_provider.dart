@@ -42,15 +42,19 @@ class ChatProvider extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
 
-    // Đăng ký nhận tin nhắn cá nhân đến/đi
-    _webSocketService.subscribe('/user/queue/messages/$_currentUsername', (data) {
+  void subscribeToChat(String partnerUsername) {
+    if (_currentUsername.isEmpty) return;
+    
+    // Hủy đăng ký cũ nếu vô tình còn sót
+    unsubscribeFromChat(partnerUsername);
+    
+    final topic = '/user/queue/messages/$partnerUsername';
+    _webSocketService.subscribe(topic, (data) {
       final message = MessageModel.fromJson(data, currentUsername: _currentUsername);
       
-      // Xác định luồng hội thoại thuộc về user nào
-      // Nếu mình gửi, luồng đó là receiver. Nếu người khác gửi cho mình, luồng đó là sender.
       final conversationPartner = message.isMine ? message.receiverUsername : message.senderName;
-      
       if (conversationPartner != null) {
         if (!_privateMessages.containsKey(conversationPartner)) {
           _privateMessages[conversationPartner] = [];
@@ -59,6 +63,11 @@ class ChatProvider extends ChangeNotifier {
         notifyListeners();
       }
     });
+  }
+
+  void unsubscribeFromChat(String partnerUsername) {
+    final topic = '/user/queue/messages/$partnerUsername';
+    _webSocketService.unsubscribe(topic);
   }
 
   void sendPrivateMessage(String toUsername, String content) {

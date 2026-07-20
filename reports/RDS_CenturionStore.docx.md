@@ -228,7 +228,7 @@ Contents
 
 ## 1\. System Context  {#1.-system-context}
 
-The SteamCLone is a web-based platform designed to facilitate the browsing, purchasing, reviewing, and publishing of digital games. It replaces manual processes by providing an online interface for users to manage their game libraries, publishers to submit games, and admins to oversee operations. The context diagram below illustrates the external entities and system interfaces for release 1.0.  
+The Centurion Store is a web-based platform designed to facilitate the browsing, purchasing, reviewing, and publishing of digital games. It replaces manual processes by providing an online interface for users to manage their game libraries, publishers to submit games, and admins to oversee operations. The context diagram below illustrates the external entities and system interfaces for release 1.0.  
 ![Context Diagram][image2]  
 Figure 1.1 Context diagram
 

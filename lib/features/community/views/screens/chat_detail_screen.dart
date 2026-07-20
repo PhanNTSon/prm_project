@@ -15,25 +15,29 @@ class ChatDetailScreen extends StatefulWidget {
 
 class _ChatDetailScreenState extends State<ChatDetailScreen> {
   final TextEditingController _textController = TextEditingController();
+  late ChatProvider _chatProvider;
 
   @override
   void initState() {
     super.initState();
+    _chatProvider = context.read<ChatProvider>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ChatProvider>().loadChatHistory(widget.friendId, widget.username);
+      _chatProvider.loadChatHistory(widget.friendId, widget.username);
+      _chatProvider.subscribeToChat(widget.username);
     });
   }
 
   void _sendMessage() {
     final text = _textController.text.trim();
     if (text.isNotEmpty) {
-      context.read<ChatProvider>().sendPrivateMessage(widget.username, text);
+      _chatProvider.sendPrivateMessage(widget.username, text);
       _textController.clear();
     }
   }
 
   @override
   void dispose() {
+    _chatProvider.unsubscribeFromChat(widget.username);
     _textController.dispose();
     super.dispose();
   }
@@ -58,8 +62,10 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
         ),
         backgroundColor: const Color(0xFF171D25),
       ),
-      body: Column(
-        children: [
+      body: SafeArea(
+        bottom: true,
+        child: Column(
+          children: [
           Expanded(
             child: Consumer<ChatProvider>(
               builder: (context, chatProvider, child) {
@@ -139,6 +145,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen> {
             ),
           ),
         ],
+        ),
       ),
     );
   }

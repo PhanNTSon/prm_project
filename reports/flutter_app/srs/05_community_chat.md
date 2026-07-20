@@ -9,9 +9,9 @@
   `[Mockup: Dark theme — Top Box: "Your Friend Code" with copy button, Search bar with "Mã Kết Bạn" hint, "Pending Invites" list with Accept/Decline icons. Bottom Box: List of Friends grouped by "ONLINE" (green dot indicator) and "OFFLINE"]`
 - **Function Detail:**
   - `Friend Code Display`: Shows the current user's unique `userId` to be shared with others. Includes a Copy-to-Clipboard button.
-  - `Friend Search`: TextField that performs a debounced search (500ms) for other users using their Friend Code. Displays the matched user's Avatar and Name with a "Send Invite" button.
-  - `Pending Invites List`: Displays incoming friend requests (fetched via `GET /user/pendinginvite/receive`). Users can Accept (`PATCH /user/acceptinvite/{id}`) or Decline (`DELETE /user/declineinvite/{id}`) the request. Real-time UI updates on action.
-  - `Friend List`: Displays accepted friends fetched via `GET /user/friends`. Friends are cross-referenced with the WebSocket's `/app/online` stream to dynamically categorize them into "ONLINE" (with a green status indicator) and "OFFLINE" sections.
+  - `Friend Search`: TextField that performs a debounced search (500ms) for other users using their Friend Code. Displays the matched user's Avatar and Name. The system checks local states to prevent duplicate invites: if the user is already a friend, displays "Đã là bạn bè"; if an invite was recently sent, displays "Đã gửi lời mời"; otherwise, provides a "Gửi kết bạn" button.
+  - `Pending Invites List`: Displays incoming friend requests (fetched via `GET /user/pendinginvite/receive`). Users can Accept (`PATCH /user/acceptinvite/{id}`) or Decline (`DELETE /user/declineinvite/{id}`) the request. Includes a real-time WebSocket listener on `/user/queue/friend.invitations` that triggers an automatic refresh of the pending list when a new invite or status change is detected.
+  - `Friend List`: Displays accepted friends fetched via `GET /user/friends`. Friends are cross-referenced with the WebSocket's `/app/online` stream to dynamically categorize them into "ONLINE" (with a green status indicator) and "OFFLINE" sections. The entire screen supports a "Pull-to-Refresh" gesture to manually synchronize both friends and invitations.
   - `Friend Tap`: Tapping a friend's ListTile navigates to `/chat/detail/:friendId/:username` to open the private chat interface.
 
 #### ***1.5.2 Private Messaging***
@@ -20,11 +20,11 @@
 - **Function Description:** A real-time, private 1-on-1 messaging interface between the user and a selected friend.
 - **Screen Layout:**
   {{IMAGE:chat_detail_screen.png}}
-  `[Mockup: Dark theme — AppBar showing Friend's Avatar and Name. Main body: Scrollable chat history (bubbles on right for user, left for friend). Bottom: Message input field and send button]`
+  `[Mockup: Dark theme — AppBar showing Friend's Avatar and Name. Main body: Scrollable chat history (bubbles on right for user, left for friend). Bottom: Message input field enclosed in a SafeArea to respect system UI paddings, and a send button]`
 - **Function Detail:**
   - `Chat History Initialization`: On load, automatically fetches past message history via `GET /user/conversation/{friendId}`. Extracts and caches the `conversationId` for subsequent real-time messages.
   - `Message Bubbles`: Messages are displayed chronologically using `ListView.builder(reverse: true)`. 
     - *User's Messages (`isMine: true`)*: Rendered on the right side with a bright blue background.
     - *Friend's Messages (`isMine: false`)*: Rendered on the left side with a dark blue/grey background.
-  - `Real-time WebSocket Sync`: Connects to STOMP topic `/user/queue/messages/{username}` to listen for incoming messages.
+  - `Real-time WebSocket Sync`: Connects dynamically to STOMP topic `/user/queue/messages/{partnerUsername}` upon opening the chat screen to listen for incoming messages exclusively from that specific user. The subscription is safely disconnected when disposing the screen to prevent memory leaks and unnecessary state updates.
   - `Message Input & Send`: TextField for composing messages. Pressing the send button publishes the payload (including `conversationId`, `senderId`, `receiverUsername`, and `content`) to the WebSocket destination `/app/chat/private.send`. The UI optimistic-updates immediately without waiting for a server echo, appending the new message bubble to the right side of the screen.

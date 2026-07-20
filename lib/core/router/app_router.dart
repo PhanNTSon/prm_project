@@ -54,6 +54,11 @@ class AppRouter {
           return location == '/splash' ? null : '/splash';
         }
 
+        // Đã khởi tạo xong nhưng vẫn ở splash -> Điều hướng
+        if (location == '/splash') {
+          return isAuthenticated ? '/home' : '/login';
+        }
+
         // Danh sách route công khai không cần đăng nhập
         final isPublicRoute = [
           '/login',
