@@ -460,18 +460,15 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
     final success = await cartProvider.addToCart(game.id);
     if (mounted) {
       setState(() => _addingToCart = false);
+      // Xóa hết queue trước để tránh snackbar chồng chất do rebuild
+      ScaffoldMessenger.of(context).clearSnackBars();
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${game.title} added to cart!'),
             backgroundColor: const Color(0xFF4C6B22),
             behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 5),
-            action: SnackBarAction(
-              label: 'VIEW CART',
-              textColor: const Color(0xFFBEEE11),
-              onPressed: () => context.go('/cart'),
-            ),
+            duration: const Duration(seconds: 2),
           ),
         );
       } else {
@@ -480,6 +477,7 @@ class _GameDetailScreenState extends State<GameDetailScreen> {
             content: Text(cartProvider.errorMessage ?? 'Failed to add to cart.'),
             backgroundColor: const Color(0xFF8B0000),
             behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
