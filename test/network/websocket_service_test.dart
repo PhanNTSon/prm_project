@@ -27,7 +27,7 @@ void main() {
 
     test('Subscribing and Unsubscribing logic (Offline)', () {
       int callCount = 0;
-      void testCallback(Map<String, dynamic> data) {
+      void testCallback(dynamic data) {
         callCount++;
       }
 

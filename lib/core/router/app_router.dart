@@ -10,8 +10,22 @@ import 'package:prm_project/features/storefront/views/screens/game_search_screen
 import 'package:prm_project/features/storefront/views/screens/all_games_screen.dart';
 import 'package:prm_project/features/library/views/screens/library.dart';
 import 'main_shell_screen.dart';
-import 'placeholder_screens.dart';
 import 'splash_screen.dart';
+import 'package:prm_project/features/auth/views/screens/login_screen.dart';
+import 'package:prm_project/features/auth/views/screens/register_screen.dart';
+import 'package:prm_project/features/auth/views/screens/verify_email_screen.dart';
+import 'package:prm_project/features/auth/views/screens/register_details_screen.dart';
+import 'package:prm_project/features/auth/views/screens/forgot_password_screen.dart';
+import 'package:prm_project/features/auth/views/screens/reset_password_screen.dart';
+import 'package:prm_project/features/auth/views/screens/profile_screen.dart';
+import 'package:prm_project/features/auth/views/screens/account_detail_screen.dart';
+import 'package:prm_project/features/auth/views/screens/edit_profile_screen.dart';
+import 'package:prm_project/features/auth/models/profile_model.dart';
+import 'package:prm_project/features/auth/models/register_request_model.dart';
+import 'package:prm_project/features/library/views/screens/library.dart';
+import 'package:prm_project/features/storefront/views/screens/game_detail_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_list_screen.dart';
+import 'package:prm_project/features/community/views/screens/chat_detail_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
@@ -31,31 +45,36 @@ class AppRouter {
       initialLocation: '/home',
       refreshListenable: authProvider,
       redirect: (context, state) {
-        // Logic Auth Guard đồng bộ với AuthProvider
         final bool isInitialized = authProvider.isInitialized;
         final bool isAuthenticated = authProvider.isAuthenticated;
+        final String location = state.matchedLocation;
 
-        final isAuthRoute =
-            state.matchedLocation == '/login' ||
-            state.matchedLocation == '/register' ||
-            state.matchedLocation == '/verify-email';
-
-        // Nếu app chưa khôi phục xong trạng thái từ Local Storage -> Chờ ở Splash
+        // Chưa khởi tạo xong → chờ ở splash
         if (!isInitialized) {
-          return '/splash';
+          return location == '/splash' ? null : '/splash';
         }
 
-        if (!isAuthenticated) {
-          // Chưa đăng nhập mà đang ở trang không phải Auth -> đá về Login (giúp thoát khỏi /splash)
-          if (!isAuthRoute) {
-            return '/login';
-          }
-        } else {
-          // Đã đăng nhập mà vào trang Auth hoặc Splash -> đá về Home
-          if (isAuthRoute || state.matchedLocation == '/splash') {
-            return '/home';
-          }
+        // Danh sách route công khai không cần đăng nhập
+        final isPublicRoute = [
+          '/login',
+          '/register',
+          '/verify-email',
+          '/register-details',
+          '/forgot-password',
+          '/reset-password',
+          '/splash',
+        ].contains(location);
+
+        // Chưa đăng nhập mà vào route cần auth → đá về login
+        if (!isAuthenticated && !isPublicRoute) {
+          return '/login';
         }
+
+        // Đã đăng nhập mà vào public route → đá về home
+        if (isAuthenticated && isPublicRoute) {
+          return '/home';
+        }
+
         return null;
       },
       routes: [
@@ -70,17 +89,47 @@ class AppRouter {
         GoRoute(
           path: '/login',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const LoginPlaceholderScreen(),
+          builder: (context, state) => const LoginScreen(),
         ),
         GoRoute(
           path: '/register',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const RegisterPlaceholderScreen(),
+          builder: (context, state) => const RegisterScreen(),
         ),
         GoRoute(
           path: '/verify-email',
           parentNavigatorKey: rootNavigatorKey,
-          builder: (context, state) => const VerifyEmailPlaceholderScreen(),
+          builder: (context, state) =>
+              VerifyEmailScreen(data: state.extra as RegisterRequestModel),
+        ),
+        GoRoute(
+          path: '/register-details',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              RegisterDetailsScreen(data: state.extra as RegisterRequestModel),
+        ),
+        GoRoute(
+          path: '/forgot-password',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ForgotPasswordScreen(),
+        ),
+        GoRoute(
+          path: '/reset-password',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              ResetPasswordScreen(email: state.extra as String),
+        ),
+
+        GoRoute(
+          path: '/account',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const AccountDetailScreen(),
+        ),
+        GoRoute(
+          path: '/account/edit',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) =>
+              EditProfileScreen(profile: state.extra as ProfileModel),
         ),
 
         // 2. Trang Payment WebView - Fullscreen
@@ -123,6 +172,42 @@ class AppRouter {
           builder: (context, state) => const AllGamesScreen(),
         ),
 
+        // Game Detail - Fullscreen
+        GoRoute(
+          path: '/game-detail/:id',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+            return GameDetailScreen(gameId: id);
+          },
+        ),
+
+        // Chat Detail
+        GoRoute(
+          path: '/chat/detail/:friendId/:username',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) {
+            final username = state.pathParameters['username'] ?? '';
+            final friendId = int.tryParse(state.pathParameters['friendId'] ?? '') ?? 0;
+            return ChatDetailScreen(username: username, friendId: friendId);
+          },
+        ),
+
+        // Profile top-level
+        GoRoute(
+          path: '/profile',
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => const ProfileScreen(),
+          routes: [
+            GoRoute(
+              path: ':userId',
+              parentNavigatorKey: rootNavigatorKey,
+              builder: (context, state) =>
+                  ProfileScreen(userId: state.pathParameters['userId']),
+            ),
+          ],
+        ),
+
         // 5. Shell Layout chứa Bottom Navigation Bar
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {
@@ -136,16 +221,6 @@ class AppRouter {
                 GoRoute(
                   path: '/home',
                   builder: (context, state) => const HomeScreen(),
-                  routes: [
-                    // Sub-route Chi tiết game (Vẫn giữ Bottom Navigation)
-                    GoRoute(
-                      path: 'game-detail/:id',
-                      builder: (context, state) {
-                        final id = state.pathParameters['id']!;
-                        return GameDetailPlaceholderScreen(gameId: id);
-                      },
-                    ),
-                  ],
                 ),
               ],
             ),
@@ -172,13 +247,13 @@ class AppRouter {
               ],
             ),
 
-            // Tab 3: Cá nhân
+            // Tab 3: Chat
             StatefulShellBranch(
               navigatorKey: _shellNavigatorProfile,
               routes: [
                 GoRoute(
-                  path: '/profile',
-                  builder: (context, state) => const ProfilePlaceholderScreen(),
+                  path: '/chat',
+                  builder: (context, state) => const ChatListScreen(),
                 ),
               ],
             ),

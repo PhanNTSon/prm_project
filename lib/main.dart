@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/network/dio_client.dart';
+import 'core/theme/app_theme.dart';
 import 'core/network/secure_storage_service.dart';
 import 'core/network/websocket_service.dart';
 import 'core/router/app_router.dart';
@@ -16,10 +17,14 @@ import 'features/cart_payment/providers/cart_provider.dart';
 import 'features/cart_payment/repositories/cart_repository.dart';
 import 'features/cart_payment/providers/payment_provider.dart';
 import 'features/cart_payment/repositories/wallet_repository.dart';
-import 'core/network/dio_client.dart';
 import 'features/storefront/data/repositories/game_repository.dart';
 import 'features/storefront/providers/game_search_provider.dart';
 import 'features/storefront/providers/game_list_provider.dart';
+import 'features/storefront/providers/home_provider.dart';
+import 'features/storefront/providers/game_detail_provider.dart';
+import 'package:prm_project/features/community/providers/chat_provider.dart';
+import 'package:prm_project/features/community/providers/friend_provider.dart';
+import 'package:prm_project/features/community/data/repositories/friend_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +56,10 @@ class _MainAppState extends State<MainApp> {
   late final NotificationProvider _notificationProvider;
   late final GameSearchProvider _gameSearchProvider;
   late final GameListProvider _gameListProvider;
+  late final HomeProvider _homeProvider;
+  late final GameDetailProvider _gameDetailProvider;
+  late final ChatProvider _chatProvider;
+  late final FriendProvider _friendProvider;
 
   @override
   void initState() {
@@ -71,6 +80,10 @@ class _MainAppState extends State<MainApp> {
     final gameRepository = GameRepository(dioClient);
     _gameSearchProvider = GameSearchProvider(gameRepository);
     _gameListProvider = GameListProvider(gameRepository);
+    _homeProvider = HomeProvider(gameRepository);
+    _gameDetailProvider = GameDetailProvider(gameRepository);
+    _chatProvider = ChatProvider(_webSocketService, _authProvider, dioClient);
+    _friendProvider = FriendProvider(FriendRepository(_dioClient));
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -108,6 +121,8 @@ class _MainAppState extends State<MainApp> {
         _webSocketService.disconnect();
         _walletProvider.clearBalance();
         _notificationProvider.clearNotifications();
+        _chatProvider.clearData();
+        _friendProvider.clearData();
       }
     }
   }
@@ -136,7 +151,15 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<GameListProvider>.value(
           value: _gameListProvider,
         ),
-        Provider<WebSocketService>.value(value: _webSocketService),
+        ChangeNotifierProvider<ChatProvider>.value(
+          value: _chatProvider,
+        ),
+        ChangeNotifierProvider<FriendProvider>.value(
+          value: _friendProvider,
+        ),
+        ChangeNotifierProvider<HomeProvider>.value(value: _homeProvider),
+        ChangeNotifierProvider<GameDetailProvider>.value(value: _gameDetailProvider),
+        ChangeNotifierProvider<WebSocketService>.value(value: _webSocketService),
         ChangeNotifierProvider(
           create: (_) => LibraryProvider(LibraryRepository()),
         ),

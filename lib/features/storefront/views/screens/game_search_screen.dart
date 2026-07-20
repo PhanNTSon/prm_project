@@ -144,10 +144,7 @@ class _GameSearchScreenState extends State<GameSearchScreen> {
               final game = provider.searchResults[index];
               return GameSearchResultItem(
                 game: game,
-                onTap: () {
-                  // Navigate đến màn hình chi tiết game
-                  context.push('/home/game-detail/${game.id}');
-                },
+                onTap: () => context.push('/game-detail/${game.id}'),
               );
             },
           ),

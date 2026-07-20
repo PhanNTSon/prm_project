@@ -23,12 +23,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void initState() {
     super.initState();
-
-    final provider = context.read<LibraryProvider>();
-
-    provider.loadLibrary(refresh: true);
-
     _scrollController.addListener(_onScroll);
+    // Defer load until after first frame to avoid setState-during-build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LibraryProvider>().loadLibrary(refresh: true);
+    });
   }
 
   void _onScroll() {

@@ -1,3 +1,4 @@
+// lib/features/cart_payment/screens/cart_screen.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:prm_project/features/profile/providers/wallet_provider.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../providers/cart_provider.dart';
+import '../providers/payment_provider.dart';
 import '../widgets/cart_item_tile.dart';
 
 class CartScreen extends StatefulWidget {
@@ -20,10 +22,14 @@ class _CartScreenState extends State<CartScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CartProvider>().loadCart();
+      context.read<PaymentProvider>().loadBalance().then((_) {
+        if (!mounted) return;
+        context
+            .read<WalletProvider>()
+            .updateBalance(context.read<PaymentProvider>().balance);
+      });
     });
   }
-
-
   String _formatUsd(double amount) => '\$${amount.toStringAsFixed(2)}';
 
   Future<void> _onPurchase() async {
@@ -34,6 +40,14 @@ class _CartScreenState extends State<CartScreen> {
 
     switch (result) {
       case CheckoutResult.success:
+        final paymentProvider = context.read<PaymentProvider>();
+        await paymentProvider.loadBalance();
+        if (!context.mounted) return;
+        context
+            .read<WalletProvider>()
+            .updateBalance(paymentProvider.balance);
+
+        if (!context.mounted) return;
         context.push('/payment-result', extra: const {
           'type': 'purchase',
           'success': true,
@@ -67,23 +81,44 @@ class _CartScreenState extends State<CartScreen> {
           'Would you like to top up your wallet?',
           style: TextStyle(color: AppColors.secondaryTextColor),
         ),
+        actionsPadding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
         actions: [
-          TextButton(
-            onPressed: () => context.pop(),
-            child: const Text(
-              'No',
-              style: TextStyle(color: AppColors.secondaryTextColor),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.pop();
-              context.push('/account/wallet');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-            ),
-            child: const Text('Top Up'),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => context.pop(),
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.surfaceColor,
+                    side: const BorderSide(color: AppColors.borderColor),
+                    foregroundColor: AppColors.primaryTextColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: const Text('No'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.pop();
+                    context.push('/account/wallet');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    foregroundColor: AppColors.backgroundColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  child: const Text('Top Up', style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -121,21 +156,84 @@ class _CartScreenState extends State<CartScreen> {
         onRefresh: () => context.read<CartProvider>().loadCart(),
         child: provider.isLoading
             ? const Center(child: CircularProgressIndicator())
-            : provider.items.isEmpty
-                ? const _EmptyCart()
-                : _CartContent(
-                    provider: provider,
-                    formatUsd: _formatUsd,
-                    walletBalanceUsd: walletBalanceUsd,
-                    onRemove: (gameId) => provider.removeItem(gameId),
-                    onPurchase: _onPurchase,
-                  ),
+            : provider.errorMessage != null && provider.items.isEmpty
+                ? _ErrorState(
+                    message: provider.errorMessage!,
+                    onRetry: () => context.read<CartProvider>().loadCart(),
+                  )
+                : provider.items.isEmpty
+                    ? const _EmptyCart()
+                    : _CartContent(
+                        provider: provider,
+                        formatUsd: _formatUsd,
+                        walletBalanceUsd: walletBalanceUsd,
+                        onRemove: (gameId) => provider.removeItem(gameId),
+                        onPurchase: _onPurchase,
+                      ),
       ),
     );
   }
 }
 
-// ── Empty state ─────────────────────────────────────────────────────────
+class _ErrorState extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorState({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.wifi_off_rounded,
+                    size: 56,
+                    color: AppColors.errorColor,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Failed to load cart',
+                    style: TextStyle(
+                      color: AppColors.primaryTextColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppColors.secondaryTextColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: onRetry,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
 
 class _EmptyCart extends StatelessWidget {
   const _EmptyCart();
@@ -177,8 +275,6 @@ class _EmptyCart extends StatelessWidget {
     );
   }
 }
-
-// ── Cart content ─────────────────────────────────────────────────────────
 
 class _CartContent extends StatelessWidget {
   final CartProvider provider;
@@ -225,8 +321,6 @@ class _CartContent extends StatelessWidget {
     );
   }
 }
-
-// ── Summary bar ──────────────────────────────────────────────────────────
 
 class _CartSummaryBar extends StatelessWidget {
   final String totalPrice;

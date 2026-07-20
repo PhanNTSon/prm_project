@@ -13,44 +13,33 @@ class CartItemTile extends StatelessWidget {
     required this.onRemove,
   });
 
-  String _formatVnd(double amount) {
-    final s = amount.round().toString();
-    final buf = StringBuffer();
-    for (int i = 0; i < s.length; i++) {
-      final fromEnd = s.length - i;
-      buf.write(s[i]);
-      if (fromEnd > 1 && fromEnd % 3 == 1) buf.write('.');
-    }
-    return '$buf₫';
-  }
+  static const double _tileHeight = 110;
+
+  String _formatUsd(double amount) => '\$${amount.toStringAsFixed(2)}';
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: _tileHeight,
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: AppColors.cardColor,
         borderRadius: BorderRadius.circular(3),
         border: Border.all(color: AppColors.borderColor),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(3),
-              bottomLeft: Radius.circular(3),
-            ),
-            child: item.thumbnailUrl != null
-                ? CachedNetworkImage(
-                    imageUrl: item.thumbnailUrl!,
-                    width: 150,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => const _ThumbnailPlaceholder(),
-                    errorWidget: (_, __, ___) => const _ThumbnailPlaceholder(),
-                  )
-                : const _ThumbnailPlaceholder(),
-          ),
+          item.thumbnailUrl != null
+              ? CachedNetworkImage(
+                  imageUrl: item.thumbnailUrl!,
+                  width: 150,
+                  height: _tileHeight,
+                  fit: BoxFit.cover,
+                  placeholder: (_, __) => const _ThumbnailPlaceholder(height: _tileHeight),
+                  errorWidget: (_, __, ___) => const _ThumbnailPlaceholder(height: _tileHeight),
+                )
+              : const _ThumbnailPlaceholder(height: _tileHeight),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -114,7 +103,7 @@ class CartItemTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatVnd(item.originalPrice),
+                    _formatUsd(item.originalPrice),
                     style: const TextStyle(
                       color: AppColors.secondaryTextColor,
                       fontSize: 11,
@@ -123,7 +112,7 @@ class CartItemTile extends StatelessWidget {
                   ),
                 ],
                 Text(
-                  _formatVnd(item.price),
+                  _formatUsd(item.price),
                   style: const TextStyle(
                     color: AppColors.primaryColor,
                     fontWeight: FontWeight.w600,
@@ -140,12 +129,14 @@ class CartItemTile extends StatelessWidget {
 }
 
 class _ThumbnailPlaceholder extends StatelessWidget {
-  const _ThumbnailPlaceholder();
+  final double height;
+  const _ThumbnailPlaceholder({required this.height});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 150,
+      height: height,
       color: AppColors.surfaceColor,
       child: const Icon(
         Icons.videogame_asset_outlined,
