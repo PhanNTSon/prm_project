@@ -4,17 +4,17 @@ The project is implemented by Group 6 - SE1924-JS(IT) based on the requirements 
 
 # **Definition and Acronyms**
 
-| Acronym | Definition                         |
-| :-----: | ---------------------------------- |
-|   API   | Application Programming Interface  |
-|   BR    | Business Rule                      |
-|   JWT   | JSON Web Token                     |
-|   OTP   | One-Time Password                  |
-|   SRS   | Software Requirement Specification |
+| Acronym | Definition                              |
+| :-----: | --------------------------------------- |
+|   API   | Application Programming Interface       |
+|   BR    | Business Rule                           |
+|   JWT   | JSON Web Token                          |
+|   OTP   | One-Time Password                       |
+|   SRS   | Software Requirement Specification      |
 |  STOMP  | Simple Text Oriented Messaging Protocol |
-|   UI    | User Interface                     |
-|   UX    | User Experience                    |
-|  VNPay  | Vietnam Payment Gateway            |
+|   UI    | User Interface                          |
+|   UX    | User Experience                         |
+|  VNPay  | Vietnam Payment Gateway                 |
 
 # **I. Project Introduction**
 
@@ -34,7 +34,7 @@ The project is implemented by Group 6 - SE1924-JS(IT) based on the requirements 
 | _1_   | Nguyễn Văn A           | Authentication & Profile                                               |
 | _2_   | Nguyễn Văn B           | Storefront (Home, Search, Game Details)                                |
 | _3_   | Nguyễn Văn C           | Cart, Payment (VNPay), & Wallet                                        |
-| _4_   | Nguyễn Văn D           | Library & UI Kit Components                                            |
+| _4_   | Ngô Tiến Đạt           | Library & UI Kit Components                                            |
 | _5_   | Phan Nguyễn Trường Sơn | Architecture, Routing, Base Network, Testing, Community (Friend, Chat) |
 
 ## **2\. Product Background**
