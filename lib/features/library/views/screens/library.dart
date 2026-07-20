@@ -64,6 +64,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
             );
           }
 
+          if (provider.isError && provider.games.isEmpty) {
+            return const Center(child: Text('Failed to load library'));
+          }
           if (provider.games.isEmpty) {
             return const EmptyLibrary();
           }

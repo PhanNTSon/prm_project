@@ -8,6 +8,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import 'package:prm_project/features/storefront/home_screen.dart';
 import 'package:prm_project/features/storefront/views/screens/game_search_screen.dart';
 import 'package:prm_project/features/storefront/views/screens/all_games_screen.dart';
+import 'package:prm_project/features/library/views/screens/library.dart';
 import 'main_shell_screen.dart';
 import 'splash_screen.dart';
 import 'package:prm_project/features/auth/views/screens/login_screen.dart';

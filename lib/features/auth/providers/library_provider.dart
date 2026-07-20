@@ -1,101 +1,208 @@
-import 'package:flutter/material.dart';
-import 'package:prm_project/features/library/data/models/library_game.dart';
-import 'package:prm_project/features/library/data/repositories/library_repository.dart';
+import 'package:flutter/foundation.dart';
+
+import '../../library/data/models/library_game.dart';
+import '../../library/data/models/page_model.dart';
+import '../../library/data/repositories/library_repository.dart';
 
 class LibraryProvider extends ChangeNotifier {
-  final LibraryRepository repository;
+  final LibraryRepository _repository;
 
-  LibraryProvider(this.repository);
+  LibraryProvider(this._repository);
 
-  List<LibraryGame> games = [];
+  // =========================
+  // Data
+  // =========================
 
-  bool isLoading = false;
+  final List<LibraryGame> _games = [];
 
-  bool isError = false;
+  List<LibraryGame> get games => List.unmodifiable(_games);
 
-  bool isSuccess = false;
+  // =========================
+  // State
+  // =========================
 
-  int currentPage = 0;
+  bool _isLoading = false;
+  bool _isError = false;
+  bool _isSuccess = false;
 
-  final int pageSize = 20;
+  bool get isLoading => _isLoading;
 
-  int totalPages = 0;
+  bool get isError => _isError;
 
-  bool hasMore = true;
+  bool get isSuccess => _isSuccess;
 
-  String sort = "name,asc";
+  // =========================
+  // Pagination
+  // =========================
+
+  int _currentPage = 0;
+
+  final int _pageSize = 20;
+
+  int _totalPages = 0;
+
+  bool _hasMore = true;
+
+  int get currentPage => _currentPage;
+
+  int get totalPages => _totalPages;
+
+  bool get hasMore => _hasMore;
+
+  // =========================
+  // Sort
+  // =========================
+
+  String _sort = "az";
+
+  String get sort => _sort;
+
+  // =========================
+  // Load Library
+  // =========================
 
   Future<void> loadLibrary({bool refresh = false}) async {
-    if (isLoading) return;
+    if (_isLoading) return;
 
     if (refresh) {
-      currentPage = 0;
-
-      games.clear();
-
-      hasMore = true;
+      _games.clear();
+      _currentPage = 0;
+      _totalPages = 0;
+      _hasMore = true;
+      _isError = false;
+      _isSuccess = false;
     }
 
-    if (!hasMore) return;
+    if (!_hasMore) return;
 
-    isLoading = true;
-
+    _isLoading = true;
     notifyListeners();
 
     try {
-      final page = await repository.getLibrary(
-        page: currentPage,
-
-        size: pageSize,
-
-        sort: [sort],
+      final PageResponse<LibraryGame> page = await _repository.getLibrary(
+        page: _currentPage,
+        size: _pageSize,
       );
 
-      games.addAll(page.content);
+      _games.addAll(page.content);
 
-      totalPages = page.totalPages;
+      _currentPage++;
 
-      hasMore = !page.last;
+      _totalPages = page.totalPages;
 
-      currentPage++;
+      _hasMore = !page.last;
 
-      isSuccess = true;
+      _isSuccess = true;
+      _isError = false;
 
-      isError = false;
-    } catch (e) {
-      isError = true;
+      debugPrint('''
+========== Library ==========
+Loaded page : $_currentPage
+Games       : ${_games.length}
+Total Pages : $_totalPages
+Has More    : $_hasMore
+=============================
+''');
+    } catch (e, stackTrace) {
+      _isError = true;
+      _isSuccess = false;
+
+      debugPrint("LibraryProvider Error: $e");
+      debugPrintStack(stackTrace: stackTrace);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
+  }
 
-    isLoading = false;
+  Future<void> refreshLibrary() async {
+    await loadLibrary(refresh: true);
+  }
+
+  // =========================
+  // Sort (Local Only)
+  // =========================
+
+  void changeSort(String value) {
+    if (_sort == value) return;
+
+    _sort = value;
 
     notifyListeners();
   }
 
   List<LibraryGame> get sortedGames {
-    final list = [...games];
+    final list = [..._games];
 
-    switch (sort) {
+    switch (_sort) {
       case "az":
         list.sort((a, b) => a.name.compareTo(b.name));
-
         break;
 
       case "za":
         list.sort((a, b) => b.name.compareTo(a.name));
-
         break;
 
       case "priceLowHigh":
         list.sort((a, b) => a.price.compareTo(b.price));
-
         break;
 
       case "priceHighLow":
         list.sort((a, b) => b.price.compareTo(a.price));
+        break;
 
+      default:
         break;
     }
 
     return list;
+  }
+
+  // =========================
+  // Search
+  // =========================
+
+  List<LibraryGame> searchGames(String keyword) {
+    final query = keyword.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      return sortedGames;
+    }
+
+    return sortedGames.where((game) {
+      return game.name.toLowerCase().contains(query) ||
+          game.publisherName.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  // =========================
+  // Infinite Scroll
+  // =========================
+
+  Future<void> loadNextPage() async {
+    if (_isLoading || !_hasMore) return;
+
+    await loadLibrary();
+  }
+
+  // =========================
+  // Clear
+  // =========================
+
+  void clear() {
+    _games.clear();
+
+    _currentPage = 0;
+    _totalPages = 0;
+
+    _hasMore = true;
+
+    _isLoading = false;
+    _isError = false;
+    _isSuccess = false;
+
+    _sort = "az";
+
+    notifyListeners();
   }
 }
