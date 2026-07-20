@@ -83,7 +83,10 @@ class _MainAppState extends State<MainApp> {
     _homeProvider = HomeProvider(gameRepository);
     _gameDetailProvider = GameDetailProvider(gameRepository);
     _chatProvider = ChatProvider(_webSocketService, _authProvider, dioClient);
-    _friendProvider = FriendProvider(FriendRepository(_dioClient), _webSocketService);
+    _friendProvider = FriendProvider(
+      FriendRepository(_dioClient),
+      _webSocketService,
+    );
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -156,17 +159,17 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<GameListProvider>.value(
           value: _gameListProvider,
         ),
-        ChangeNotifierProvider<ChatProvider>.value(
-          value: _chatProvider,
-        ),
-        ChangeNotifierProvider<FriendProvider>.value(
-          value: _friendProvider,
-        ),
+        ChangeNotifierProvider<ChatProvider>.value(value: _chatProvider),
+        ChangeNotifierProvider<FriendProvider>.value(value: _friendProvider),
         ChangeNotifierProvider<HomeProvider>.value(value: _homeProvider),
-        ChangeNotifierProvider<GameDetailProvider>.value(value: _gameDetailProvider),
-        ChangeNotifierProvider<WebSocketService>.value(value: _webSocketService),
+        ChangeNotifierProvider<GameDetailProvider>.value(
+          value: _gameDetailProvider,
+        ),
+        ChangeNotifierProvider<WebSocketService>.value(
+          value: _webSocketService,
+        ),
         ChangeNotifierProvider(
-          create: (_) => LibraryProvider(LibraryRepository()),
+          create: (_) => LibraryProvider(LibraryRepository(_dioClient)),
         ),
       ],
       child: MaterialApp.router(
