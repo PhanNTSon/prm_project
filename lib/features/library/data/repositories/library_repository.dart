@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../../core/network/dio_client.dart';
@@ -13,66 +12,68 @@ class LibraryRepository {
   Future<PageResponse<LibraryGame>> getLibrary({
     required int page,
     required int size,
-    List<String>? sort,
   }) async {
-    try {
-      final response = await _dioClient.get(
-        "/user/library",
-        queryParameters: {
-          "page": page,
-          "size": size,
-          if (sort != null && sort.isNotEmpty) "sort": sort,
-        },
+    final response = await _dioClient.get(
+      "/user/library",
+      queryParameters: {"page": page, "size": size},
+    );
+
+    final data = response.data;
+
+    final List<LibraryGame> games = (data["content"] as List<dynamic>).map((
+      libraryItem,
+    ) {
+      final game = libraryItem["gameDetail"] as Map<String, dynamic>;
+
+      String imageUrl = "";
+
+      // Ưu tiên iconUrl
+      if (game["iconUrl"] != null && game["iconUrl"].toString().isNotEmpty) {
+        imageUrl = game["iconUrl"];
+      }
+
+      // Nếu iconUrl rỗng thì lấy image_header
+      if (imageUrl.isEmpty && game["media"] != null) {
+        final mediaList = List<Map<String, dynamic>>.from(game["media"]);
+
+        for (final media in mediaList) {
+          if (media["type"] == "image_header") {
+            imageUrl = media["url"] ?? "";
+            break;
+          }
+        }
+
+        // Nếu không có image_header thì lấy ảnh đầu tiên
+        if (imageUrl.isEmpty && mediaList.isNotEmpty) {
+          imageUrl = mediaList.first["url"] ?? "";
+        }
+      }
+
+      debugPrint("--------------------------------");
+      debugPrint("Game: ${game["name"]}");
+      debugPrint("Image: $imageUrl");
+
+      return LibraryGame(
+        gameId: (game["gameId"] as num).toInt(),
+        name: game["name"] ?? "",
+        price: (game["price"] as num).toDouble(),
+        iconUrl: imageUrl,
+        publisherName: (game["publisher"]?["publisherName"] ?? "") as String,
+        playtimeInMillis:
+            (libraryItem["playtimeInMillis"] as num?)?.toInt() ?? 0,
+        lastTimePlayed: libraryItem["lastTimePlayed"] != null
+            ? DateTime.tryParse(libraryItem["lastTimePlayed"].toString())
+            : null,
       );
-      debugPrint("Status: ${response.statusCode}");
-      debugPrint("Response: ${response.data}");
+    }).toList();
 
-      final Map<String, dynamic> data = response.data as Map<String, dynamic>;
-      debugPrint(data.toString());
-      final List<dynamic> content = (data["content"] as List<dynamic>?) ?? [];
-
-      final List<LibraryGame> games = content.map((item) {
-        final Map<String, dynamic> libraryItem = item as Map<String, dynamic>;
-
-        final Map<String, dynamic> game =
-            libraryItem["gameDetail"] as Map<String, dynamic>;
-
-        return LibraryGame(
-          gameId: game["gameId"] as int,
-          name: game["name"] as String,
-          price: (game["price"] as num).toDouble(),
-          iconUrl: game["iconUrl"] as String? ?? "",
-          publisherName:
-              (game["publisher"] as Map<String, dynamic>)["publisherName"]
-                  as String? ??
-              "",
-          playtimeInMillis:
-              (libraryItem["playtimeInMillis"] as num?)?.toInt() ?? 0,
-          lastTimePlayed: libraryItem["lastTimePlayed"] != null
-              ? DateTime.tryParse(libraryItem["lastTimePlayed"].toString())
-              : null,
-        );
-      }).toList();
-
-      debugPrint("Library API loaded ${games.length} games.");
-
-      return PageResponse<LibraryGame>(
-        content: games,
-        totalPages: data["totalPages"] as int? ?? 0,
-        totalElements: data["totalElements"] as int? ?? 0,
-        page: data["number"] as int? ?? page,
-        size: data["size"] as int? ?? size,
-        last: data["last"] as bool? ?? true,
-      );
-    } on DioException catch (e) {
-      debugPrint("Status: ${e.response?.statusCode}");
-      debugPrint("Body: ${e.response?.data}");
-
-      rethrow;
-    } catch (e, stackTrace) {
-      debugPrint("LibraryRepository Error: $e");
-      debugPrintStack(stackTrace: stackTrace);
-      rethrow;
-    }
+    return PageResponse(
+      content: games,
+      totalPages: (data["totalPages"] as num).toInt(),
+      totalElements: (data["totalElements"] as num).toInt(),
+      page: (data["number"] as num).toInt(),
+      size: (data["size"] as num).toInt(),
+      last: data["last"] as bool,
+    );
   }
 }
