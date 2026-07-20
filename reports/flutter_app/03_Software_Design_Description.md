@@ -28,64 +28,201 @@ Each sub-feature (e.g., `storefront`) is further divided into a 3-Layer Architec
 
 #### **1.3.1 Screen Authorization**
 
-| Screen | Guest | User | Publisher | Admin |
-| :---- | :---: | :---: | :---: | :---: |
-| Home | x | x | x | x |
-| Library |  | x | x | x |
-| Feedback/Request |  | x | x | x |
-| New Feedback/Request |  | x | x | x |
-| User Profile |  | x | x | x |
-| Register | x |  |  |  |
-| Login | x |  |  |  |
-| Forget Password | x |  |  |  |
-| Apply Publisher  |  | x |  |  |
-| Adding Game |  |  | x |  |
-| Edit Profile |  | x | x | x |
-| Success / Not Success Pop-up |  | x | x | x |
-| Apply to Publisher Queue |  |  |  | x |
-| Game Request Queue |  |  |  | x |
-| Report Queue |  |  |  | x |
-| Feedback/Request Queue |  |  |  | x |
-| Queue Pop-up |  |  |  | x |
-| Game Browse Filter | x | x | x | x |
-| Search Box | x | x | x | x |
-| Game Details and Review | x | x | x | x |
-| Report Form |  | x | x |  |
-| Publisher Profile | x | x | x | x |
-| Add to Cart Pop-up |  | x | x | x |
-| Cart |  | x | x | x |
-| Payment method |  | x | x | x |
-| Payment Success/ Not Success  |  | x | x | x |
+| Screen                       | Guest | User | Publisher | Admin |
+| :--------------------------- | :---: | :--: | :-------: | :---: |
+| Home                         |   x   |  x   |     x     |   x   |
+| Library                      |       |  x   |     x     |   x   |
+| Feedback/Request             |       |  x   |     x     |   x   |
+| New Feedback/Request         |       |  x   |     x     |   x   |
+| User Profile                 |       |  x   |     x     |   x   |
+| Register                     |   x   |      |           |       |
+| Login                        |   x   |      |           |       |
+| Forget Password              |   x   |      |           |       |
+| Apply Publisher              |       |  x   |           |       |
+| Adding Game                  |       |      |     x     |       |
+| Edit Profile                 |       |  x   |     x     |   x   |
+| Success / Not Success Pop-up |       |  x   |     x     |   x   |
+| Apply to Publisher Queue     |       |      |           |   x   |
+| Game Request Queue           |       |      |           |   x   |
+| Report Queue                 |       |      |           |   x   |
+| Feedback/Request Queue       |       |      |           |   x   |
+| Queue Pop-up                 |       |      |           |   x   |
+| Game Browse Filter           |   x   |  x   |     x     |   x   |
+| Search Box                   |   x   |  x   |     x     |   x   |
+| Game Details and Review      |   x   |  x   |     x     |   x   |
+| Report Form                  |       |  x   |     x     |       |
+| Publisher Profile            |   x   |  x   |     x     |   x   |
+| Add to Cart Pop-up           |       |  x   |     x     |   x   |
+| Cart                         |       |  x   |     x     |   x   |
+| Payment method               |       |  x   |     x     |   x   |
+| Payment Success/ Not Success |       |  x   |     x     |   x   |
 
 #### **1.3.2 Non-UI Functions**
 
-| \# | Feature | System Function | Description |
-| :---- | :---- | :---- | :---- |
-| 1 | Database Backup | Cron Job | Automated daily backup of the main PostgreSQL database. |
-| 2 | Subscription Expiry Check | Scheduled Task | Background process to evaluate and update family subscription statuses. |
+| \#  | Feature                   | System Function | Description                                                             |
+| :-- | :------------------------ | :-------------- | :---------------------------------------------------------------------- |
+| 1   | Database Backup           | Cron Job        | Automated daily backup of the main PostgreSQL database.                 |
+| 2   | Subscription Expiry Check | Scheduled Task  | Background process to evaluate and update family subscription statuses. |
 
-### **1.4 Main Workflows & Screen Flows**
+### **1.4 System Use Cases & Workflows**
 
 The following diagrams illustrate the core business processes and screen navigation flows of the Centurion Store.
 
-#### **1.4.1 Main Workflows**
+#### **1.4.1 System Use Case Diagrams**
+
+##### **1.4.1.1 Actors**
+
+{{DIAGRAM:actors}}
+
+##### **1.4.1.2 Usecases**
+
+###### **1.4.1.2.1 Guest Use Cases**
+
+{{DIAGRAM:guest_use_case}}
+
+| ID  | Use Case            | Actors | Use Case Description                                                    |
+| :-: | :------------------ | :----- | :---------------------------------------------------------------------- |
+| 01  | View Home Page      | Guest  | Guest can access to the Homepage                                        |
+| 02  | View About us       | Guest  | Guest can see information of project’s owners                           |
+| 03  | View Private Policy | Guest  | Guest can see and read project’s private policies                       |
+| 04  | View Terms of Use   | Guest  | Guest can see and read project’s Terms of Uses                          |
+| 05  | Register            | Guest  | Guest can register new account                                          |
+| 06  | Download launcher   | Guest  | Guest can download game launcher                                        |
+| 07  | View Game list      | Guest  | Guest can access to gamelist                                            |
+| 08  | Search Game         | Guest  | Guest can search for games                                              |
+| 09  | Filter Game         | Guest  | Guest can use filters to help search games easier                       |
+| 10  | View Game Detail    | Guest  | Guest can see game details after clicking on that game                  |
+| 11  | View Review         | Guest  | Guest can scroll down the game detail page to see reviews for that game |
+| 12  | View Rate           | Guest  | Guest can see recommendation vote rate                                  |
+
+###### **1.4.1.2.2 User Use Cases**
+
+{{DIAGRAM:user_use_case_1}}
+{{DIAGRAM:user_use_case_2}}
+{{DIAGRAM:user_use_case_3}}
+{{DIAGRAM:user_use_case_4}}
+{{DIAGRAM:user_use_case_5}}
+
+| ID  | Use Case                       | Actors | Use Case Description                                                                                                                                |
+| --- | :----------------------------- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01  | Login                          | User   | User can login into website                                                                                                                         |
+| 02  | Login with Google              | User   | User can login via Google gmail                                                                                                                     |
+| 03  | Login with Username & Password | User   | User can login via username/password that has been registered                                                                                       |
+| 04  | Forgot password                | User   | User can request to change password if they forgot the current password                                                                             |
+| 05  | View Account info              | User   | User can see their account profile informations                                                                                                     |
+| 06  | Update info                    | User   | User can edit, update account informations in profile                                                                                               |
+| 07  | Change Password                | User   | User can request to change current password                                                                                                         |
+| 08  | Update Avatar                  | User   | User can update user avatar by uploading pictures                                                                                                   |
+| 09  | View Transaction History       | User   | User can see their Purchase history                                                                                                                 |
+| 10  | View Transaction Detail        | User   | User can see the transaction detail after clicking onto the detail button in transaction page                                                       |
+| 11  | Make Refunds                   | User   | User can request a refund if they want to                                                                                                           |
+| 12  | View Library                   | User   | User can access to their library, to see games that they bought                                                                                     |
+| 13  | View Game Detail               | User   | User can see game details after clicking on that game                                                                                               |
+| 14  | View Wallet                    | User   | User can see their current wallet balance                                                                                                           |
+| 15  | Add funds                      | User   | User can Add more money into account balance                                                                                                        |
+| 16  | Update cart                    | User   | User can add games that they want to buy into cart                                                                                                  |
+| 17  | View cart                      | User   | User can see games inside their cart                                                                                                                |
+| 18  | Remove from cart               | User   | User can remove any games that currently in their cart                                                                                              |
+| 19  | Checkout                       | User   | User can make a checkout to buy all games that stored inside the cart if user account balance is enough to buy                                      |
+| 20  | Make Review                    | User   | User can make a review right under the game they want to review                                                                                     |
+| 21  | View Review                    | User   | User can scroll down the game detail page to see reviews for that game                                                                              |
+| 22  | Edit Review                    | User   | User can update/edit their posted review                                                                                                            |
+| 23  | Remove Review                  | User   | User can delete their posted review                                                                                                                 |
+| 24  | Vote Review                    | User   | User can vote other people’s reviews as well(Recommended/Not Recommended)                                                                           |
+| 25  | View Notifications             | User   | User can see notifications about stuffs in the system(Eg: add friend notifications, buy game successful notifications, review notifications, etc..) |
+| 26  | Remove Notification            | User   | User can delete those notifications if they want                                                                                                    |
+| 27  | View other User profile        | User   | User can search and see other people’s profile informations                                                                                         |
+| 28  | View other’s Library           | User   | User can also see games in other people’s library through their profile                                                                             |
+| 29  | Chat                           | User   | User can chat with other people once they are friends with each other                                                                               |
+| 30  | Block                          | User   | User can block other people if they want to                                                                                                         |
+| 31  | Add Friends                    | User   | User can add other people, by making a request and wait for the other one accepts the invitation                                                    |
+| 32  | Unblock                        | User   | User can unblock other users that has been blocked by them                                                                                          |
+| 33  | Unfriend                       | User   | User can unfriend a friend if they want                                                                                                             |
+| 34  | View Friend List               | User   | User can see their own friendlist                                                                                                                   |
+| 35  | Make Feedback                  | User   | User can make a feedback and send it to admin, to reflect what they are not satisfied with or report bugs                                           |
+| 36  | View Feedback List             | User   | User can view their own sent feedback                                                                                                               |
+| 37  | View Feedback Detail           | User   | User can see the feedback in detail                                                                                                                 |
+| 38  | Remove Feedback                | User   | User can delete/remove their sent feedback                                                                                                          |
+| 39  | Apply Publisher                | User   | User can apply to become publisher by filling in the application form and sending it to admin, then the admin will consider accepting it.           |
+| 40  | Subscribe family plan          | User   | User can subscribe to provided plan so that they can use special offer of the plan                                                                  |
+| 41  | Create Family                  | User   | User can create a Family so that they can start sharing games.                                                                                      |
+| 42  | Create Family Invitation       | User   | User can create invitations to invite their friend joining their family.                                                                            |
+| 43  | Cancel Family Invitation       | User   | User can cancel their invitations                                                                                                                   |
+| 44  | Kick Family Members            | User   |                                                                                                                                                     |
+| 45  | Share Games                    | User   |                                                                                                                                                     |
+| 46  | Join Family                    | User   |                                                                                                                                                     |
+| 47  | Leave Family                   | User   |                                                                                                                                                     |
+| 48  | View Threads                   | Guest  |                                                                                                                                                     |
+| 49  | Create Thread                  | User   |                                                                                                                                                     |
+| 50  | Edit Thread                    | User   |                                                                                                                                                     |
+| 51  | Delete Thread                  | User   |                                                                                                                                                     |
+| 52  | Comment Thread                 | User   |                                                                                                                                                     |
+
+###### **1.4.1.2.3 Publisher Use Cases**
+
+{{DIAGRAM:publisher_use_case}}
+
+| ID  | Use Case                   | Actors    | Use Case Description                                                                                          |
+| :-: | :------------------------- | :-------- | :------------------------------------------------------------------------------------------------------------ |
+| 01  | View Owned Game list       | Publisher | Publisher can see a list including their games they added into system                                         |
+| 02  | Request updating game      | Publisher | Publisher can request to admin to update current uploaded games                                               |
+| 03  | Unlist game                | Publisher | Publisher can unlist their uploaded games if they want to                                                     |
+| 04  | View Game’s news           | Publisher | Publisher can make news about the game they uploaded                                                          |
+| 05  | List game                  | Publisher | Publisher can list a game to be available again they uploaded that they had unlisted before                   |
+| 06  | Request Adding game        | Publisher | Publisher can make a request to admin to add new games by fill in the application forms then send it to admin |
+| 07  | View pending requests list | Publisher | Publisher can see list of requests that are still pending(waiting admin to accept/decline)                    |
+| 08  | Cancel Request             | Publisher | Publisher can cancel their request if they want to                                                            |
+| 09  | View Decline Request list  | Publisher | Publisher can see list of requests that are being declined by admin                                           |
+| 10  | Edit Request               | Publisher | Publisher can edit their requests then send it again to admin                                                 |
+| 11  | Remove Request             | Publisher | Publisher can remove request if they want to                                                                  |
+
+###### **1.4.1.2.4 Admin Use Cases**
+
+{{DIAGRAM:admin_use_case_1}}
+{{DIAGRAM:admin_use_case_2}}
+
+| ID  | Use Case             | Actors | Use Case Description                                                             |
+| :-: | :------------------- | :----- | :------------------------------------------------------------------------------- |
+| 01  | View Game Detail     | Admin  | Admin can see game detail in the game detail page                                |
+| 02  | View Game List       | Admin  | Admin can view gamelist that are now on the website                              |
+| 03  | List game            | Admin  | Admin can choose to public that game so that user can find and buy it            |
+| 04  | Unlist game          | Admin  | Admin can choose to unlist that game off the game page                           |
+| 05  | View Request List    | Admin  | Admin can see request list that are made by users and publishers                 |
+| 06  | View Request Detail  | Admin  | Admin can see request detail by clicking on that request                         |
+| 07  | Decline request      | Admin  | Admin can decline request by clicking the “Decline” button                       |
+| 08  | View Users List      | Admin  | Admin can see list of users that are registered in the website                   |
+| 09  | View User’s Profile  | Admin  | Admin can see user’s profile informations                                        |
+| 10  | Ban User             | Admin  | Admin can choose to ban users that are violated to the community standards       |
+| 11  | Unban User           | Admin  | Admin can choose to unban the previously banned user if they want to             |
+| 12  | View Report          | Admin  | Admin can view reports made by users                                             |
+| 13  | View Feedback List   | Admin  | Admin can see feedback lists sent from users                                     |
+| 14  | View Feedback Detail | Admin  | Admin can see feedback in details by clicking on that feedback                   |
+| 15  | Answer Feedback      | Admin  | Admin can answer feedback, send the answer data to the user who made the request |
+| 16  | Dismiss Feedback     | Admin  | Admin can dismiss the feedback, with a valid reason                              |
+
+#### **1.4.2 Main Workflows**
 
 - **Register Account**: Flow for a guest to sign up, verify email via OTP, and become a registered user.
+  {{IMAGE:register_flow.png}}
 - **Recover Password**: Flow to reset a forgotten password using OTP verification.
+  {{IMAGE:recover_password_flow.png}}
 - **Upgrade to Publisher Account**: Process for a standard user to apply for publisher privileges.
 - **Buy Game**: E-commerce flow including cart management, checkout, and payment processing via VNPay.
+  {{IMAGE:buy_game_flow.png}}
 - **Sell Game**: Publisher flow to submit a new game (details, assets, launcher) for admin approval.
 - **Add Funds**: Process for topping up the user wallet balance.
+  {{IMAGE:add_funds_flow.png}}
 - **Download and Play Game**: Flow for retrieving game files and launching them via the Centurion Launcher.
 - **Write Review**: Flow for users to submit ratings and feedback for games in their library.
 - **Add Friends**: Social flow to send, accept, or decline friend requests.
 - **Family Sharing**: Process to create a family group, invite members, and share game libraries based on subscription plans.
 - **Browse Game**: Flow to discover games using search and filters (A-Z, Price, Tags, Publisher).
+  {{IMAGE:browse_flow.png}}
 - **Refund Game**: Process to request a refund for an eligible game purchase.
 
-*(Note: Detailed flowcharts for each workflow are maintained in the project's diagram repository.)*
+_(Note: Detailed flowcharts for each workflow are maintained in the project's diagram repository.)_
 
-#### **1.4.2 Screen Flows**
+#### **1.4.3 Screen Flows**
 
 {{DIAGRAM:screen_flows}}
 
@@ -100,73 +237,80 @@ _The database design is kept in sync with the current PostgreSQL database of the
 ### **2.2 Table Descriptions (Data Dictionary)**
 
 #### **1. User Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| UserID | BIGSERIAL | PK | Unique identifier for user |
-| RoleID | BIGINT | FK | References `Roles` table |
-| Email | VARCHAR(100) | UNIQUE, NOT NULL | User's email address |
-| Username | VARCHAR(50) | UNIQUE, NOT NULL | Account login username |
-| Password | VARCHAR(255) | NOT NULL | Encrypted password |
-| AvatarURL | TEXT | | Link to user's avatar image |
-| CreatedAt | DATE | | Account creation date |
-| WalletBalance | DECIMAL(10,2) | DEFAULT 0.00 | User's store funds balance |
-| BanStatus | BOOLEAN | DEFAULT FALSE | Indicates if user is banned |
-| ProfileName, Country, DoB, Gender, Summary | (Various) | | User profile details |
+
+| Field Name                                 | Data Type     | Key/Constraint   | Description                 |
+| :----------------------------------------- | :------------ | :--------------- | :-------------------------- |
+| UserID                                     | BIGSERIAL     | PK               | Unique identifier for user  |
+| RoleID                                     | BIGINT        | FK               | References `Roles` table    |
+| Email                                      | VARCHAR(100)  | UNIQUE, NOT NULL | User's email address        |
+| Username                                   | VARCHAR(50)   | UNIQUE, NOT NULL | Account login username      |
+| Password                                   | VARCHAR(255)  | NOT NULL         | Encrypted password          |
+| AvatarURL                                  | TEXT          |                  | Link to user's avatar image |
+| CreatedAt                                  | DATE          |                  | Account creation date       |
+| WalletBalance                              | DECIMAL(10,2) | DEFAULT 0.00     | User's store funds balance  |
+| BanStatus                                  | BOOLEAN       | DEFAULT FALSE    | Indicates if user is banned |
+| ProfileName, Country, DoB, Gender, Summary | (Various)     |                  | User profile details        |
 
 #### **2. Publisher Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| PublisherID | BIGINT | PK, FK | References `User(UserID)` |
-| PublisherName | VARCHAR(100) | NOT NULL | Studio or publisher name |
-| LegalName | VARCHAR(255) | | Publisher's legal entity name |
-| CardNumber, SocialNumber | VARCHAR | | Publisher billing and tax ID |
+
+| Field Name               | Data Type    | Key/Constraint | Description                   |
+| :----------------------- | :----------- | :------------- | :---------------------------- |
+| PublisherID              | BIGINT       | PK, FK         | References `User(UserID)`     |
+| PublisherName            | VARCHAR(100) | NOT NULL       | Studio or publisher name      |
+| LegalName                | VARCHAR(255) |                | Publisher's legal entity name |
+| CardNumber, SocialNumber | VARCHAR      |                | Publisher billing and tax ID  |
 
 #### **3. Game Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| GameID | BIGSERIAL | PK | Unique identifier for game |
-| PublisherID | BIGINT | FK | References `Publisher` table |
-| Name | VARCHAR(100) | NOT NULL | Game title |
-| ReleaseDate | DATE | | Launch date |
-| State | BOOLEAN | | Active/Inactive (Listed/Unlisted) |
-| Price | DECIMAL(10,2) | | Base price of the game |
-| ShortDescription, FullDescription | TEXT | | Store page descriptions |
-| OS, Storage, Processor, Memory, Graphics | VARCHAR | | System requirements |
-| GameUrl, IconUrl | VARCHAR/TEXT | | Asset and download links |
+
+| Field Name                               | Data Type     | Key/Constraint | Description                       |
+| :--------------------------------------- | :------------ | :------------- | :-------------------------------- |
+| GameID                                   | BIGSERIAL     | PK             | Unique identifier for game        |
+| PublisherID                              | BIGINT        | FK             | References `Publisher` table      |
+| Name                                     | VARCHAR(100)  | NOT NULL       | Game title                        |
+| ReleaseDate                              | DATE          |                | Launch date                       |
+| State                                    | BOOLEAN       |                | Active/Inactive (Listed/Unlisted) |
+| Price                                    | DECIMAL(10,2) |                | Base price of the game            |
+| ShortDescription, FullDescription        | TEXT          |                | Store page descriptions           |
+| OS, Storage, Processor, Memory, Graphics | VARCHAR       |                | System requirements               |
+| GameUrl, IconUrl                         | VARCHAR/TEXT  |                | Asset and download links          |
 
 #### **4. Transaction & TransactionDetail Tables**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| **TransactionID** | BIGSERIAL | PK (Transaction) | Main checkout record |
-| UserID | BIGINT | FK | User who made the purchase |
-| TotalAmount | DECIMAL(10,2) | | Final total of checkout |
-| Type | VARCHAR(255) | | E.g., 'Purchase', 'Top-up' |
-| **GameID** | BIGINT | PK, FK (Detail) | Game included in transaction |
-| Price | DECIMAL(10,2) | | Price of specific game at time of purchase |
 
-*(Note: TransactionDetail uses a composite PK of TransactionID and GameID).*
+| Field Name        | Data Type     | Key/Constraint   | Description                                |
+| :---------------- | :------------ | :--------------- | :----------------------------------------- |
+| **TransactionID** | BIGSERIAL     | PK (Transaction) | Main checkout record                       |
+| UserID            | BIGINT        | FK               | User who made the purchase                 |
+| TotalAmount       | DECIMAL(10,2) |                  | Final total of checkout                    |
+| Type              | VARCHAR(255)  |                  | E.g., 'Purchase', 'Top-up'                 |
+| **GameID**        | BIGINT        | PK, FK (Detail)  | Game included in transaction               |
+| Price             | DECIMAL(10,2) |                  | Price of specific game at time of purchase |
+
+_(Note: TransactionDetail uses a composite PK of TransactionID and GameID)._
 
 #### **5. Cart Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| UserID | BIGINT | PK, FK | References `User` |
-| GameID | BIGINT | PK, FK | References `Game` |
-| DateAdded | DATE | | When it was added to cart |
+
+| Field Name | Data Type | Key/Constraint | Description               |
+| :--------- | :-------- | :------------- | :------------------------ |
+| UserID     | BIGINT    | PK, FK         | References `User`         |
+| GameID     | BIGINT    | PK, FK         | References `Game`         |
+| DateAdded  | DATE      |                | When it was added to cart |
 
 #### **6. Library Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| GameID | BIGINT | PK, FK | References `Game` |
-| UserID | BIGINT | PK, FK | References `User` |
-| DateAdded | TIMESTAMP | | Purchase/Add date |
-| PlaytimeInMillis | BIGINT | DEFAULT 0 | Accumulated playtime |
-| LastTimePlayed | TIMESTAMP | | Last launch timestamp |
+
+| Field Name       | Data Type | Key/Constraint | Description           |
+| :--------------- | :-------- | :------------- | :-------------------- |
+| GameID           | BIGINT    | PK, FK         | References `Game`     |
+| UserID           | BIGINT    | PK, FK         | References `User`     |
+| DateAdded        | TIMESTAMP |                | Purchase/Add date     |
+| PlaytimeInMillis | BIGINT    | DEFAULT 0      | Accumulated playtime  |
+| LastTimePlayed   | TIMESTAMP |                | Last launch timestamp |
 
 #### **7. Review Table**
-| Field Name | Data Type | Key/Constraint | Description |
-| :--- | :--- | :--- | :--- |
-| GameID | BIGINT | PK, FK | References `Game` |
-| UserID | BIGINT | PK, FK | References `User` |
-| ReviewContent | TEXT | | The user's feedback text |
-| IsRecommended | BOOLEAN | | Thumb up / Thumb down |
-| TimeCreated | DATE | | When the review was posted |
+
+| Field Name    | Data Type | Key/Constraint | Description                |
+| :------------ | :-------- | :------------- | :------------------------- |
+| GameID        | BIGINT    | PK, FK         | References `Game`          |
+| UserID        | BIGINT    | PK, FK         | References `User`          |
+| ReviewContent | TEXT      |                | The user's feedback text   |
+| IsRecommended | BOOLEAN   |                | Thumb up / Thumb down      |
+| TimeCreated   | DATE      |                | When the review was posted |
