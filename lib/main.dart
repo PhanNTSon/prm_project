@@ -87,8 +87,10 @@ class _MainAppState extends State<MainApp> {
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
 
-    // Yêu cầu Provider khôi phục phiên đăng nhập từ Storage
-    _authProvider.initializeAuth();
+    // Yêu cầu Provider khôi phục phiên đăng nhập từ Storage (Trì hoãn để Router kịp render và lắng nghe)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authProvider.initializeAuth();
+    });
 
     // Khởi tạo GoRouter với instance của AuthProvider
     _router = AppRouter.createRouter(_authProvider);
