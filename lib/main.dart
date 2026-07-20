@@ -169,7 +169,7 @@ class _MainAppState extends State<MainApp> {
         ),
       ],
       child: MaterialApp.router(
-        title: 'Steam Clone',
+        title: 'Centurion Store',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
         routerConfig: _router,
