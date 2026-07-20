@@ -24,19 +24,149 @@ Each sub-feature (e.g., `storefront`) is further divided into a 3-Layer Architec
 - `providers/`: Contains state management logic (ChangeNotifier/Provider) for that specific feature.
 - `views/`: Contains screens and specific UI components (Widgets) of that feature.
 
+### **1.3 Security & Authorization**
+
+#### **1.3.1 Screen Authorization**
+
+| Screen | Guest | User | Publisher | Admin |
+| :---- | :---: | :---: | :---: | :---: |
+| Home | x | x | x | x |
+| Library |  | x | x | x |
+| Feedback/Request |  | x | x | x |
+| New Feedback/Request |  | x | x | x |
+| User Profile |  | x | x | x |
+| Register | x |  |  |  |
+| Login | x |  |  |  |
+| Forget Password | x |  |  |  |
+| Apply Publisher  |  | x |  |  |
+| Adding Game |  |  | x |  |
+| Edit Profile |  | x | x | x |
+| Success / Not Success Pop-up |  | x | x | x |
+| Apply to Publisher Queue |  |  |  | x |
+| Game Request Queue |  |  |  | x |
+| Report Queue |  |  |  | x |
+| Feedback/Request Queue |  |  |  | x |
+| Queue Pop-up |  |  |  | x |
+| Game Browse Filter | x | x | x | x |
+| Search Box | x | x | x | x |
+| Game Details and Review | x | x | x | x |
+| Report Form |  | x | x |  |
+| Publisher Profile | x | x | x | x |
+| Add to Cart Pop-up |  | x | x | x |
+| Cart |  | x | x | x |
+| Payment method |  | x | x | x |
+| Payment Success/ Not Success  |  | x | x | x |
+
+#### **1.3.2 Non-UI Functions**
+
+| \# | Feature | System Function | Description |
+| :---- | :---- | :---- | :---- |
+| 1 | Database Backup | Cron Job | Automated daily backup of the main PostgreSQL database. |
+| 2 | Subscription Expiry Check | Scheduled Task | Background process to evaluate and update family subscription statuses. |
+
+### **1.4 Main Workflows & Screen Flows**
+
+The following diagrams illustrate the core business processes and screen navigation flows of the Centurion Store.
+
+#### **1.4.1 Main Workflows**
+
+- **Register Account**: Flow for a guest to sign up, verify email via OTP, and become a registered user.
+- **Recover Password**: Flow to reset a forgotten password using OTP verification.
+- **Upgrade to Publisher Account**: Process for a standard user to apply for publisher privileges.
+- **Buy Game**: E-commerce flow including cart management, checkout, and payment processing via VNPay.
+- **Sell Game**: Publisher flow to submit a new game (details, assets, launcher) for admin approval.
+- **Add Funds**: Process for topping up the user wallet balance.
+- **Download and Play Game**: Flow for retrieving game files and launching them via the Centurion Launcher.
+- **Write Review**: Flow for users to submit ratings and feedback for games in their library.
+- **Add Friends**: Social flow to send, accept, or decline friend requests.
+- **Family Sharing**: Process to create a family group, invite members, and share game libraries based on subscription plans.
+- **Browse Game**: Flow to discover games using search and filters (A-Z, Price, Tags, Publisher).
+- **Refund Game**: Process to request a refund for an eligible game purchase.
+
+*(Note: Detailed flowcharts for each workflow are maintained in the project's diagram repository.)*
+
+#### **1.4.2 Screen Flows**
+
+{{DIAGRAM:screen_flows}}
+
 ## **2\. Database Design**
 
-_The database design is kept in sync with the current PostgreSQL database of the Spring Boot Backend._
+_The database design is kept in sync with the current PostgreSQL database of the Spring Boot Backend (`V1__Create_Schema.sql`)._
 
-- **Main Tables:** `User`, `Game`, `Transaction`, `TransactionDetail`, `Library`, `Cart`, `Review`.
-- **Structure:** A User can own multiple Games in their Library (N-N relationship resolved via the Library table). Each addition to the cart creates a record in the Cart table. Successful payment deducts the User's `WalletBalance` and generates a `Transaction` along with a `TransactionDetail`.
-- **User Table Details:**
-  - `UserID` (bigint, PK)
-  - `Email` (varchar, Unique)
-  - `Username` (varchar, Unique)
-  - `WalletBalance` (numeric)
-- **Game Table Details:**
-  - `GameID` (bigint, PK)
-  - `Name` (varchar)
-  - `Price` (numeric)
-  - `IconUrl` (varchar)
+### **2.1 Database Schema (ERD)**
+
+{{DIAGRAM:database_schema}}
+
+### **2.2 Table Descriptions (Data Dictionary)**
+
+#### **1. User Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| UserID | BIGSERIAL | PK | Unique identifier for user |
+| RoleID | BIGINT | FK | References `Roles` table |
+| Email | VARCHAR(100) | UNIQUE, NOT NULL | User's email address |
+| Username | VARCHAR(50) | UNIQUE, NOT NULL | Account login username |
+| Password | VARCHAR(255) | NOT NULL | Encrypted password |
+| AvatarURL | TEXT | | Link to user's avatar image |
+| CreatedAt | DATE | | Account creation date |
+| WalletBalance | DECIMAL(10,2) | DEFAULT 0.00 | User's store funds balance |
+| BanStatus | BOOLEAN | DEFAULT FALSE | Indicates if user is banned |
+| ProfileName, Country, DoB, Gender, Summary | (Various) | | User profile details |
+
+#### **2. Publisher Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| PublisherID | BIGINT | PK, FK | References `User(UserID)` |
+| PublisherName | VARCHAR(100) | NOT NULL | Studio or publisher name |
+| LegalName | VARCHAR(255) | | Publisher's legal entity name |
+| CardNumber, SocialNumber | VARCHAR | | Publisher billing and tax ID |
+
+#### **3. Game Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| GameID | BIGSERIAL | PK | Unique identifier for game |
+| PublisherID | BIGINT | FK | References `Publisher` table |
+| Name | VARCHAR(100) | NOT NULL | Game title |
+| ReleaseDate | DATE | | Launch date |
+| State | BOOLEAN | | Active/Inactive (Listed/Unlisted) |
+| Price | DECIMAL(10,2) | | Base price of the game |
+| ShortDescription, FullDescription | TEXT | | Store page descriptions |
+| OS, Storage, Processor, Memory, Graphics | VARCHAR | | System requirements |
+| GameUrl, IconUrl | VARCHAR/TEXT | | Asset and download links |
+
+#### **4. Transaction & TransactionDetail Tables**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| **TransactionID** | BIGSERIAL | PK (Transaction) | Main checkout record |
+| UserID | BIGINT | FK | User who made the purchase |
+| TotalAmount | DECIMAL(10,2) | | Final total of checkout |
+| Type | VARCHAR(255) | | E.g., 'Purchase', 'Top-up' |
+| **GameID** | BIGINT | PK, FK (Detail) | Game included in transaction |
+| Price | DECIMAL(10,2) | | Price of specific game at time of purchase |
+
+*(Note: TransactionDetail uses a composite PK of TransactionID and GameID).*
+
+#### **5. Cart Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| UserID | BIGINT | PK, FK | References `User` |
+| GameID | BIGINT | PK, FK | References `Game` |
+| DateAdded | DATE | | When it was added to cart |
+
+#### **6. Library Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| GameID | BIGINT | PK, FK | References `Game` |
+| UserID | BIGINT | PK, FK | References `User` |
+| DateAdded | TIMESTAMP | | Purchase/Add date |
+| PlaytimeInMillis | BIGINT | DEFAULT 0 | Accumulated playtime |
+| LastTimePlayed | TIMESTAMP | | Last launch timestamp |
+
+#### **7. Review Table**
+| Field Name | Data Type | Key/Constraint | Description |
+| :--- | :--- | :--- | :--- |
+| GameID | BIGINT | PK, FK | References `Game` |
+| UserID | BIGINT | PK, FK | References `User` |
+| ReviewContent | TEXT | | The user's feedback text |
+| IsRecommended | BOOLEAN | | Thumb up / Thumb down |
+| TimeCreated | DATE | | When the review was posted |
