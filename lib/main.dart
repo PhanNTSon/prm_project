@@ -82,7 +82,7 @@ class _MainAppState extends State<MainApp> {
     _homeProvider = HomeProvider(gameRepository);
     _gameDetailProvider = GameDetailProvider(gameRepository);
     _chatProvider = ChatProvider(_webSocketService, _authProvider, dioClient);
-    _friendProvider = FriendProvider(FriendRepository(_dioClient));
+    _friendProvider = FriendProvider(FriendRepository(_dioClient), _webSocketService);
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
@@ -100,6 +100,9 @@ class _MainAppState extends State<MainApp> {
     if (_authProvider.isAuthenticated && _authProvider.token != null) {
       if (!_webSocketService.isConnected) {
         _webSocketService.connect(_authProvider.token!);
+
+        // Khởi tạo kênh nhận lời mời kết bạn
+        _friendProvider.initializeSubscriptions();
 
         // Đăng ký nhận bản tin ví
         _webSocketService.subscribe('/user/queue/wallet.balance', (data) {

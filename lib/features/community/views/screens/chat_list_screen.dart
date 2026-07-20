@@ -59,8 +59,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
         backgroundColor: const Color(0xFF171D25),
         elevation: 0,
       ),
-      body: CustomScrollView(
-        slivers: [
+      body: RefreshIndicator(
+        onRefresh: () => context.read<FriendProvider>().refreshData(),
+        child: CustomScrollView(
+          slivers: [
           if (webSocketService.hasConnectionError)
             SliverToBoxAdapter(
               child: Container(
@@ -199,14 +201,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            ElevatedButton(
-                              onPressed: () => _handleSendInvite(context, friendProvider.searchResult!.userId.toString()),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryColor,
-                                fixedSize: const Size(140, 40),
-                              ),
-                              child: const Text('Gửi kết bạn', style: TextStyle(color: Colors.white)),
-                            )
+                            if (friendProvider.isFriend(friendProvider.searchResult!.userId.toString()))
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text('Đã là bạn bè', style: TextStyle(color: Colors.white54, fontStyle: FontStyle.italic)),
+                              )
+                            else if (friendProvider.hasSentInvite(friendProvider.searchResult!.userId.toString()))
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                child: Text('Đã gửi lời mời', style: TextStyle(color: Colors.white54, fontStyle: FontStyle.italic)),
+                              )
+                            else
+                              ElevatedButton(
+                                onPressed: () => _handleSendInvite(context, friendProvider.searchResult!.userId.toString()),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primaryColor,
+                                  fixedSize: const Size(140, 40),
+                                ),
+                                child: const Text('Gửi kết bạn', style: TextStyle(color: Colors.white)),
+                              )
                           ],
                         ),
                       ),
@@ -395,6 +408,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
           
           const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
         ],
+        ),
       ),
     );
   }
