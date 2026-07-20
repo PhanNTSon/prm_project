@@ -90,3 +90,168 @@ graph TD
     style readme_net fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#000
     style readme_rot_dir fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,color:#000
 ```
+
+## database_schema
+```plantuml
+@startuml
+skinparam linetype ortho
+skinparam shadowing false
+
+entity "Roles" as Roles {
+  * RoleID : BIGSERIAL
+  --
+  RoleName : VARCHAR(50)
+}
+
+entity "User" as User {
+  * UserID : BIGSERIAL
+  --
+  RoleID : BIGINT <<FK>>
+  Email : VARCHAR(100)
+  Username : VARCHAR(50)
+  Password : VARCHAR(255)
+  WalletBalance : DECIMAL(10, 2)
+}
+
+entity "Publisher" as Publisher {
+  * PublisherID : BIGINT <<PK, FK>>
+  --
+  PublisherName : VARCHAR(100)
+}
+
+entity "Game" as Game {
+  * GameID : BIGSERIAL
+  --
+  PublisherID : BIGINT <<FK>>
+  Name : VARCHAR(100)
+  Price : DECIMAL(10, 2)
+  State : BOOLEAN
+}
+
+entity "Transaction" as Transaction {
+  * TransactionID : BIGSERIAL
+  --
+  UserID : BIGINT <<FK>>
+  TotalAmount : DECIMAL(10, 2)
+  Type : VARCHAR(255)
+}
+
+entity "TransactionDetail" as TransactionDetail {
+  * TransactionID : BIGINT <<PK, FK>>
+  * GameID : BIGINT <<PK, FK>>
+  --
+  Price : DECIMAL(10, 2)
+}
+
+entity "Cart" as Cart {
+  * UserID : BIGINT <<PK, FK>>
+  * GameID : BIGINT <<PK, FK>>
+  --
+  DateAdded : DATE
+}
+
+entity "Library" as Library {
+  * GameID : BIGINT <<PK, FK>>
+  * UserID : BIGINT <<PK, FK>>
+  --
+  PlaytimeInMillis : BIGINT
+}
+
+entity "Review" as Review {
+  * GameID : BIGINT <<PK, FK>>
+  * UserID : BIGINT <<PK, FK>>
+  --
+  ReviewContent : TEXT
+  IsRecommended : BOOLEAN
+}
+
+entity "Friendships" as Friendships {
+  * User1ID : BIGINT <<PK, FK>>
+  * User2ID : BIGINT <<PK, FK>>
+}
+
+entity "FriendRequests" as FriendRequests {
+  * RequestID : BIGSERIAL
+  --
+  SenderID : BIGINT <<FK>>
+  ReceiverID : BIGINT <<FK>>
+}
+
+entity "Conversations" as Conversations {
+  * ConversationID : BIGSERIAL
+  --
+  UserID1 : BIGINT <<FK>>
+  UserID2 : BIGINT <<FK>>
+}
+
+entity "Messages" as Messages {
+  * MessageID : BIGSERIAL
+  --
+  ConversationID : BIGINT <<FK>>
+  SenderID : BIGINT <<FK>>
+  MessageContent : TEXT
+}
+
+Roles ||--o{ User
+User ||--o| Publisher
+Publisher ||--o{ Game
+User ||--o{ Transaction
+Transaction ||--|{ TransactionDetail
+Game ||--o{ TransactionDetail
+User ||--o{ Cart
+Game ||--o{ Cart
+User ||--o{ Library
+Game ||--o{ Library
+User ||--o{ Review
+Game ||--o{ Review
+User ||--o{ Friendships
+User ||--o{ FriendRequests
+User ||--o{ Conversations
+Conversations ||--o{ Messages
+@enduml
+```
+
+## screen_flows
+```mermaid
+graph TD
+    Splash[Splash Screen] -->|Authenticated| Home
+    Splash -->|Unauthenticated| Login
+
+    %% Auth Flow
+    Login[Login Screen] -->|Register| Register[Register Screen]
+    Register --> VerifyEmail[Verify Email]
+    VerifyEmail --> RegisterDetails[Register Details]
+    Login --> ForgotPwd[Forgot Password]
+    ForgotPwd --> ResetPwd[Reset Password]
+
+    %% Main Shell
+    subgraph Bottom Navigation Shell
+        Home[Home Storefront]
+        Cart[Cart Screen]
+        Library[Library Screen]
+        Chat[Chat List]
+    end
+
+    %% Store Interactions
+    Home --> Search[Game Search]
+    Home --> AllGames[All Games]
+    Home --> GameDetail[Game Detail]
+    Search --> GameDetail
+    AllGames --> GameDetail
+
+    %% Cart & Payment Flow
+    GameDetail -->|Add to Cart| Cart
+    Cart -->|Checkout| Payment[Payment WebView]
+    Payment --> PaymentResult[Payment Result]
+
+    %% Library & Community
+    Library -->|Play/Review| GameDetail
+    Chat --> ChatDetail[Chat Detail]
+
+    %% Profile Flow
+    Home --> Profile[User Profile]
+    Profile --> Account[Account Detail]
+    Account --> EditProfile[Edit Profile]
+    Account --> Wallet[Wallet Screen]
+    Wallet --> Payment
+```

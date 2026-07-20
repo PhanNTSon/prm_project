@@ -61,6 +61,34 @@ def download_gdrive_assets():
     except Exception as e:
         print(f"Error fetching files from Google Drive: {e}")
 
+def compile_plantuml_diagrams():
+    if not os.path.exists("reports/diagrams.md"):
+        return
+        
+    os.makedirs("reports/assets", exist_ok=True)
+    
+    with open("reports/diagrams.md", "r", encoding="utf-8") as f:
+        content = f.read()
+        
+    # Regex to find: ## diagram_id \n ```plantuml \n ... \n ```
+    pattern = re.compile(r"##\s+(\w+)\s+```plantuml(.*?)```", re.DOTALL)
+    matches = pattern.findall(content)
+    
+    for name, code in matches:
+        code = code.strip()
+        print(f"Compiling PlantUML diagram: {name}")
+        
+        url = "https://kroki.io/plantuml/png"
+        headers = {"Content-Type": "text/plain"}
+        response = requests.post(url, headers=headers, data=code.encode('utf-8'))
+        
+        if response.status_code == 200:
+            with open(f"reports/assets/{name}.png", "wb") as f:
+                f.write(response.content)
+            print(f"Saved {name}.png")
+        else:
+            print(f"Failed to fetch PlantUML diagram {name}: HTTP {response.status_code} - {response.text}")
+
 def compile_mermaid_diagrams():
     if not os.path.exists("reports/diagrams.md"):
         print("reports/diagrams.md not found. Skipping mermaid compilation.")
@@ -150,6 +178,7 @@ def build_unified_report():
 
 def main():
     download_gdrive_assets()
+    compile_plantuml_diagrams()
     compile_mermaid_diagrams()
     build_unified_report()
 
