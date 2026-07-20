@@ -1,11 +1,11 @@
-# 📂 Hướng Dẫn Kiến Trúc & Cấu Trúc Thư Mục Dự Án (Steam Clone Flutter)
+# 📂 Hướng Dẫn Kiến Trúc & Cấu Trúc Thư Mục Dự Án (Centurion Store Flutter)
 
 Tài liệu này giải thích cấu trúc thư mục của dự án và cách sắp xếp code trong quá trình chuyển đổi từ React sang Flutter.
 
 ---
 
 ## 1. Mục Tiêu Dự Án
-Dự án được phát triển theo mô hình **Steam Clone** trên di động. Mục tiêu cốt lõi là hoàn thiện các tính năng chính trong luồng người dùng (Core User Loop): Xác thực, Cửa hàng, Giỏ hàng & Thanh toán, và Thư viện game sở hữu.
+Dự án được phát triển theo mô hình **Centurion Store** trên di động. Mục tiêu cốt lõi là hoàn thiện các tính năng chính trong luồng người dùng (Core User Loop): Xác thực, Cửa hàng, Giỏ hàng & Thanh toán, và Thư viện game sở hữu.
 
 ---
 

@@ -26,8 +26,9 @@ class TransactionTile extends StatelessWidget {
     final title = transaction.isTopUp
         ? 'Top up wallet'
         : (transaction.gameName ?? 'Game purchase');
-    final amountText =
-        '${_isCredit ? '+' : '-'}${_formatUsd(transaction.price)}';
+    final amountText = transaction.price == null
+        ? (transaction.isTopUp ? 'Amount unavailable' : '--')
+        : '${_isCredit ? '+' : '-'}${_formatUsd(transaction.price)}';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -83,9 +84,13 @@ class TransactionTile extends StatelessWidget {
           Text(
             amountText,
             style: TextStyle(
-              color: _isCredit ? AppColors.successColor : AppColors.errorColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+              color: transaction.price == null
+                  ? AppColors.secondaryTextColor
+                  : (_isCredit ? AppColors.successColor : AppColors.errorColor),
+              fontWeight: transaction.price == null
+                  ? FontWeight.normal
+                  : FontWeight.bold,
+              fontSize: transaction.price == null ? 12 : 14,
             ),
           ),
         ],

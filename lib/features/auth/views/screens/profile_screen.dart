@@ -140,6 +140,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       backgroundColor: const Color(0xFF171A21),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: AppColors.primaryTextColor),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/home');
+          }
+        },
+      ),
       title: Text(
         _isOwnProfile ? 'Trang cá nhân' : 'Hồ sơ người dùng',
         style: const TextStyle(color: AppColors.primaryTextColor),
@@ -563,9 +573,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               icon: Icons.history,
               title: 'Lịch sử giao dịch',
               subtitle: 'Xem các giao dịch đã thực hiện',
-              onTap: () {
-                // TODO: context.push('/account/history') khi Dev C làm xong
-              },
+              onTap: () => context.push('/account/wallet'),
             ),
             _buildSectionHeader('Khác'),
             ProfileMenuItem(

@@ -22,6 +22,8 @@ import 'features/storefront/providers/game_list_provider.dart';
 import 'features/storefront/providers/home_provider.dart';
 import 'features/storefront/providers/game_detail_provider.dart';
 import 'package:prm_project/features/community/providers/chat_provider.dart';
+import 'package:prm_project/features/community/providers/friend_provider.dart';
+import 'package:prm_project/features/community/data/repositories/friend_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +58,7 @@ class _MainAppState extends State<MainApp> {
   late final HomeProvider _homeProvider;
   late final GameDetailProvider _gameDetailProvider;
   late final ChatProvider _chatProvider;
+  late final FriendProvider _friendProvider;
 
   @override
   void initState() {
@@ -78,13 +81,16 @@ class _MainAppState extends State<MainApp> {
     _gameListProvider = GameListProvider(gameRepository);
     _homeProvider = HomeProvider(gameRepository);
     _gameDetailProvider = GameDetailProvider(gameRepository);
-    _chatProvider = ChatProvider(_webSocketService, _authProvider);
+    _chatProvider = ChatProvider(_webSocketService, _authProvider, dioClient);
+    _friendProvider = FriendProvider(FriendRepository(_dioClient), _webSocketService);
 
     // Lắng nghe trạng thái đăng nhập để bật/tắt WebSocket
     _authProvider.addListener(_onAuthStateChanged);
 
-    // Yêu cầu Provider khôi phục phiên đăng nhập từ Storage
-    _authProvider.initializeAuth();
+    // Yêu cầu Provider khôi phục phiên đăng nhập từ Storage (Trì hoãn để Router kịp render và lắng nghe)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _authProvider.initializeAuth();
+    });
 
     // Khởi tạo GoRouter với instance của AuthProvider
     _router = AppRouter.createRouter(_authProvider);
@@ -94,6 +100,9 @@ class _MainAppState extends State<MainApp> {
     if (_authProvider.isAuthenticated && _authProvider.token != null) {
       if (!_webSocketService.isConnected) {
         _webSocketService.connect(_authProvider.token!);
+
+        // Khởi tạo kênh nhận lời mời kết bạn
+        _friendProvider.initializeSubscriptions();
 
         // Đăng ký nhận bản tin ví
         _webSocketService.subscribe('/user/queue/wallet.balance', (data) {
@@ -116,6 +125,8 @@ class _MainAppState extends State<MainApp> {
         _webSocketService.disconnect();
         _walletProvider.clearBalance();
         _notificationProvider.clearNotifications();
+        _chatProvider.clearData();
+        _friendProvider.clearData();
       }
     }
   }
@@ -147,6 +158,9 @@ class _MainAppState extends State<MainApp> {
         ChangeNotifierProvider<ChatProvider>.value(
           value: _chatProvider,
         ),
+        ChangeNotifierProvider<FriendProvider>.value(
+          value: _friendProvider,
+        ),
         ChangeNotifierProvider<HomeProvider>.value(value: _homeProvider),
         ChangeNotifierProvider<GameDetailProvider>.value(value: _gameDetailProvider),
         ChangeNotifierProvider<WebSocketService>.value(value: _webSocketService),
@@ -155,7 +169,7 @@ class _MainAppState extends State<MainApp> {
         ),
       ],
       child: MaterialApp.router(
-        title: 'Steam Clone',
+        title: 'Centurion Store',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.darkTheme,
         routerConfig: _router,

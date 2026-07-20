@@ -53,6 +53,11 @@ class AppRouter {
           return location == '/splash' ? null : '/splash';
         }
 
+        // Đã khởi tạo xong nhưng vẫn ở splash -> Điều hướng
+        if (location == '/splash') {
+          return isAuthenticated ? '/home' : '/login';
+        }
+
         // Danh sách route công khai không cần đăng nhập
         final isPublicRoute = [
           '/login',
@@ -183,11 +188,12 @@ class AppRouter {
 
         // Chat Detail
         GoRoute(
-          path: '/chat/detail/:username',
+          path: '/chat/detail/:friendId/:username',
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) {
             final username = state.pathParameters['username'] ?? '';
-            return ChatDetailScreen(username: username);
+            final friendId = int.tryParse(state.pathParameters['friendId'] ?? '') ?? 0;
+            return ChatDetailScreen(username: username, friendId: friendId);
           },
         ),
 

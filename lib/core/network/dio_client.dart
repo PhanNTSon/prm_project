@@ -26,16 +26,6 @@ class DioClient {
 
     // Add interceptors
     _dio.interceptors.add(AuthInterceptor(navigatorKey));
-    
-    // Add LogInterceptor for debugging if needed
-    _dio.interceptors.add(LogInterceptor(
-      request: true,
-      requestHeader: true,
-      requestBody: true,
-      responseHeader: false,
-      responseBody: true,
-      error: true,
-    ));
   }
 
   /// Wrapper for GET request
@@ -74,6 +64,21 @@ class DioClient {
     Options? options,
   }) async {
     return await _dio.put(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+    );
+  }
+
+  /// Wrapper for PATCH request
+  Future<Response> patch(
+    String path, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    return await _dio.patch(
       path,
       data: data,
       queryParameters: queryParameters,
