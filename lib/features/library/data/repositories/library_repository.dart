@@ -43,7 +43,6 @@ class LibraryRepository {
           }
         }
 
-        // Nếu không có image_header thì lấy ảnh đầu tiên
         if (imageUrl.isEmpty && mediaList.isNotEmpty) {
           imageUrl = mediaList.first["url"] ?? "";
         }

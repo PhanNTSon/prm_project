@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:prm_project/features/library/data/models/library_game.dart';
 
 class OwnedGameTile extends StatelessWidget {
@@ -13,6 +14,9 @@ class OwnedGameTile extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
+        onTap: () {
+          context.push('/game-detail/${game.gameId}');
+        },
         leading: _GameThumbnail(iconUrl: game.iconUrl),
 
         title: Text(game.name),
