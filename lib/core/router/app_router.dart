@@ -193,7 +193,8 @@ class AppRouter {
           parentNavigatorKey: rootNavigatorKey,
           builder: (context, state) {
             final username = state.pathParameters['username'] ?? '';
-            final friendId = int.tryParse(state.pathParameters['friendId'] ?? '') ?? 0;
+            final friendId =
+                int.tryParse(state.pathParameters['friendId'] ?? '') ?? 0;
             return ChatDetailScreen(username: username, friendId: friendId);
           },
         ),
