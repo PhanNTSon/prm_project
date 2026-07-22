@@ -9,17 +9,9 @@ class LibraryProvider extends ChangeNotifier {
 
   LibraryProvider(this._repository);
 
-  // =========================
-  // Data
-  // =========================
-
   final List<LibraryGame> _games = [];
 
   List<LibraryGame> get games => List.unmodifiable(_games);
-
-  // =========================
-  // State
-  // =========================
 
   bool _isLoading = false;
   bool _isError = false;
@@ -30,10 +22,6 @@ class LibraryProvider extends ChangeNotifier {
   bool get isError => _isError;
 
   bool get isSuccess => _isSuccess;
-
-  // =========================
-  // Pagination
-  // =========================
 
   int _currentPage = 0;
 
@@ -49,17 +37,9 @@ class LibraryProvider extends ChangeNotifier {
 
   bool get hasMore => _hasMore;
 
-  // =========================
-  // Sort
-  // =========================
-
   String _sort = "az";
 
   String get sort => _sort;
-
-  // =========================
-  // Load Library
-  // =========================
 
   Future<void> loadLibrary({bool refresh = false}) async {
     if (_isLoading) return;
@@ -119,10 +99,6 @@ Has More    : $_hasMore
     await loadLibrary(refresh: true);
   }
 
-  // =========================
-  // Sort (Local Only)
-  // =========================
-
   void changeSort(String value) {
     if (_sort == value) return;
 
@@ -158,10 +134,6 @@ Has More    : $_hasMore
     return list;
   }
 
-  // =========================
-  // Search
-  // =========================
-
   List<LibraryGame> searchGames(String keyword) {
     final query = keyword.trim().toLowerCase();
 
@@ -175,19 +147,11 @@ Has More    : $_hasMore
     }).toList();
   }
 
-  // =========================
-  // Infinite Scroll
-  // =========================
-
   Future<void> loadNextPage() async {
     if (_isLoading || !_hasMore) return;
 
     await loadLibrary();
   }
-
-  // =========================
-  // Clear
-  // =========================
 
   void clear() {
     _games.clear();
