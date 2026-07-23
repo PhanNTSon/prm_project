@@ -15,9 +15,11 @@ class HomeAppbar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: const Color(0xFF171A21),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
           // ── Dòng 1: Logo + Search + Actions ──────────────────────────────
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
@@ -90,7 +92,8 @@ class HomeAppbar extends StatelessWidget {
               ),
             ),
           ),
-        ],
+          ],
+        ),
       ),
     );
   }
