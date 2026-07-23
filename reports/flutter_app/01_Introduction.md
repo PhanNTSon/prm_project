@@ -31,9 +31,9 @@ The project is implemented by Group 6 - SE1924-JS(IT) based on the requirements 
 
 | _No._ | _Member_               | _Task/Screen_                                                          |
 | :---- | :--------------------- | :--------------------------------------------------------------------- |
-| _1_   | Nguyễn Văn A           | Authentication & Profile                                               |
-| _2_   | Nguyễn Văn B           | Storefront (Home, Search, Game Details)                                |
-| _3_   | Nguyễn Văn C           | Cart, Payment (VNPay), & Wallet                                        |
+| _1_   | Hoàng Vĩnh Đạt           | Authentication & Profile                                               |
+| _2_   | Trần Sỹ Huy           | Storefront (Home, Search, Game Details)                                |
+| _3_   | Đỗ Bá Thành           | Cart, Payment (VNPay), & Wallet                                        |
 | _4_   | Ngô Tiến Đạt           | Library & UI Kit Components                                            |
 | _5_   | Phan Nguyễn Trường Sơn | Architecture, Routing, Base Network, Testing, Community (Friend, Chat) |
 
