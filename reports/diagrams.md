@@ -4,20 +4,22 @@
 
 ```mermaid
 graph TD
-    lib["lib/"] --> core["core/ (Shared Core)"]
+    lib["lib/"] --> core["core/ (Shared Infrastructure - Tech Lead)"]
     lib --> features["features/ (Feature-First Modules)"]
     lib --> main["main.dart"]
 
-    core --> network["network/ (Dio, Interceptors)"]
-    core --> router["router/ (GoRouter, Guards)"]
+    core --> network["network/ (Dio, AuthInterceptor, WebSocketService)"]
+    core --> router["router/ (GoRouter, AuthGuard, ShellRoute)"]
+    core --> theme["theme/ (AppTheme, AppColors)"]
+    core --> utils["utils/ (JwtDecoder)"]
     core --> widgets["widgets/ (Common UI Kit)"]
-    core --> constants["constants/ (AppColors, API)"]
 
     features --> auth["auth/ (Dev A)"]
     features --> profile["profile/ (Dev A)"]
     features --> storefront["storefront/ (Dev B)"]
-    features --> cart["cart/ (Dev C)"]
+    features --> cart_payment["cart_payment/ (Dev C)"]
     features --> library["library/ (Dev D)"]
+    features --> community["community/ (Tech Lead - Sơn)"]
 
     style lib fill:#1b2838,stroke:#66c0f4,stroke-width:2px,color:#fff
     style core fill:#2a475e,stroke:#66c0f4,stroke-width:1px,color:#fff
@@ -36,7 +38,8 @@ graph TD
     D["🐘 PostgreSQL Database<br>(Managed by Railway)"]
 
     %% Establish connections with description labels
-    A <-->|HTTP/REST<br>JSON payloads| B
+    A <-->|HTTP/REST API<br>JSON payloads via Dio| B
+    A <-->|WebSocket STOMP<br>SockJS /ws real-time| B
     A -->|InAppWebView| C
     B -->|JDBC| D
 
@@ -311,22 +314,18 @@ actor User
 
 rectangle "Centurion Store" #LightBlue {
   usecase "Login" as UC1
-  usecase "Login with Google" as UC2
   usecase "Login with Username & Password" as UC3
   usecase "Forgot password" as UC4
   usecase "View Account info" as UC5
   usecase "Update info" as UC6
-  usecase "Change Password" as UC7
   usecase "Update Avatar" as UC8
 }
 
 User -- UC1
-User -- UC2
 User -- UC3
 User -- UC4
 User -- UC5
 User -- UC6
-User -- UC7
 User -- UC8
 @enduml
 ```
@@ -340,7 +339,6 @@ actor User
 
 rectangle "Centurion Store" #LightBlue {
   usecase "View Transaction History" as UC9
-  usecase "View Transaction Detail" as UC10
   usecase "View Library" as UC12
   usecase "View Game Detail" as UC13
   usecase "View Wallet" as UC14
@@ -352,7 +350,6 @@ rectangle "Centurion Store" #LightBlue {
 }
 
 User -- UC9
-User -- UC10
 User -- UC12
 User -- UC13
 User -- UC14
@@ -372,22 +369,12 @@ skinparam packageStyle rectangle
 actor User
 
 rectangle "Centurion Store" #LightBlue {
-  usecase "Make Review" as UC20
   usecase "View Review" as UC21
-  usecase "Edit Review" as UC22
-  usecase "Remove Review" as UC23
-  usecase "Vote Review" as UC24
   usecase "View other User profile" as UC27
-  usecase "View other's Library" as UC28
 }
 
-User -- UC20
 User -- UC21
-User -- UC22
-User -- UC23
-User -- UC24
 User -- UC27
-User -- UC28
 @enduml
 ```
 

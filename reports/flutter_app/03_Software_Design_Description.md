@@ -48,10 +48,7 @@ Each sub-feature (e.g., `storefront`) is further divided into a 3-Layer Architec
 
 #### **1.3.2 Non-UI Functions**
 
-| \#  | Feature                   | System Function | Description                                                             |
-| :-- | :------------------------ | :-------------- | :---------------------------------------------------------------------- |
-| 1   | Database Backup           | Cron Job        | Automated daily backup of the main PostgreSQL database.                 |
-| 2   | Subscription Expiry Check | Scheduled Task  | Background process to evaluate and update family subscription statuses. |
+_(Note: Non-UI background functions like automated database backups and subscription expiry evaluation are executed by the Spring Boot Backend service)._
 
 ### **1.4 System Use Cases & Workflows**
 
@@ -89,15 +86,12 @@ The following diagrams illustrate the core business processes and screen navigat
 | ID  | Use Case                       | Actors | Use Case Description                                                                                                                                |
 | --- | :----------------------------- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 01  | Login                          | User   | User can login into website                                                                                                                         |
-| 02  | Login with Google              | User   | User can login via Google gmail                                                                                                                     |
 | 03  | Login with Username & Password | User   | User can login via username/password that has been registered                                                                                       |
 | 04  | Forgot password                | User   | User can request to change password if they forgot the current password                                                                             |
 | 05  | View Account info              | User   | User can see their account profile informations                                                                                                     |
 | 06  | Update info                    | User   | User can edit, update account informations in profile                                                                                               |
-| 07  | Change Password                | User   | User can request to change current password                                                                                                         |
 | 08  | Update Avatar                  | User   | User can update user avatar by uploading pictures                                                                                                   |
 | 09  | View Transaction History       | User   | User can see their Purchase history                                                                                                                 |
-| 10  | View Transaction Detail        | User   | User can see the transaction detail after clicking onto the detail button in transaction page                                                       |
 | 12  | View Library                   | User   | User can access to their library, to see games that they bought                                                                                     |
 | 13  | View Game Detail               | User   | User can see game details after clicking on that game                                                                                               |
 | 14  | View Wallet                    | User   | User can see their current wallet balance                                                                                                           |
@@ -106,13 +100,8 @@ The following diagrams illustrate the core business processes and screen navigat
 | 17  | View cart                      | User   | User can see games inside their cart                                                                                                                |
 | 18  | Remove from cart               | User   | User can remove any games that currently in their cart                                                                                              |
 | 19  | Checkout                       | User   | User can make a checkout to buy all games that stored inside the cart if user account balance is enough to buy                                      |
-| 20  | Make Review                    | User   | User can make a review right under the game they want to review                                                                                     |
 | 21  | View Review                    | User   | User can scroll down the game detail page to see reviews for that game                                                                              |
-| 22  | Edit Review                    | User   | User can update/edit their posted review                                                                                                            |
-| 23  | Remove Review                  | User   | User can delete their posted review                                                                                                                 |
-| 24  | Vote Review                    | User   | User can vote other people’s reviews as well(Recommended/Not Recommended)                                                                           |
 | 27  | View other User profile        | User   | User can search and see other people’s profile informations                                                                                         |
-| 28  | View other’s Library           | User   | User can also see games in other people’s library through their profile                                                                             |
 | 29  | Chat                           | User   | User can chat with other people once they are friends with each other                                                                               |
 | 31  | Add Friends                    | User   | User can add other people, by making a request and wait for the other one accepts the invitation                                                    |
 | 33  | Unfriend                       | User   | User can unfriend a friend if they want                                                                                                             |
@@ -128,7 +117,6 @@ The following diagrams illustrate the core business processes and screen navigat
   {{IMAGE:buy_game_flow.png}}
 - **Add Funds**: Process for topping up the user wallet balance.
   {{IMAGE:add_funds_flow.png}}
-- **Write Review**: Flow for users to submit ratings and feedback for games in their library.
 - **Add Friends**: Social flow to send, accept, or decline friend requests.
 - **Browse Game**: Flow to discover games using search and filters (A-Z, Price, Tags, Publisher).
   {{IMAGE:browse_flow.png}}

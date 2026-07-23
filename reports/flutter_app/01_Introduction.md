@@ -31,9 +31,9 @@ The project is implemented by Group 6 - SE1924-JS(IT) based on the requirements 
 
 | _No._ | _Member_               | _Task/Screen_                                                          |
 | :---- | :--------------------- | :--------------------------------------------------------------------- |
-| _1_   | Nguyễn Văn A           | Authentication & Profile                                               |
-| _2_   | Nguyễn Văn B           | Storefront (Home, Search, Game Details)                                |
-| _3_   | Nguyễn Văn C           | Cart, Payment (VNPay), & Wallet                                        |
+| _1_   | Hoàng Vĩnh Đạt           | Authentication & Profile                                               |
+| _2_   | Trần Sỹ Huy           | Storefront (Home, Search, Game Details)                                |
+| _3_   | Đỗ Bá Thành           | Cart, Payment (VNPay), & Wallet                                        |
 | _4_   | Ngô Tiến Đạt           | Library & UI Kit Components                                            |
 | _5_   | Phan Nguyễn Trường Sơn | Architecture, Routing, Base Network, Testing, Community (Friend, Chat) |
 
@@ -58,9 +58,9 @@ The digital game market is constantly expanding; however, mobile users often enc
 - Manage cart and payment using Wallet balance.
 - Top up wallet via the VNPay payment gateway (displayed via InAppWebView).
 - Manage purchased Game Library (Library).
+- Real-time 1-on-1 Chat and Friend Management via WebSocket STOMP.
 
 **Out of Scope (Limitations):**
 
 - No support for downloading and playing games directly on the mobile phone (as the system is a PC/Desktop game store).
 - Advanced publisher/admin management functions are not included (Managing and uploading new games will be performed on the old Web/Desktop version).
-- No real-time chat support in mobile version V1.0 (to be considered for future additions).
