@@ -118,6 +118,10 @@ The following diagrams illustrate the core business processes and screen navigat
 - **Add Funds**: Process for topping up the user wallet balance.
   {{IMAGE:add_funds_flow.png}}
 - **Add Friends**: Social flow to send, accept, or decline friend requests.
+- **Search Game**: Flow for users to search for games by entering a game title or keyword.
+  {{IMAGE:search_game_flow.png}}
+- **Game Detail**: Flow for users to view detailed game information after selecting a game.
+  {{IMAGE:game_detail_flow.png}}
 - **Browse Game**: Flow to discover games using search and filters (A-Z, Price, Tags, Publisher).
   {{IMAGE:browse_flow.png}}
 
